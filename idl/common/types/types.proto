@@ -1,0 +1,29 @@
+// common/types/types.proto
+syntax = "proto3";
+
+package common.types;
+
+option go_package ="common/types";
+
+import "google/protobuf/timestamp.proto";
+
+// 空响应
+message EmptyResponse {
+}
+
+// ID请求
+message IdRequest {
+  string id = 1;
+}
+
+// 时间区间
+message TimeRange {
+  google.protobuf.Timestamp start_time = 1;
+  google.protobuf.Timestamp end_time = 2;
+}
+
+// 地理位置
+message GeoLocation {
+  double latitude = 1;
+  double longitude = 2;
+}

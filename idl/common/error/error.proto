@@ -1,0 +1,44 @@
+// common/error/error.proto
+syntax = "proto3";
+
+package common.error;
+
+option go_package ="common/error";
+// 系统错误码定义
+enum ErrorCode {
+  // 成功
+  SUCCESS = 0;
+
+  // 系统级错误: 10000-19999
+  SYSTEM_ERROR = 10000;
+  SERVICE_UNAVAILABLE = 10001;
+  PARAMETER_ERROR = 10002;
+  TIMEOUT_ERROR = 10003;
+
+  // 用户相关错误: 30000-39999
+  UNAUTHORIZED = 30000;
+  PERMISSION_DENIED = 30001;
+  INVALID_CREDENTIALS = 30002;
+  ACCOUNT_DISABLED = 30003;
+
+  // 业务逻辑错误: 40000-49999
+  NOT_FOUND = 40000;
+  EMAIL_ALREADY_EXISTS = 40001;
+  PHONE_ALREADY_EXISTS = 40002;
+  USERNAME_ALREADY_EXISTS = 40003;
+  DEFAULT_COLLECTION_UNDELETABLE = 40004;
+  COLLECTION_NOT_EMPTY = 40005;
+  INVALID_SHARE_LINK = 40006;
+
+  // 第三方服务错误: 50000-59999
+  THIRD_PARTY_SERVICE_ERROR = 50000;
+  THIRD_PARTY_AUTH_FAILED = 50001;
+}
+
+// 标准错误消息
+message Error {
+  ErrorCode code = 1;        // 错误码
+  string message = 2;        // 错误消息
+  string details = 3;        // 详细信息(仅用于日志和调试)
+  string request_id = 4;     // 请求跟踪ID
+}

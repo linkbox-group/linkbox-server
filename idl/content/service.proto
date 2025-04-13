@@ -1,0 +1,430 @@
+// content/service.proto
+syntax = "proto3";
+
+package content;
+
+option go_package = "content";
+
+import "google/protobuf/timestamp.proto";
+import "common/error/error.proto";
+import "common/pagination/pagination.proto";
+import "common/types/types.proto";
+
+// 内容服务定义
+service ContentService {
+  // 创建内容项
+  rpc CreateItem(CreateItemRequest) returns (CreateItemResponse);
+
+  // 获取内容项
+  rpc GetItem(GetItemRequest) returns (GetItemResponse);
+
+  // 更新内容项
+  rpc UpdateItem(UpdateItemRequest) returns (UpdateItemResponse);
+
+  // 删除内容项
+  rpc DeleteItem(DeleteItemRequest) returns (DeleteItemResponse);
+
+  // 批量获取内容项
+  rpc GetItems(GetItemsRequest) returns (GetItemsResponse);
+
+  // 批量删除内容项
+  rpc BatchDeleteItems(BatchDeleteItemsRequest) returns (BatchDeleteItemsResponse);
+
+  // 按标签获取内容项
+  rpc GetItemsByTags(GetItemsByTagsRequest) returns (GetItemsByTagsResponse);
+
+  // 从URL解析内容元数据
+  rpc ExtractMetadata(ExtractMetadataRequest) returns (ExtractMetadataResponse);
+
+  // 获取用户最近添加的内容项
+  rpc GetRecentItems(GetRecentItemsRequest) returns (GetRecentItemsResponse);
+
+  // 批量更新内容项
+  rpc BatchUpdateItems(BatchUpdateItemsRequest) returns (BatchUpdateItemsResponse);
+
+  // 从文件导入内容
+  rpc ImportFromFile(ImportFromFileRequest) returns (ImportFromFileResponse);
+
+  // 导出内容到文件
+  rpc ExportToFile(ExportToFileRequest) returns (ExportToFileResponse);
+
+  // 内容项全文搜索
+  rpc SearchItems(SearchItemsRequest) returns (SearchItemsResponse);
+
+  // 添加内容备注
+  rpc AddItemNote(AddItemNoteRequest) returns (AddItemNoteResponse);
+
+  // 更新内容备注
+  rpc UpdateItemNote(UpdateItemNoteRequest) returns (UpdateItemNoteResponse);
+
+  // 获取内容备注
+  rpc GetItemNote(GetItemNoteRequest) returns (GetItemNoteResponse);
+}
+
+// 内容类型枚举
+enum ItemType {
+  UNKNOWN_TYPE = 0;
+  LINK = 1;
+  NOTE = 2;
+  IMAGE = 3;
+  DOCUMENT = 4;
+  VIDEO = 5;
+  AUDIO = 6;
+  CODE = 7;
+}
+
+// 内容元数据
+message ItemMetadata {
+  string title = 1;
+  string description = 2;
+  string thumbnail_url = 3;
+  string author = 4;
+  string site_name = 5;
+  string favicon_url = 6;
+  string content_type = 7;
+  repeated string keywords = 8;
+  string language = 9;
+  bool is_article = 10;
+}
+
+// 内容项
+message Item {
+  string id = 1;
+  string user_id = 2;
+  ItemType type = 3;
+  string url = 4;
+  string title = 5;
+  string description = 6;
+  string thumbnail_url = 7;
+  repeated string tags = 8;
+  repeated string collection_ids = 9;
+  bool is_favorite = 10;
+  bool is_archived = 11;
+  bool is_private = 12;
+  ItemMetadata metadata = 13;
+  google.protobuf.Timestamp created_at = 14;
+  google.protobuf.Timestamp updated_at = 15;
+  string note = 16;
+  int32 read_count = 17;
+}
+
+// 创建内容项请求
+message CreateItemRequest {
+  string user_id = 1;
+  ItemType type = 2;
+  string url = 3;
+  string title = 4;
+  string description = 5;
+  string thumbnail_url = 6;
+  ItemMetadata metadata = 7;
+  repeated string tags = 8;
+  repeated string collection_ids = 9;
+  bool is_favorite = 10;
+  bool is_private = 11;
+  string note = 12;
+}
+
+// 创建内容项响应
+message CreateItemResponse {
+  oneof result {
+    Item item = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 获取内容项请求
+message GetItemRequest {
+  string id = 1;
+  string user_id = 2;
+}
+
+// 获取内容项响应
+message GetItemResponse {
+  oneof result {
+    Item item = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 更新内容项请求
+message UpdateItemRequest {
+  string id = 1;
+  string user_id = 2;
+  string title = 3;
+  string description = 4;
+  string thumbnail_url = 5;
+  ItemMetadata metadata = 6;
+  repeated string tags = 7;
+  repeated string collection_ids = 8;
+  bool is_favorite = 9;
+  bool is_archived = 10;
+  bool is_private = 11;
+}
+
+// 更新内容项响应
+message UpdateItemResponse {
+  oneof result {
+    Item item = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 删除内容项请求
+message DeleteItemRequest {
+  string id = 1;
+  string user_id = 2;
+}
+
+// 删除内容项响应
+message DeleteItemResponse {
+  oneof result {
+    bool success = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 批量获取内容项请求
+message GetItemsRequest {
+  string user_id = 1;
+  repeated string ids = 2;
+}
+
+// 批量获取内容项响应
+message GetItemsResponse {
+  oneof result {
+    ItemsData items = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 内容项列表数据
+message ItemsData {
+  repeated Item items = 1;
+}
+
+// 批量删除内容项请求
+message BatchDeleteItemsRequest {
+  string user_id = 1;
+  repeated string ids = 2;
+}
+
+// 批量删除内容项响应
+message BatchDeleteItemsResponse {
+  oneof result {
+    BatchOperationResult data = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 批量操作结果
+message BatchOperationResult {
+  int32 success_count = 1;
+  int32 failure_count = 2;
+  repeated string failed_ids = 3;
+}
+
+// 按标签获取内容项请求
+message GetItemsByTagsRequest {
+  string user_id = 1;
+  repeated string tags = 2;
+  common.pagination.PaginationRequest pagination = 3;
+}
+
+// 按标签获取内容项响应
+message GetItemsByTagsResponse {
+  oneof result {
+    ItemsPage items_page = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 内容项分页数据
+message ItemsPage {
+  repeated Item items = 1;
+  common.pagination.PaginationMeta pagination = 2;
+}
+
+// 从URL提取元数据请求
+message ExtractMetadataRequest {
+  string url = 1;
+}
+
+// 从URL提取元数据响应
+message ExtractMetadataResponse {
+  oneof result {
+    ItemMetadata metadata = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 获取最近内容项请求
+message GetRecentItemsRequest {
+  string user_id = 1;
+  int32 limit = 2;
+  ItemType type = 3;
+  bool exclude_archived = 4;
+}
+
+// 获取最近内容项响应
+message GetRecentItemsResponse {
+  oneof result {
+    ItemsData items = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 批量更新内容项请求
+message BatchUpdateItemsRequest {
+  string user_id = 1;
+  repeated string ids = 2;
+  bool is_archived = 3;  // 使用 BoolValue 封装类型
+  bool is_favorite = 4;
+  bool is_private = 5;
+  repeated string add_tags = 6;
+  repeated string remove_tags = 7;
+  repeated string add_to_collections = 8;
+  repeated string remove_from_collections = 9;
+}
+
+// 批量更新内容项响应
+message BatchUpdateItemsResponse {
+  oneof result {
+    BatchOperationResult data = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 从文件导入内容请求
+message ImportFromFileRequest {
+  string user_id = 1;
+  string file_content = 2;  // Base64编码的文件内容
+  string file_format = 3;   // "html", "json", "csv"
+}
+
+
+// 从文件导入内容响应
+message ImportFromFileResponse {
+  oneof result {
+    ImportResult data = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 导入结果
+message ImportResult {
+  int32 total_processed = 1;
+  int32 success_count = 2;
+  int32 failure_count = 3;
+  repeated string failed_urls = 4;
+}
+
+// 导出内容到文件请求
+message ExportToFileRequest {
+  string user_id = 1;
+  string collection_id = 2;
+  repeated string tags = 3;
+  string file_format = 4;  // "html", "json", "csv"
+  bool include_archived = 5;
+}
+
+// 导出内容到文件响应
+message ExportToFileResponse {
+  oneof result {
+    ExportResult data = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 导出结果
+message ExportResult {
+  string file_content = 1;  // Base64编码的文件内容
+  string file_name = 2;
+  string mime_type = 3;
+  int32 item_count = 4;
+}
+
+// 内容项全文搜索请求
+message SearchItemsRequest {
+  string user_id = 1;
+  string query = 2;
+  common.pagination.PaginationRequest pagination = 3;
+  repeated ItemType types = 4;
+  repeated string collections = 5;
+  repeated string tags = 6;
+  bool include_archived = 7;
+  common.types.TimeRange date_range = 8;
+  bool favorites_only = 9;
+}
+
+// 内容项全文搜索响应
+message SearchItemsResponse {
+  oneof result {
+    SearchResult data = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 搜索结果
+message SearchResult {
+  repeated Item items = 1;
+  common.pagination.PaginationMeta pagination = 2;
+  repeated string suggested_terms = 3;
+  repeated TagCount top_tags = 4;
+}
+
+// 标签计数
+message TagCount {
+  string tag = 1;
+  int32 count = 2;
+}
+
+// 添加内容备注请求
+message AddItemNoteRequest {
+  string item_id = 1;
+  string user_id = 2;
+  string note = 3;
+}
+
+// 添加内容备注响应
+message AddItemNoteResponse {
+  oneof result {
+    Item item = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 更新内容备注请求
+message UpdateItemNoteRequest {
+  string item_id = 1;
+  string user_id = 2;
+  string note = 3;
+}
+
+// 更新内容备注响应
+message UpdateItemNoteResponse {
+  oneof result {
+    Item item = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 获取内容备注请求
+message GetItemNoteRequest {
+  string item_id = 1;
+  string user_id = 2;
+}
+
+// 获取内容备注响应
+message GetItemNoteResponse {
+  oneof result {
+    NoteData note = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 备注数据
+message NoteData {
+  string item_id = 1;
+  string note = 2;
+  google.protobuf.Timestamp updated_at = 3;
+}

@@ -1,0 +1,390 @@
+// analytics/service.proto
+syntax = "proto3";
+
+package analytics;
+
+option go_package = "analytics";
+
+import "google/protobuf/timestamp.proto";
+import "common/error/error.proto";
+import "common/pagination/pagination.proto";
+import "common/types/types.proto";
+
+// 分析服务定义
+service AnalyticsService {
+  // 获取用户活动统计
+  rpc GetUserActivityStats(GetUserActivityStatsRequest) returns (GetUserActivityStatsResponse);
+
+  // 获取内容项统计
+  rpc GetItemStats(GetItemStatsRequest) returns (GetItemStatsResponse);
+
+  // 获取收藏夹统计
+  rpc GetCollectionStats(GetCollectionStatsRequest) returns (GetCollectionStatsResponse);
+
+  // 获取标签统计
+  rpc GetTagStats(GetTagStatsRequest) returns (GetTagStatsResponse);
+
+  // 获取域名统计
+  rpc GetDomainStats(GetDomainStatsRequest) returns (GetDomainStatsResponse);
+
+  // 获取使用趋势
+  rpc GetUsageTrends(GetUsageTrendsRequest) returns (GetUsageTrendsResponse);
+
+  // 获取内容项访问历史
+  rpc GetItemAccessHistory(GetItemAccessHistoryRequest) returns (GetItemAccessHistoryResponse);
+
+  // 记录内容项访问
+  rpc RecordItemAccess(RecordItemAccessRequest) returns (RecordItemAccessResponse);
+
+  // 获取推荐内容
+  rpc GetRecommendedItems(GetRecommendedItemsRequest) returns (GetRecommendedItemsResponse);
+
+  // 获取相关内容
+  rpc GetRelatedItems(GetRelatedItemsRequest) returns (GetRelatedItemsResponse);
+}
+
+// 获取用户活动统计请求
+message GetUserActivityStatsRequest {
+  string user_id = 1;
+  optional common.types.TimeRange time_range = 2;
+}
+
+// 获取用户活动统计响应
+message GetUserActivityStatsResponse {
+  oneof result {
+    UserActivityStats stats = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 用户活动统计
+message UserActivityStats {
+  int32 total_items = 1;
+  int32 total_collections = 2;
+  int32 total_tags = 3;
+  int32 items_added_count = 4;
+  int32 items_read_count = 5;
+  int32 items_archived_count = 6;
+  int32 items_shared_count = 7;
+  repeated DailyActivityCount daily_activity = 8;
+  repeated ActivityByHour activity_by_hour = 9;
+  repeated ActivityByType activity_by_type = 10;
+}
+
+// 每日活动计数
+message DailyActivityCount {
+  string date = 1;  // ISO格式日期
+  int32 added_count = 2;
+  int32 read_count = 3;
+  int32 archived_count = 4;
+  int32 shared_count = 5;
+}
+
+// 按小时活动
+message ActivityByHour {
+  int32 hour = 1;  // 0-23
+  int32 count = 2;
+}
+
+// 按类型活动
+message ActivityByType {
+  string type = 1;  // "link", "note", "image", etc.
+  int32 count = 2;
+}
+
+// 获取内容项统计请求
+message GetItemStatsRequest {
+  string user_id = 1;
+  optional string item_id = 2;  // 如果提供，则获取特定内容项的统计
+  optional common.types.TimeRange time_range = 3;
+}
+
+// 获取内容项统计响应
+message GetItemStatsResponse {
+  oneof result {
+    ItemStats stats = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 内容项统计
+message ItemStats {
+  int32 total_items = 1;
+  int32 read_items = 2;
+  int32 unread_items = 3;
+  int32 archived_items = 4;
+  int32 favorite_items = 5;
+  repeated ItemTypeCount items_by_type = 6;
+  repeated TopItem most_read_items = 7;
+  repeated TopItem recently_added_items = 8;
+  repeated TopDomain top_domains = 9;
+}
+
+// 内容项类型计数
+message ItemTypeCount {
+  string type = 1;  // "link", "note", "image", etc.
+  int32 count = 2;
+}
+
+// 热门内容项
+message TopItem {
+  string id = 1;
+  string title = 2;
+  string url = 3;
+  int32 access_count = 4;
+  google.protobuf.Timestamp last_accessed = 5;
+}
+
+// 热门域名
+message TopDomain {
+  string domain = 1;
+  int32 item_count = 2;
+}
+
+// 获取收藏夹统计请求
+message GetCollectionStatsRequest {
+  string user_id = 1;
+  optional string collection_id = 2;  // 如果提供，则获取特定收藏夹的统计
+}
+
+// 获取收藏夹统计响应
+message GetCollectionStatsResponse {
+  oneof result {
+    CollectionStats stats = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 收藏夹统计
+message CollectionStats {
+  int32 total_collections = 1;
+  int32 empty_collections = 2;
+  repeated CollectionItemCount collections_by_size = 3;
+  repeated CollectionActivity recent_activities = 4;
+}
+
+// 收藏夹内容项计数
+message CollectionItemCount {
+  string collection_id = 1;
+  string collection_name = 2;
+  int32 item_count = 3;
+}
+
+// 收藏夹活动
+message CollectionActivity {
+  string collection_id = 1;
+  string collection_name = 2;
+  string activity_type = 3;  // "created", "updated", "item_added", "item_removed"
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+// 获取标签统计请求
+message GetTagStatsRequest {
+  string user_id = 1;
+  optional common.types.TimeRange time_range = 2;
+}
+
+// 获取标签统计响应
+message GetTagStatsResponse {
+  oneof result {
+    TagStats stats = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 标签统计
+message TagStats {
+  int32 total_tags = 1;
+  int32 unused_tags = 2;
+  repeated TagItemCount tags_by_usage = 3;
+  repeated TagTrend tag_trends = 4;
+}
+
+// 标签内容项计数
+message TagItemCount {
+  string tag_id = 1;
+  string tag_name = 2;
+  int32 item_count = 3;
+}
+
+// 标签趋势
+message TagTrend {
+  string tag_name = 1;
+  repeated DailyCount daily_counts = 2;
+}
+
+// 每日计数
+message DailyCount {
+  string date = 1;  // ISO格式日期
+  int32 count = 2;
+}
+
+// 获取域名统计请求
+message GetDomainStatsRequest {
+  string user_id = 1;
+  optional common.types.TimeRange time_range = 2;
+  optional int32 limit = 3;
+}
+
+// 获取域名统计响应
+message GetDomainStatsResponse {
+  oneof result {
+    DomainStats stats = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 域名统计
+message DomainStats {
+  int32 total_domains = 1;
+  repeated DomainItemCount domains_by_count = 2;
+  repeated DomainReadStats domains_by_read_rate = 3;
+}
+
+// 域名内容项计数
+message DomainItemCount {
+  string domain = 1;
+  int32 item_count = 2;
+  int32 read_count = 3;
+  float read_percentage = 4;
+}
+
+// 域名阅读统计
+message DomainReadStats {
+  string domain = 1;
+  int32 total_items = 2;
+  int32 read_items = 3;
+  float read_percentage = 4;
+}
+
+// 获取使用趋势请求
+message GetUsageTrendsRequest {
+  string user_id = 1;
+  common.types.TimeRange time_range = 2;
+  string interval = 3;  // "day", "week", "month"
+}
+
+// 获取使用趋势响应
+message GetUsageTrendsResponse {
+  oneof result {
+    UsageTrends trends = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 使用趋势
+message UsageTrends {
+  repeated TimeSeriesPoint items_added = 1;
+  repeated TimeSeriesPoint items_read = 2;
+  repeated TimeSeriesPoint items_archived = 3;
+  repeated TimeSeriesPoint collections_created = 4;
+  repeated TimeSeriesPoint tags_created = 5;
+}
+
+// 时间序列点
+message TimeSeriesPoint {
+  string timestamp = 1;  // ISO格式时间戳
+  int32 value = 2;
+}
+
+// 获取内容项访问历史请求
+message GetItemAccessHistoryRequest {
+  string user_id = 1;
+  string item_id = 2;
+  common.pagination.PaginationRequest pagination = 3;
+}
+
+// 获取内容项访问历史响应
+message GetItemAccessHistoryResponse {
+  oneof result {
+    ItemAccessHistoryPage history_page = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 内容项访问历史分页数据
+message ItemAccessHistoryPage {
+  repeated ItemAccess accesses = 1;
+  common.pagination.PaginationMeta pagination = 2;
+}
+
+// 内容项访问
+message ItemAccess {
+  string id = 1;
+  string item_id = 2;
+  string user_id = 3;
+  string device_type = 4;  // "desktop", "mobile", "tablet"
+  string browser = 5;
+  string ip_address = 6;
+  google.protobuf.Timestamp accessed_at = 7;
+}
+
+// 记录内容项访问请求
+message RecordItemAccessRequest {
+  string user_id = 1;
+  string item_id = 2;
+  string device_type = 3;
+  string browser = 4;
+  string ip_address = 5;
+}
+
+// 记录内容项访问响应
+message RecordItemAccessResponse {
+  oneof result {
+    bool success = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 获取推荐内容请求
+message GetRecommendedItemsRequest {
+  string user_id = 1;
+  int32 limit = 2;
+  optional string context = 3;  // 可选的上下文，如当前正在查看的内容项或收藏夹
+}
+
+// 获取推荐内容响应
+message GetRecommendedItemsResponse {
+  oneof result {
+    RecommendedItems items = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 推荐内容
+message RecommendedItems {
+  repeated RecommendedItem items = 1;
+  repeated string recommendation_factors = 2;  // 推荐因素说明
+}
+
+// 推荐内容项
+message RecommendedItem {
+  string id = 1;
+  string title = 2;
+  string url = 3;
+  string thumbnail_url = 4;
+  repeated string tags = 5;
+  float relevance_score = 6;
+  string recommendation_reason = 7;  // 推荐理由
+}
+
+// 获取相关内容请求
+message GetRelatedItemsRequest {
+  string user_id = 1;
+  string item_id = 2;
+  int32 limit = 3;
+}
+
+// 获取相关内容响应
+message GetRelatedItemsResponse {
+  oneof result {
+    RelatedItems items = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 相关内容
+message RelatedItems {
+  repeated RecommendedItem items = 1;
+  string relation_type = 2;  // "tag", "content", "domain", etc.
+}

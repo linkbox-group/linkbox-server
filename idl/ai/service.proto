@@ -1,0 +1,339 @@
+// ai/service.proto
+syntax = "proto3";
+
+package ai;
+
+option go_package = "ai";
+
+import "google/protobuf/timestamp.proto";
+import "common/error/error.proto";
+
+// AI服务定义
+service AIService {
+  // 为内容项生成标签建议
+  rpc SuggestTags(SuggestTagsRequest) returns (SuggestTagsResponse);
+
+  // 自动分类内容
+  rpc ClassifyContent(ClassifyContentRequest) returns (ClassifyContentResponse);
+
+  // 生成内容摘要
+  rpc GenerateSummary(GenerateSummaryRequest) returns (GenerateSummaryResponse);
+
+  // 查找相似内容
+  rpc FindSimilarContent(FindSimilarContentRequest) returns (FindSimilarContentResponse);
+
+  // 增强搜索查询
+  rpc EnhanceSearchQuery(EnhanceSearchQueryRequest) returns (EnhanceSearchQueryResponse);
+
+  // 提取文章内容
+  rpc ExtractArticleContent(ExtractArticleContentRequest) returns (ExtractArticleContentResponse);
+
+  // 分析内容情绪
+  rpc AnalyzeSentiment(AnalyzeSentimentRequest) returns (AnalyzeSentimentResponse);
+
+  // 识别内容中的实体
+  rpc RecognizeEntities(RecognizeEntitiesRequest) returns (RecognizeEntitiesResponse);
+
+  // 生成智能收藏夹名称
+  rpc GenerateCollectionName(GenerateCollectionNameRequest) returns (GenerateCollectionNameResponse);
+
+  // 将内容分组到建议的收藏夹
+  rpc GroupContentIntoCollections(GroupContentIntoCollectionsRequest) returns (GroupContentIntoCollectionsResponse);
+}
+
+// 为内容建议标签请求
+message SuggestTagsRequest {
+  string user_id = 1;
+  optional string item_id = 2;
+  optional string url = 3;
+  optional string title = 4;
+  optional string content = 5;
+  optional int32 max_tags = 6;
+  optional bool use_existing_user_tags = 7;
+}
+
+// 为内容建议标签响应
+message SuggestTagsResponse {
+  oneof result {
+    TagSuggestions suggestions = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 标签建议
+message TagSuggestions {
+  repeated SuggestedTag tags = 1;
+  repeated string existing_user_tags = 2;
+}
+
+// 建议的标签
+message SuggestedTag {
+  string name = 1;
+  float confidence = 2;
+  string source = 3;  // "content_analysis", "user_history", "popular_tags"
+}
+
+// 自动分类内容请求
+message ClassifyContentRequest {
+  string user_id = 1;
+  optional string item_id = 2;
+  optional string url = 3;
+  optional string title = 4;
+  optional string content = 5;
+}
+
+// 自动分类内容响应
+message ClassifyContentResponse {
+  oneof result {
+    ContentClassification classification = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 内容分类
+message ContentClassification {
+  repeated CategoryPrediction categories = 1;
+  repeated TopicPrediction topics = 2;
+}
+
+// 类别预测
+message CategoryPrediction {
+  string category = 1;
+  float confidence = 2;
+}
+
+// 主题预测
+message TopicPrediction {
+  string topic = 1;
+  float confidence = 2;
+  repeated string keywords = 3;
+}
+
+// 生成内容摘要请求
+message GenerateSummaryRequest {
+  string user_id = 1;
+  optional string item_id = 2;
+  optional string url = 3;
+  optional string content = 4;
+  optional int32 max_length = 5;
+  optional string language = 6;
+}
+
+// 生成内容摘要响应
+message GenerateSummaryResponse {
+  oneof result {
+    ContentSummary summary = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 内容摘要
+message ContentSummary {
+  string summary = 1;
+  repeated string key_points = 2;
+  int32 original_length = 3;
+  int32 summary_length = 4;
+}
+
+// 查找相似内容请求
+message FindSimilarContentRequest {
+  string user_id = 1;
+  optional string item_id = 2;
+  optional string url = 3;
+  optional string content = 4;
+  optional int32 max_results = 5;
+  optional float min_similarity = 6;
+}
+
+// 查找相似内容响应
+message FindSimilarContentResponse {
+  oneof result {
+    SimilarContentResults results = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 相似内容结果
+message SimilarContentResults {
+  repeated SimilarContentItem items = 1;
+  string similarity_method = 2;
+}
+
+// 相似内容项
+message SimilarContentItem {
+  string item_id = 1;
+  string title = 2;
+  string url = 3;
+  float similarity_score = 4;
+  repeated string matching_features = 5;
+}
+
+// 增强搜索查询请求
+message EnhanceSearchQueryRequest {
+  string user_id = 1;
+  string original_query = 2;
+  optional string language = 3;
+  optional bool expand_acronyms = 4;
+  optional bool add_synonyms = 5;
+  optional bool correct_spelling = 6;
+}
+
+// 增强搜索查询响应
+message EnhanceSearchQueryResponse {
+  oneof result {
+    EnhancedQuery enhanced_query = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 增强查询
+message EnhancedQuery {
+  string enhanced_query = 1;
+  repeated QueryModification modifications = 2;
+  repeated string alternative_queries = 3;
+}
+
+// 查询修改
+message QueryModification {
+  string type = 1;  // "synonym", "correction", "expansion"
+  string original = 2;
+  string modified = 3;
+}
+
+// 提取文章内容请求
+message ExtractArticleContentRequest {
+  string user_id = 1;
+  string url = 2;
+  optional bool include_images = 3;
+  optional bool clean_layout = 4;
+}
+
+// 提取文章内容响应
+message ExtractArticleContentResponse {
+  oneof result {
+    ArticleContent content = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 文章内容
+message ArticleContent {
+  string title = 1;
+  string author = 2;
+  google.protobuf.Timestamp publish_date = 3;
+  string content = 4;
+  repeated string images = 5;
+  int32 word_count = 6;
+  int32 read_time_minutes = 7;
+}
+
+// 分析内容情绪请求
+message AnalyzeSentimentRequest {
+  string user_id = 1;
+  optional string item_id = 2;
+  optional string text = 3;
+  optional string url = 4;
+}
+
+// 分析内容情绪响应
+message AnalyzeSentimentResponse {
+  oneof result {
+    SentimentAnalysis sentiment = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 情绪分析
+message SentimentAnalysis {
+  float positive_score = 1;
+  float negative_score = 2;
+  float neutral_score = 3;
+  string overall_sentiment = 4;
+  repeated SentenceAnalysis sentences = 5;
+}
+
+// 句子分析
+message SentenceAnalysis {
+  string text = 1;
+  string sentiment = 2;
+  float confidence = 3;
+}
+
+// 识别实体请求
+message RecognizeEntitiesRequest {
+  string user_id = 1;
+  optional string item_id = 2;
+  optional string text = 3;
+  optional string url = 4;
+  optional string entity_types = 5;
+}
+
+// 识别实体响应
+message RecognizeEntitiesResponse {
+  oneof result {
+    EntitiesRecognition entities = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 实体识别
+message EntitiesRecognition {
+  repeated RecognizedEntity entities = 1;
+  int32 total_entities = 2;
+}
+
+// 识别的实体
+message RecognizedEntity {
+  string name = 1;
+  string type = 2;  // "PERSON", "ORGANIZATION", "LOCATION", "PRODUCT", etc.
+  float confidence = 3;
+  repeated string mentions = 4;  // 文本中的具体提及
+}
+
+// 生成收藏夹名称请求
+message GenerateCollectionNameRequest {
+  string user_id = 1;
+  repeated string item_ids = 2;
+}
+
+// 生成收藏夹名称响应
+message GenerateCollectionNameResponse {
+  oneof result {
+    CollectionNameSuggestions suggestions = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 收藏夹名称建议
+message CollectionNameSuggestions {
+  repeated string suggested_names = 1;
+  string common_theme = 2;
+}
+
+// 将内容分组到收藏夹请求
+message GroupContentIntoCollectionsRequest {
+  string user_id = 1;
+  repeated string item_ids = 2;
+  optional int32 max_collections = 3;
+}
+
+// 将内容分组到收藏夹响应
+message GroupContentIntoCollectionsResponse {
+  oneof result {
+    ContentGroups groups = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 内容分组
+message ContentGroups {
+  repeated ContentGroup groups = 1;
+}
+
+// 内容组
+message ContentGroup {
+  string suggested_name = 1;
+  string theme_description = 2;
+  repeated string item_ids = 3;
+  repeated string common_tags = 4;
+}

@@ -1,0 +1,24 @@
+// common/pagination/pagination.proto
+syntax = "proto3";
+
+package common.pagination;
+option go_package ="common/pagination";
+// 分页请求
+message PaginationRequest {
+  int32 page = 1;        // 页码，从1开始
+  int32 page_size = 2;   // 每页大小，默认20
+}
+
+// 分页元数据
+message PaginationMeta {
+  int32 page = 1;            // 当前页码
+  int32 page_size = 2;       // 每页大小
+  int32 total_pages = 3;     // 总页数
+  int32 total_items = 4;     // 总条目数
+}
+
+// 排序请求
+message SortRequest {
+  string field = 1;          // 排序字段
+  bool ascending = 2;        // 是否升序
+}

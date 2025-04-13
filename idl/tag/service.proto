@@ -1,0 +1,315 @@
+// tag/service.proto
+syntax = "proto3";
+
+package tag;
+
+option go_package = "tag";
+
+import "google/protobuf/timestamp.proto";
+import "common/error/error.proto";
+import "common/pagination/pagination.proto";
+
+// 标签服务定义
+service TagService {
+  // 创建标签
+  rpc CreateTag(CreateTagRequest) returns (CreateTagResponse);
+
+  // 获取标签
+  rpc GetTag(GetTagRequest) returns (GetTagResponse);
+
+  // 更新标签
+  rpc UpdateTag(UpdateTagRequest) returns (UpdateTagResponse);
+
+  // 删除标签
+  rpc DeleteTag(DeleteTagRequest) returns (DeleteTagResponse);
+
+  // 获取用户所有标签
+  rpc GetUserTags(GetUserTagsRequest) returns (GetUserTagsResponse);
+
+  // 添加标签到内容项
+  rpc AddTagsToItems(AddTagsToItemsRequest) returns (AddTagsToItemsResponse);
+
+  // 从内容项移除标签
+  rpc RemoveTagsFromItems(RemoveTagsFromItemsRequest) returns (RemoveTagsFromItemsResponse);
+
+  // 获取内容项的标签
+  rpc GetItemTags(GetItemTagsRequest) returns (GetItemTagsResponse);
+
+  // 合并标签
+  rpc MergeTags(MergeTagsRequest) returns (MergeTagsResponse);
+
+  // 获取标签使用统计
+  rpc GetTagStats(GetTagStatsRequest) returns (GetTagStatsResponse);
+
+  // 获取相关标签
+  rpc GetRelatedTags(GetRelatedTagsRequest) returns (GetRelatedTagsResponse);
+
+  // 自动建议标签
+  rpc SuggestTags(SuggestTagsRequest) returns (SuggestTagsResponse);
+}
+
+// 标签
+message Tag {
+  string id = 1;
+  string user_id = 2;
+  string name = 3;
+  string description = 4;
+  string color = 5;
+  int32 item_count = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+// 创建标签请求
+message CreateTagRequest {
+  string user_id = 1;
+  string name = 2;
+  optional string description = 3;
+  optional string color = 4;
+}
+
+// 创建标签响应
+message CreateTagResponse {
+  oneof result {
+    Tag tag = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 获取标签请求
+message GetTagRequest {
+  string id = 1;
+  string user_id = 2;
+}
+
+// 获取标签响应
+message GetTagResponse {
+  oneof result {
+    Tag tag = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 更新标签请求
+message UpdateTagRequest {
+  string id = 1;
+  string user_id = 2;
+  optional string name = 3;
+  optional string description = 4;
+  optional string color = 5;
+}
+
+// 更新标签响应
+message UpdateTagResponse {
+  oneof result {
+    Tag tag = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 删除标签请求
+message DeleteTagRequest {
+  string id = 1;
+  string user_id = 2;
+}
+
+// 删除标签响应
+message DeleteTagResponse {
+  oneof result {
+    bool success = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 获取用户标签请求
+message GetUserTagsRequest {
+  string user_id = 1;
+  optional common.pagination.PaginationRequest pagination = 2;
+  optional string search_query = 3;
+}
+
+// 获取用户标签响应
+message GetUserTagsResponse {
+  oneof result {
+    TagsData tags = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 标签数据
+message TagsData {
+  repeated Tag tags = 1;
+  optional common.pagination.PaginationMeta pagination = 2;
+}
+
+// 添加标签到内容项请求
+message AddTagsToItemsRequest {
+  string user_id = 1;
+  repeated string tags = 2;
+  repeated string item_ids = 3;
+}
+
+// 添加标签到内容项响应
+message AddTagsToItemsResponse {
+  oneof result {
+    TagOperationResult data = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 标签操作结果
+message TagOperationResult {
+  int32 success_count = 1;
+  int32 failure_count = 2;
+  repeated string failed_item_ids = 3;
+}
+
+// 从内容项移除标签请求
+message RemoveTagsFromItemsRequest {
+  string user_id = 1;
+  repeated string tags = 2;
+  repeated string item_ids = 3;
+}
+
+// 从内容项移除标签响应
+message RemoveTagsFromItemsResponse {
+  oneof result {
+    TagOperationResult data = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 获取内容项标签请求
+message GetItemTagsRequest {
+  string item_id = 1;
+  string user_id = 2;
+}
+
+// 获取内容项标签响应
+message GetItemTagsResponse {
+  oneof result {
+    ItemTagsData tags = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 内容项标签数据
+message ItemTagsData {
+  string item_id = 1;
+  repeated Tag tags = 2;
+}
+
+// 合并标签请求
+message MergeTagsRequest {
+  string user_id = 1;
+  repeated string source_tag_ids = 2;
+  string target_tag_id = 3;
+  optional bool delete_source_tags = 4;
+}
+
+// 合并标签响应
+message MergeTagsResponse {
+  oneof result {
+    MergeTagsResult data = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 合并标签结果
+message MergeTagsResult {
+  int32 affected_items = 1;
+  Tag target_tag = 2;
+}
+
+// 获取标签统计请求
+message GetTagStatsRequest {
+  string user_id = 1;
+  optional int32 top_count = 2;
+  optional bool include_unused = 3;
+}
+
+// 获取标签统计响应
+message GetTagStatsResponse {
+  oneof result {
+    TagStatsData stats = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 标签统计数据
+message TagStatsData {
+  repeated TagStats tag_stats = 1;
+  int32 total_tags = 2;
+  int32 unused_tags = 3;
+}
+
+// 标签统计
+message TagStats {
+  Tag tag = 1;
+  int32 item_count = 2;
+  repeated CollectionUsage collection_usage = 3;
+}
+
+// 收藏夹使用情况
+message CollectionUsage {
+  string collection_id = 1;
+  string collection_name = 2;
+  int32 count = 3;
+}
+
+// 获取相关标签请求
+message GetRelatedTagsRequest {
+  string tag_id = 1;
+  string user_id = 2;
+  optional int32 limit = 3;
+}
+
+// 获取相关标签响应
+message GetRelatedTagsResponse {
+  oneof result {
+    RelatedTagsData related_tags = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 相关标签数据
+message RelatedTagsData {
+  string tag_id = 1;
+  repeated TagRelation related_tags = 2;
+}
+
+// 标签关系
+message TagRelation {
+  Tag tag = 1;
+  float correlation = 2;
+  int32 co_occurrence = 3;
+}
+
+// 自动建议标签请求
+message SuggestTagsRequest {
+  string user_id = 1;
+  string url = 2;
+  optional string title = 3;
+  optional string content = 4;
+  optional int32 limit = 5;
+}
+
+// 自动建议标签响应
+message SuggestTagsResponse {
+  oneof result {
+    SuggestedTagsData suggested_tags = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 建议标签数据
+message SuggestedTagsData {
+  repeated TagSuggestion tag_suggestions = 1;
+}
+
+// 标签建议
+message TagSuggestion {
+  string tag = 1;
+  float confidence = 2;
+  string source = 3;  // "content", "history", "popular"
+}

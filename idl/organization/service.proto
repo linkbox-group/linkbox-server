@@ -1,0 +1,320 @@
+// organization/service.proto
+syntax = "proto3";
+
+package organization;
+
+option go_package = "organization";
+
+import "google/protobuf/timestamp.proto";
+import "common/error/error.proto";
+import "common/pagination/pagination.proto";
+import "common/types/types.proto";
+
+// 组织服务定义
+service OrganizationService {
+  // 创建收藏夹
+  rpc CreateCollection(CreateCollectionRequest) returns (CreateCollectionResponse);
+
+  // 获取收藏夹
+  rpc GetCollection(GetCollectionRequest) returns (GetCollectionResponse);
+
+  // 更新收藏夹
+  rpc UpdateCollection(UpdateCollectionRequest) returns (UpdateCollectionResponse);
+
+  // 删除收藏夹
+  rpc DeleteCollection(DeleteCollectionRequest) returns (DeleteCollectionResponse);
+
+  // 获取用户的收藏夹层级结构
+  rpc GetUserCollections(GetUserCollectionsRequest) returns (GetUserCollectionsResponse);
+
+  // 移动收藏夹（变更父级）
+  rpc MoveCollection(MoveCollectionRequest) returns (MoveCollectionResponse);
+
+  // 将内容项添加到收藏夹
+  rpc AddItemsToCollection(AddItemsToCollectionRequest) returns (AddItemsToCollectionResponse);
+
+  // 从收藏夹移除内容项
+  rpc RemoveItemsFromCollection(RemoveItemsFromCollectionRequest) returns (RemoveItemsFromCollectionResponse);
+
+  // 获取收藏夹中的内容项
+  rpc GetCollectionItems(GetCollectionItemsRequest) returns (GetCollectionItemsResponse);
+
+  // 排序收藏夹中的内容项
+  rpc ReorderCollectionItems(ReorderCollectionItemsRequest) returns (ReorderCollectionItemsResponse);
+
+  // 排序收藏夹
+  rpc ReorderCollections(ReorderCollectionsRequest) returns (ReorderCollectionsResponse);
+
+  // 获取收藏夹最近活动
+  rpc GetCollectionActivity(GetCollectionActivityRequest) returns (GetCollectionActivityResponse);
+}
+
+// 收藏夹图标类型
+enum CollectionIconType {
+  DEFAULT_ICON = 0;
+  EMOJI = 1;
+  CUSTOM = 2;
+}
+
+// 收藏夹
+message Collection {
+  string id = 1;
+  string user_id = 2;
+  string name = 3;
+  string description = 4;
+  string parent_id = 5;  // 空字符串表示根收藏夹
+  string icon = 6;
+  CollectionIconType icon_type = 7;
+  string color = 8;
+  bool is_default = 9;
+  bool is_private = 10;
+  int32 order = 11;
+  int32 item_count = 12;
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp updated_at = 14;
+}
+
+// 创建收藏夹请求
+message CreateCollectionRequest {
+  string user_id = 1;
+  string name = 2;
+  optional string description = 3;
+  optional string parent_id = 4;
+  optional string icon = 5;
+  optional CollectionIconType icon_type = 6;
+  optional string color = 7;
+  optional bool is_private = 8;
+}
+
+// 创建收藏夹响应
+message CreateCollectionResponse {
+  oneof result {
+    Collection collection = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 获取收藏夹请求
+message GetCollectionRequest {
+  string id = 1;
+  string user_id = 2;
+}
+
+// 获取收藏夹响应
+message GetCollectionResponse {
+  oneof result {
+    Collection collection = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 更新收藏夹请求
+message UpdateCollectionRequest {
+  string id = 1;
+  string user_id = 2;
+  optional string name = 3;
+  optional string description = 4;
+  optional string icon = 5;
+  optional CollectionIconType icon_type = 6;
+  optional string color = 7;
+  optional bool is_private = 8;
+}
+
+// 更新收藏夹响应
+message UpdateCollectionResponse {
+  oneof result {
+    Collection collection = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 删除收藏夹请求
+message DeleteCollectionRequest {
+  string id = 1;
+  string user_id = 2;
+}
+
+// 删除收藏夹响应
+message DeleteCollectionResponse {
+  oneof result {
+    bool success = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 获取用户收藏夹请求
+message GetUserCollectionsRequest {
+  string user_id = 1;
+}
+
+// 获取用户收藏夹响应
+message GetUserCollectionsResponse {
+  oneof result {
+    CollectionsData collections = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 收藏夹数据
+message CollectionsData {
+  repeated Collection collections = 1;
+}
+
+// 移动收藏夹请求
+message MoveCollectionRequest {
+  string id = 1;
+  string user_id = 2;
+  string new_parent_id = 3;  // 空字符串表示移动到根目录
+}
+
+// 移动收藏夹响应
+message MoveCollectionResponse {
+  oneof result {
+    Collection collection = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 添加内容项到收藏夹请求
+message AddItemsToCollectionRequest {
+  string collection_id = 1;
+  string user_id = 2;
+  repeated string item_ids = 3;
+}
+
+// 添加内容项到收藏夹响应
+message AddItemsToCollectionResponse {
+  oneof result {
+    bool success = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 从收藏夹移除内容项请求
+message RemoveItemsFromCollectionRequest {
+  string collection_id = 1;
+  string user_id = 2;
+  repeated string item_ids = 3;
+}
+
+// 从收藏夹移除内容项响应
+message RemoveItemsFromCollectionResponse {
+  oneof result {
+    bool success = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 获取收藏夹内容项请求
+message GetCollectionItemsRequest {
+  string collection_id = 1;
+  string user_id = 2;
+  common.pagination.PaginationRequest pagination = 3;
+  common.pagination.SortRequest sort = 4;
+}
+
+// 获取收藏夹内容项响应
+message GetCollectionItemsResponse {
+  oneof result {
+    CollectionItemsPage items_page = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 收藏夹内容项分页数据
+message CollectionItemsPage {
+  repeated CollectionItem items = 1;
+  common.pagination.PaginationMeta pagination = 2;
+}
+
+// 收藏夹内容项
+message CollectionItem {
+  string id = 1;
+  string collection_id = 2;
+  string item_id = 3;
+  int32 order = 4;
+  google.protobuf.Timestamp added_at = 5;
+}
+
+// 排序收藏夹内容项请求
+message ReorderCollectionItemsRequest {
+  string collection_id = 1;
+  string user_id = 2;
+  repeated ItemOrder item_orders = 3;
+}
+
+// 内容项顺序
+message ItemOrder {
+  string item_id = 1;
+  int32 order = 2;
+}
+
+// 排序收藏夹内容项响应
+message ReorderCollectionItemsResponse {
+  oneof result {
+    bool success = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 排序收藏夹请求
+message ReorderCollectionsRequest {
+  string user_id = 1;
+  repeated CollectionOrder collection_orders = 2;
+}
+
+// 收藏夹顺序
+message CollectionOrder {
+  string collection_id = 1;
+  int32 order = 2;
+}
+
+// 排序收藏夹响应
+message ReorderCollectionsResponse {
+  oneof result {
+    bool success = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 收藏夹活动类型
+enum CollectionActivityType {
+  UNKNOWN_ACTIVITY = 0;
+  ITEM_ADDED = 1;
+  ITEM_REMOVED = 2;
+  COLLECTION_CREATED = 3;
+  COLLECTION_UPDATED = 4;
+  COLLECTION_DELETED = 5;
+}
+
+// 收藏夹活动
+message CollectionActivity {
+  string id = 1;
+  string collection_id = 2;
+  string user_id = 3;
+  CollectionActivityType type = 4;
+  string item_id = 5;  // 如果活动与内容项相关
+  string description = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+// 获取收藏夹活动请求
+message GetCollectionActivityRequest {
+  string collection_id = 1;
+  string user_id = 2;
+  common.pagination.PaginationRequest pagination = 3;
+}
+
+// 获取收藏夹活动响应
+message GetCollectionActivityResponse {
+  oneof result {
+    CollectionActivityPage activity_page = 1;
+    common.error.Error error = 2;
+  }
+}
+
+// 收藏夹活动分页数据
+message CollectionActivityPage {
+  repeated CollectionActivity activities = 1;
+  common.pagination.PaginationMeta pagination = 2;
+}
