@@ -1,0 +1,13 @@
+[mysql]
+dsn='root:%v@tcp(0.0.0.0:3306)/tag?charset=utf8mb4&parseTime=true&loc=Local'
+[redis]
+addr='0.0.0.0:6379'
+password='12345678'
+db=2
+[service]
+address='0.0.0.0:8093'
+name='user'
+[mtl]
+address='0.0.0.0:4317'
+[consul]
+address='0.0.0.0:8500'
