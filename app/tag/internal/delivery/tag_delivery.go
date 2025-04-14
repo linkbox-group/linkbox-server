@@ -2,15 +2,40 @@ package delivery
 
 import (
 	"context"
+	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/tag"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"log"
 )
 
 // TagDelivery implements the last service interface defined in the IDL.
 
 // CreateTag implements the TagDelivery interface.
 func (s *TagDelivery) CreateTag(ctx context.Context, req *tag.CreateTagRequest) (resp *tag.CreateTagResponse, err error) {
-	// TODO: Your code here...
-	return
+	tagEntity := model.Tag{
+		Name:   req.Name,
+		Color:  req.Color,
+		UserID: req.UserId,
+	}
+	err = s.service.CreateTagService(ctx, &tagEntity)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+
+	}
+	resp = &tag.CreateTagResponse{
+		Result: &tag.CreateTagResponse_Tag{
+			Tag: &tag.Tag{
+				Id:          tagEntity.ID,
+				UserId:      tagEntity.UserID,
+				Name:        tagEntity.Name,
+				Description: "",
+				Color:       *tagEntity.Color,
+				ItemCount:   int32(len(tagEntity.Items)),
+				CreatedAt:   timestamppb.New(tagEntity.CreatedAt),
+				UpdatedAt:   timestamppb.New(tagEntity.UpdatedAt),
+			}}}
+	return resp, nil
 }
 
 // GetTag implements the TagDelivery interface.
