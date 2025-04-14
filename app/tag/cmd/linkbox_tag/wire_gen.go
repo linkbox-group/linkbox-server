@@ -7,12 +7,19 @@
 package main
 
 import (
+	"github.com/linkbox-group/linkbox-server/tag/internal/core"
 	"github.com/linkbox-group/linkbox-server/tag/internal/delivery"
+	"github.com/linkbox-group/linkbox-server/tag/internal/repository"
+	"github.com/linkbox-group/linkbox-server/tag/internal/service"
 )
 
 // Injectors from wire.go:
 
 func NewTagHandler() *delivery.TagDelivery {
-	tagDelivery := delivery.NewTagDelivery()
+	context := core.NewContext()
+	db := core.NewDB(context)
+	tagRepository := repository.NewTagRepository(db)
+	tagService := service.NewTagService(tagRepository)
+	tagDelivery := delivery.NewTagDelivery(tagService)
 	return tagDelivery
 }
