@@ -24,3 +24,7 @@ go.work.sum
 # env file
 .env
 .idea
+**.log
+**.toml
+# stupid apple
+**.DS_Store
