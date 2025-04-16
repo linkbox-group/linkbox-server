@@ -14,5 +14,4 @@ import (
 func NewTagHandler() *delivery.TagDelivery {
 	wire.Build(delivery.ProviderSet, service.ProviderSet, repository.ProviderSet, core.ProviderSet)
 	return &delivery.TagDelivery{}
-
 }

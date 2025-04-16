@@ -6,6 +6,7 @@ import (
 )
 
 var ProviderSet = wire.NewSet(wire.Bind(new(acl.TagServiceItf), new(*TagService)), NewTagService)
+var _ acl.TagServiceItf = &TagService{}
 
 type TagService struct {
 	repo acl.TagRepositoryItf

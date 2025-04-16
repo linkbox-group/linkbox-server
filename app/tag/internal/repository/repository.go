@@ -8,6 +8,8 @@ import (
 
 var ProviderSet = wire.NewSet(wire.Bind(new(acl.TagRepositoryItf), new(*TagRepository)), NewTagRepository)
 
+var _ acl.TagRepositoryItf = &TagRepository{}
+
 type TagRepository struct {
 	db *gorm.DB
 }
