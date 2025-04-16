@@ -4,7 +4,7 @@ package organization
 
 import (
 	"context"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/error"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"strconv"
@@ -12,1250 +12,1680 @@ import (
 	"github.com/cloudwego/prutal"
 )
 
-// 收藏夹图标类型
-type CollectionIconType int32
+// 组织活动类型
+type OrganizationActivityType int32
 
 const (
-	CollectionIconType_DEFAULT_ICON CollectionIconType = 0
-	CollectionIconType_EMOJI        CollectionIconType = 1
-	CollectionIconType_CUSTOM       CollectionIconType = 2
+	OrganizationActivityType_UNKNOWN_ACTIVITY     OrganizationActivityType = 0
+	OrganizationActivityType_ITEM_ADDED           OrganizationActivityType = 1
+	OrganizationActivityType_ITEM_REMOVED         OrganizationActivityType = 2
+	OrganizationActivityType_ORGANIZATION_CREATED OrganizationActivityType = 3
+	OrganizationActivityType_ORGANIZATION_UPDATED OrganizationActivityType = 4
+	OrganizationActivityType_ORGANIZATION_DELETED OrganizationActivityType = 5
 )
 
-// Enum value maps for CollectionIconType.
-var CollectionIconType_name = map[int32]string{
-	0: "DEFAULT_ICON",
-	1: "EMOJI",
-	2: "CUSTOM",
-}
-
-var CollectionIconType_value = map[string]int32{
-	"DEFAULT_ICON": 0,
-	"EMOJI":        1,
-	"CUSTOM":       2,
-}
-
-func (x CollectionIconType) String() string {
-	s, ok := CollectionIconType_name[int32(x)]
-	if ok {
-		return s
-	}
-	return strconv.Itoa(int(x))
-}
-
-// 收藏夹活动类型
-type CollectionActivityType int32
-
-const (
-	CollectionActivityType_UNKNOWN_ACTIVITY   CollectionActivityType = 0
-	CollectionActivityType_ITEM_ADDED         CollectionActivityType = 1
-	CollectionActivityType_ITEM_REMOVED       CollectionActivityType = 2
-	CollectionActivityType_COLLECTION_CREATED CollectionActivityType = 3
-	CollectionActivityType_COLLECTION_UPDATED CollectionActivityType = 4
-	CollectionActivityType_COLLECTION_DELETED CollectionActivityType = 5
-)
-
-// Enum value maps for CollectionActivityType.
-var CollectionActivityType_name = map[int32]string{
+// Enum value maps for OrganizationActivityType.
+var OrganizationActivityType_name = map[int32]string{
 	0: "UNKNOWN_ACTIVITY",
 	1: "ITEM_ADDED",
 	2: "ITEM_REMOVED",
-	3: "COLLECTION_CREATED",
-	4: "COLLECTION_UPDATED",
-	5: "COLLECTION_DELETED",
+	3: "ORGANIZATION_CREATED",
+	4: "ORGANIZATION_UPDATED",
+	5: "ORGANIZATION_DELETED",
 }
 
-var CollectionActivityType_value = map[string]int32{
-	"UNKNOWN_ACTIVITY":   0,
-	"ITEM_ADDED":         1,
-	"ITEM_REMOVED":       2,
-	"COLLECTION_CREATED": 3,
-	"COLLECTION_UPDATED": 4,
-	"COLLECTION_DELETED": 5,
+var OrganizationActivityType_value = map[string]int32{
+	"UNKNOWN_ACTIVITY":     0,
+	"ITEM_ADDED":           1,
+	"ITEM_REMOVED":         2,
+	"ORGANIZATION_CREATED": 3,
+	"ORGANIZATION_UPDATED": 4,
+	"ORGANIZATION_DELETED": 5,
 }
 
-func (x CollectionActivityType) String() string {
-	s, ok := CollectionActivityType_name[int32(x)]
+func (x OrganizationActivityType) String() string {
+	s, ok := OrganizationActivityType_name[int32(x)]
 	if ok {
 		return s
 	}
 	return strconv.Itoa(int(x))
 }
 
-// 收藏夹
-type Collection struct {
-	Id          string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	UserId      string                 `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Name        string                 `protobuf:"bytes,3,opt,name=name" json:"name,omitempty"`
-	Description string                 `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
-	ParentId    string                 `protobuf:"bytes,5,opt,name=parent_id" json:"parent_id,omitempty"` // 空字符串表示根收藏夹
-	Icon        string                 `protobuf:"bytes,6,opt,name=icon" json:"icon,omitempty"`
-	IconType    CollectionIconType     `protobuf:"varint,7,opt,name=icon_type" json:"icon_type,omitempty"`
-	Color       string                 `protobuf:"bytes,8,opt,name=color" json:"color,omitempty"`
-	IsDefault   bool                   `protobuf:"varint,9,opt,name=is_default" json:"is_default,omitempty"`
-	IsPrivate   bool                   `protobuf:"varint,10,opt,name=is_private" json:"is_private,omitempty"`
-	Order       int32                  `protobuf:"varint,11,opt,name=order" json:"order,omitempty"`
-	ItemCount   int32                  `protobuf:"varint,12,opt,name=item_count" json:"item_count,omitempty"`
-	CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=created_at" json:"created_at,omitempty"`
-	UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=updated_at" json:"updated_at,omitempty"`
+// 组织
+type Organization struct {
+	Id            string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	Code          string                 `protobuf:"bytes,2,opt,name=code" json:"code,omitempty"`
+	ParentCode    string                 `protobuf:"bytes,3,opt,name=parent_code" json:"parent_code,omitempty"`
+	ParentCodes   string                 `protobuf:"bytes,4,opt,name=parent_codes" json:"parent_codes,omitempty"`
+	TreeLeaf      string                 `protobuf:"bytes,5,opt,name=tree_leaf" json:"tree_leaf,omitempty"`
+	TreeLevel     int32                  `protobuf:"varint,6,opt,name=tree_level" json:"tree_level,omitempty"`
+	TreeNames     string                 `protobuf:"bytes,7,opt,name=tree_names" json:"tree_names,omitempty"`
+	Name          string                 `protobuf:"bytes,8,opt,name=name" json:"name,omitempty"`
+	UserId        string                 `protobuf:"bytes,9,opt,name=user_id" json:"user_id,omitempty"`
+	Description   string                 `protobuf:"bytes,10,opt,name=description" json:"description,omitempty"`
+	IsDefault     bool                   `protobuf:"varint,11,opt,name=is_default" json:"is_default,omitempty"`
+	IsShared      bool                   `protobuf:"varint,12,opt,name=is_shared" json:"is_shared,omitempty"`
+	ShareCode     string                 `protobuf:"bytes,13,opt,name=share_code" json:"share_code,omitempty"`
+	ShareExpireAt *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=share_expire_at" json:"share_expire_at,omitempty"`
+	SortOrder     int32                  `protobuf:"varint,15,opt,name=sort_order" json:"sort_order,omitempty"`
+	ItemsCount    uint32                 `protobuf:"varint,16,opt,name=items_count" json:"items_count,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=created_at" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,18,opt,name=updated_at" json:"updated_at,omitempty"`
 }
 
-func (x *Collection) Reset() { *x = Collection{} }
+func (x *Organization) Reset() { *x = Organization{} }
 
-func (x *Collection) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *Organization) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *Collection) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *Organization) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *Collection) GetId() string {
+func (x *Organization) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *Collection) GetUserId() string {
+func (x *Organization) GetCode() string {
 	if x != nil {
-		return x.UserId
+		return x.Code
 	}
 	return ""
 }
 
-func (x *Collection) GetName() string {
+func (x *Organization) GetParentCode() string {
+	if x != nil {
+		return x.ParentCode
+	}
+	return ""
+}
+
+func (x *Organization) GetParentCodes() string {
+	if x != nil {
+		return x.ParentCodes
+	}
+	return ""
+}
+
+func (x *Organization) GetTreeLeaf() string {
+	if x != nil {
+		return x.TreeLeaf
+	}
+	return ""
+}
+
+func (x *Organization) GetTreeLevel() int32 {
+	if x != nil {
+		return x.TreeLevel
+	}
+	return 0
+}
+
+func (x *Organization) GetTreeNames() string {
+	if x != nil {
+		return x.TreeNames
+	}
+	return ""
+}
+
+func (x *Organization) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *Collection) GetDescription() string {
+func (x *Organization) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *Organization) GetDescription() string {
 	if x != nil {
 		return x.Description
 	}
 	return ""
 }
 
-func (x *Collection) GetParentId() string {
-	if x != nil {
-		return x.ParentId
-	}
-	return ""
-}
-
-func (x *Collection) GetIcon() string {
-	if x != nil {
-		return x.Icon
-	}
-	return ""
-}
-
-func (x *Collection) GetIconType() CollectionIconType {
-	if x != nil {
-		return x.IconType
-	}
-	return CollectionIconType_DEFAULT_ICON
-}
-
-func (x *Collection) GetColor() string {
-	if x != nil {
-		return x.Color
-	}
-	return ""
-}
-
-func (x *Collection) GetIsDefault() bool {
+func (x *Organization) GetIsDefault() bool {
 	if x != nil {
 		return x.IsDefault
 	}
 	return false
 }
 
-func (x *Collection) GetIsPrivate() bool {
+func (x *Organization) GetIsShared() bool {
 	if x != nil {
-		return x.IsPrivate
+		return x.IsShared
 	}
 	return false
 }
 
-func (x *Collection) GetOrder() int32 {
+func (x *Organization) GetShareCode() string {
 	if x != nil {
-		return x.Order
+		return x.ShareCode
+	}
+	return ""
+}
+
+func (x *Organization) GetShareExpireAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ShareExpireAt
+	}
+	return nil
+}
+
+func (x *Organization) GetSortOrder() int32 {
+	if x != nil {
+		return x.SortOrder
 	}
 	return 0
 }
 
-func (x *Collection) GetItemCount() int32 {
+func (x *Organization) GetItemsCount() uint32 {
 	if x != nil {
-		return x.ItemCount
+		return x.ItemsCount
 	}
 	return 0
 }
 
-func (x *Collection) GetCreatedAt() *timestamppb.Timestamp {
+func (x *Organization) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
 	}
 	return nil
 }
 
-func (x *Collection) GetUpdatedAt() *timestamppb.Timestamp {
+func (x *Organization) GetUpdatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.UpdatedAt
 	}
 	return nil
 }
 
-// 创建收藏夹请求
-type CreateCollectionRequest struct {
-	UserId      string              `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	Name        string              `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
-	Description *string             `protobuf:"bytes,3,opt,name=description" json:"description,omitempty"`
-	ParentId    *string             `protobuf:"bytes,4,opt,name=parent_id" json:"parent_id,omitempty"`
-	Icon        *string             `protobuf:"bytes,5,opt,name=icon" json:"icon,omitempty"`
-	IconType    *CollectionIconType `protobuf:"varint,6,opt,name=icon_type" json:"icon_type,omitempty"`
-	Color       *string             `protobuf:"bytes,7,opt,name=color" json:"color,omitempty"`
-	IsPrivate   *bool               `protobuf:"varint,8,opt,name=is_private" json:"is_private,omitempty"`
+// 创建组织请求
+type CreateOrganizationRequest struct {
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
+	Code          string                 `protobuf:"bytes,3,opt,name=code" json:"code,omitempty"`
+	ParentCode    *string                `protobuf:"bytes,4,opt,name=parent_code" json:"parent_code,omitempty"`
+	Description   *string                `protobuf:"bytes,5,opt,name=description" json:"description,omitempty"`
+	IsDefault     *bool                  `protobuf:"varint,6,opt,name=is_default" json:"is_default,omitempty"`
+	IsShared      *bool                  `protobuf:"varint,7,opt,name=is_shared" json:"is_shared,omitempty"`
+	ShareCode     *string                `protobuf:"bytes,8,opt,name=share_code" json:"share_code,omitempty"`
+	ShareExpireAt *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=share_expire_at" json:"share_expire_at,omitempty"`
+	SortOrder     *int32                 `protobuf:"varint,10,opt,name=sort_order" json:"sort_order,omitempty"`
 }
 
-func (x *CreateCollectionRequest) Reset() { *x = CreateCollectionRequest{} }
+func (x *CreateOrganizationRequest) Reset() { *x = CreateOrganizationRequest{} }
 
-func (x *CreateCollectionRequest) Marshal(in []byte) ([]byte, error) {
+func (x *CreateOrganizationRequest) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *CreateCollectionRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *CreateOrganizationRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *CreateCollectionRequest) GetUserId() string {
+func (x *CreateOrganizationRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *CreateCollectionRequest) GetName() string {
+func (x *CreateOrganizationRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *CreateCollectionRequest) GetDescription() string {
+func (x *CreateOrganizationRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *CreateOrganizationRequest) GetParentCode() string {
+	if x != nil && x.ParentCode != nil {
+		return *x.ParentCode
+	}
+	return ""
+}
+
+func (x *CreateOrganizationRequest) GetDescription() string {
 	if x != nil && x.Description != nil {
 		return *x.Description
 	}
 	return ""
 }
 
-func (x *CreateCollectionRequest) GetParentId() string {
-	if x != nil && x.ParentId != nil {
-		return *x.ParentId
-	}
-	return ""
-}
-
-func (x *CreateCollectionRequest) GetIcon() string {
-	if x != nil && x.Icon != nil {
-		return *x.Icon
-	}
-	return ""
-}
-
-func (x *CreateCollectionRequest) GetIconType() CollectionIconType {
-	if x != nil && x.IconType != nil {
-		return *x.IconType
-	}
-	return CollectionIconType_DEFAULT_ICON
-}
-
-func (x *CreateCollectionRequest) GetColor() string {
-	if x != nil && x.Color != nil {
-		return *x.Color
-	}
-	return ""
-}
-
-func (x *CreateCollectionRequest) GetIsPrivate() bool {
-	if x != nil && x.IsPrivate != nil {
-		return *x.IsPrivate
+func (x *CreateOrganizationRequest) GetIsDefault() bool {
+	if x != nil && x.IsDefault != nil {
+		return *x.IsDefault
 	}
 	return false
 }
 
-// 创建收藏夹响应
-type CreateCollectionResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*CreateCollectionResponse_Collection
-	//	*CreateCollectionResponse_Error
-	Result isCreateCollectionResponse_Result `protobuf_oneof:"result"`
+func (x *CreateOrganizationRequest) GetIsShared() bool {
+	if x != nil && x.IsShared != nil {
+		return *x.IsShared
+	}
+	return false
 }
 
-func (x *CreateCollectionResponse) Reset() { *x = CreateCollectionResponse{} }
+func (x *CreateOrganizationRequest) GetShareCode() string {
+	if x != nil && x.ShareCode != nil {
+		return *x.ShareCode
+	}
+	return ""
+}
 
-func (x *CreateCollectionResponse) Marshal(in []byte) ([]byte, error) {
+func (x *CreateOrganizationRequest) GetShareExpireAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ShareExpireAt
+	}
+	return nil
+}
+
+func (x *CreateOrganizationRequest) GetSortOrder() int32 {
+	if x != nil && x.SortOrder != nil {
+		return *x.SortOrder
+	}
+	return 0
+}
+
+// 创建组织响应
+type CreateOrganizationResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*CreateOrganizationResponse_Organization
+	//	*CreateOrganizationResponse_Error
+	Result isCreateOrganizationResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *CreateOrganizationResponse) Reset() { *x = CreateOrganizationResponse{} }
+
+func (x *CreateOrganizationResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *CreateCollectionResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *CreateOrganizationResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *CreateCollectionResponse) GetResult() isCreateCollectionResponse_Result {
+func (x *CreateOrganizationResponse) GetResult() isCreateOrganizationResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
-func (x *CreateCollectionResponse) GetCollection() *Collection {
-	if p, ok := x.GetResult().(*CreateCollectionResponse_Collection); ok {
-		return p.Collection
+func (x *CreateOrganizationResponse) GetOrganization() *Organization {
+	if p, ok := x.GetResult().(*CreateOrganizationResponse_Organization); ok {
+		return p.Organization
 	}
 	return nil
 }
 
-func (x *CreateCollectionResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*CreateCollectionResponse_Error); ok {
+func (x *CreateOrganizationResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*CreateOrganizationResponse_Error); ok {
 		return p.Error
 	}
 	return nil
 }
 
 // XXX_OneofWrappers is for the internal use of the prutal package.
-func (*CreateCollectionResponse) XXX_OneofWrappers() []interface{} {
+func (*CreateOrganizationResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*CreateCollectionResponse_Collection)(nil),
-		(*CreateCollectionResponse_Error)(nil),
+		(*CreateOrganizationResponse_Organization)(nil),
+		(*CreateOrganizationResponse_Error)(nil),
 	}
 }
 
-type isCreateCollectionResponse_Result interface {
-	isCreateCollectionResponse_Result()
+type isCreateOrganizationResponse_Result interface {
+	isCreateOrganizationResponse_Result()
 }
 
-type CreateCollectionResponse_Collection struct {
-	Collection *Collection `protobuf:"bytes,1,opt,name=collection" json:"collection,omitempty"`
+type CreateOrganizationResponse_Organization struct {
+	Organization *Organization `protobuf:"bytes,1,opt,name=organization" json:"organization,omitempty"`
 }
 
-func (*CreateCollectionResponse_Collection) isCreateCollectionResponse_Result() {}
+func (*CreateOrganizationResponse_Organization) isCreateOrganizationResponse_Result() {}
 
-type CreateCollectionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+type CreateOrganizationResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
-func (*CreateCollectionResponse_Error) isCreateCollectionResponse_Result() {}
+func (*CreateOrganizationResponse_Error) isCreateOrganizationResponse_Result() {}
 
-// 获取收藏夹请求
-type GetCollectionRequest struct {
+// 获取组织请求
+type GetOrganizationRequest struct {
 	Id     string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
 	UserId string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
 }
 
-func (x *GetCollectionRequest) Reset() { *x = GetCollectionRequest{} }
+func (x *GetOrganizationRequest) Reset() { *x = GetOrganizationRequest{} }
 
-func (x *GetCollectionRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *GetOrganizationRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
 
-func (x *GetCollectionRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *GetOrganizationRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *GetCollectionRequest) GetId() string {
+func (x *GetOrganizationRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *GetCollectionRequest) GetUserId() string {
+func (x *GetOrganizationRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-// 获取收藏夹响应
-type GetCollectionResponse struct {
+// 获取组织响应
+type GetOrganizationResponse struct {
 	// Types that are assignable to Result:
 	//
-	//	*GetCollectionResponse_Collection
-	//	*GetCollectionResponse_Error
-	Result isGetCollectionResponse_Result `protobuf_oneof:"result"`
+	//	*GetOrganizationResponse_Organization
+	//	*GetOrganizationResponse_Error
+	Result isGetOrganizationResponse_Result `protobuf_oneof:"result"`
 }
 
-func (x *GetCollectionResponse) Reset() { *x = GetCollectionResponse{} }
+func (x *GetOrganizationResponse) Reset() { *x = GetOrganizationResponse{} }
 
-func (x *GetCollectionResponse) Marshal(in []byte) ([]byte, error) {
+func (x *GetOrganizationResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *GetCollectionResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *GetOrganizationResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *GetCollectionResponse) GetResult() isGetCollectionResponse_Result {
+func (x *GetOrganizationResponse) GetResult() isGetOrganizationResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
-func (x *GetCollectionResponse) GetCollection() *Collection {
-	if p, ok := x.GetResult().(*GetCollectionResponse_Collection); ok {
-		return p.Collection
+func (x *GetOrganizationResponse) GetOrganization() *Organization {
+	if p, ok := x.GetResult().(*GetOrganizationResponse_Organization); ok {
+		return p.Organization
 	}
 	return nil
 }
 
-func (x *GetCollectionResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*GetCollectionResponse_Error); ok {
+func (x *GetOrganizationResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*GetOrganizationResponse_Error); ok {
 		return p.Error
 	}
 	return nil
 }
 
 // XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GetCollectionResponse) XXX_OneofWrappers() []interface{} {
+func (*GetOrganizationResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*GetCollectionResponse_Collection)(nil),
-		(*GetCollectionResponse_Error)(nil),
+		(*GetOrganizationResponse_Organization)(nil),
+		(*GetOrganizationResponse_Error)(nil),
 	}
 }
 
-type isGetCollectionResponse_Result interface {
-	isGetCollectionResponse_Result()
+type isGetOrganizationResponse_Result interface {
+	isGetOrganizationResponse_Result()
 }
 
-type GetCollectionResponse_Collection struct {
-	Collection *Collection `protobuf:"bytes,1,opt,name=collection" json:"collection,omitempty"`
+type GetOrganizationResponse_Organization struct {
+	Organization *Organization `protobuf:"bytes,1,opt,name=organization" json:"organization,omitempty"`
 }
 
-func (*GetCollectionResponse_Collection) isGetCollectionResponse_Result() {}
+func (*GetOrganizationResponse_Organization) isGetOrganizationResponse_Result() {}
 
-type GetCollectionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+type GetOrganizationResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
-func (*GetCollectionResponse_Error) isGetCollectionResponse_Result() {}
+func (*GetOrganizationResponse_Error) isGetOrganizationResponse_Result() {}
 
-// 更新收藏夹请求
-type UpdateCollectionRequest struct {
-	Id          string              `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	UserId      string              `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Name        *string             `protobuf:"bytes,3,opt,name=name" json:"name,omitempty"`
-	Description *string             `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
-	Icon        *string             `protobuf:"bytes,5,opt,name=icon" json:"icon,omitempty"`
-	IconType    *CollectionIconType `protobuf:"varint,6,opt,name=icon_type" json:"icon_type,omitempty"`
-	Color       *string             `protobuf:"bytes,7,opt,name=color" json:"color,omitempty"`
-	IsPrivate   *bool               `protobuf:"varint,8,opt,name=is_private" json:"is_private,omitempty"`
+// 根据代码获取组织请求
+type GetOrganizationByCodeRequest struct {
+	Code   string `protobuf:"bytes,1,opt,name=code" json:"code,omitempty"`
+	UserId string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
 }
 
-func (x *UpdateCollectionRequest) Reset() { *x = UpdateCollectionRequest{} }
+func (x *GetOrganizationByCodeRequest) Reset() { *x = GetOrganizationByCodeRequest{} }
 
-func (x *UpdateCollectionRequest) Marshal(in []byte) ([]byte, error) {
+func (x *GetOrganizationByCodeRequest) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *UpdateCollectionRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *GetOrganizationByCodeRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *UpdateCollectionRequest) GetId() string {
+func (x *GetOrganizationByCodeRequest) GetCode() string {
 	if x != nil {
-		return x.Id
+		return x.Code
 	}
 	return ""
 }
 
-func (x *UpdateCollectionRequest) GetUserId() string {
+func (x *GetOrganizationByCodeRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *UpdateCollectionRequest) GetName() string {
+// 根据代码获取组织响应
+type GetOrganizationByCodeResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*GetOrganizationByCodeResponse_Organization
+	//	*GetOrganizationByCodeResponse_Error
+	Result isGetOrganizationByCodeResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *GetOrganizationByCodeResponse) Reset() { *x = GetOrganizationByCodeResponse{} }
+
+func (x *GetOrganizationByCodeResponse) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *GetOrganizationByCodeResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetOrganizationByCodeResponse) GetResult() isGetOrganizationByCodeResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *GetOrganizationByCodeResponse) GetOrganization() *Organization {
+	if p, ok := x.GetResult().(*GetOrganizationByCodeResponse_Organization); ok {
+		return p.Organization
+	}
+	return nil
+}
+
+func (x *GetOrganizationByCodeResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*GetOrganizationByCodeResponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*GetOrganizationByCodeResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*GetOrganizationByCodeResponse_Organization)(nil),
+		(*GetOrganizationByCodeResponse_Error)(nil),
+	}
+}
+
+type isGetOrganizationByCodeResponse_Result interface {
+	isGetOrganizationByCodeResponse_Result()
+}
+
+type GetOrganizationByCodeResponse_Organization struct {
+	Organization *Organization `protobuf:"bytes,1,opt,name=organization" json:"organization,omitempty"`
+}
+
+func (*GetOrganizationByCodeResponse_Organization) isGetOrganizationByCodeResponse_Result() {}
+
+type GetOrganizationByCodeResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*GetOrganizationByCodeResponse_Error) isGetOrganizationByCodeResponse_Result() {}
+
+// 更新组织请求
+type UpdateOrganizationRequest struct {
+	Id            string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	Name          *string                `protobuf:"bytes,3,opt,name=name" json:"name,omitempty"`
+	Description   *string                `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
+	IsDefault     *bool                  `protobuf:"varint,5,opt,name=is_default" json:"is_default,omitempty"`
+	IsShared      *bool                  `protobuf:"varint,6,opt,name=is_shared" json:"is_shared,omitempty"`
+	ShareCode     *string                `protobuf:"bytes,7,opt,name=share_code" json:"share_code,omitempty"`
+	ShareExpireAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=share_expire_at" json:"share_expire_at,omitempty"`
+	SortOrder     *int32                 `protobuf:"varint,9,opt,name=sort_order" json:"sort_order,omitempty"`
+}
+
+func (x *UpdateOrganizationRequest) Reset() { *x = UpdateOrganizationRequest{} }
+
+func (x *UpdateOrganizationRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *UpdateOrganizationRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *UpdateOrganizationRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UpdateOrganizationRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *UpdateOrganizationRequest) GetName() string {
 	if x != nil && x.Name != nil {
 		return *x.Name
 	}
 	return ""
 }
 
-func (x *UpdateCollectionRequest) GetDescription() string {
+func (x *UpdateOrganizationRequest) GetDescription() string {
 	if x != nil && x.Description != nil {
 		return *x.Description
 	}
 	return ""
 }
 
-func (x *UpdateCollectionRequest) GetIcon() string {
-	if x != nil && x.Icon != nil {
-		return *x.Icon
-	}
-	return ""
-}
-
-func (x *UpdateCollectionRequest) GetIconType() CollectionIconType {
-	if x != nil && x.IconType != nil {
-		return *x.IconType
-	}
-	return CollectionIconType_DEFAULT_ICON
-}
-
-func (x *UpdateCollectionRequest) GetColor() string {
-	if x != nil && x.Color != nil {
-		return *x.Color
-	}
-	return ""
-}
-
-func (x *UpdateCollectionRequest) GetIsPrivate() bool {
-	if x != nil && x.IsPrivate != nil {
-		return *x.IsPrivate
+func (x *UpdateOrganizationRequest) GetIsDefault() bool {
+	if x != nil && x.IsDefault != nil {
+		return *x.IsDefault
 	}
 	return false
 }
 
-// 更新收藏夹响应
-type UpdateCollectionResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*UpdateCollectionResponse_Collection
-	//	*UpdateCollectionResponse_Error
-	Result isUpdateCollectionResponse_Result `protobuf_oneof:"result"`
+func (x *UpdateOrganizationRequest) GetIsShared() bool {
+	if x != nil && x.IsShared != nil {
+		return *x.IsShared
+	}
+	return false
 }
 
-func (x *UpdateCollectionResponse) Reset() { *x = UpdateCollectionResponse{} }
+func (x *UpdateOrganizationRequest) GetShareCode() string {
+	if x != nil && x.ShareCode != nil {
+		return *x.ShareCode
+	}
+	return ""
+}
 
-func (x *UpdateCollectionResponse) Marshal(in []byte) ([]byte, error) {
+func (x *UpdateOrganizationRequest) GetShareExpireAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ShareExpireAt
+	}
+	return nil
+}
+
+func (x *UpdateOrganizationRequest) GetSortOrder() int32 {
+	if x != nil && x.SortOrder != nil {
+		return *x.SortOrder
+	}
+	return 0
+}
+
+// 更新组织响应
+type UpdateOrganizationResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*UpdateOrganizationResponse_Organization
+	//	*UpdateOrganizationResponse_Error
+	Result isUpdateOrganizationResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *UpdateOrganizationResponse) Reset() { *x = UpdateOrganizationResponse{} }
+
+func (x *UpdateOrganizationResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *UpdateCollectionResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *UpdateOrganizationResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *UpdateCollectionResponse) GetResult() isUpdateCollectionResponse_Result {
+func (x *UpdateOrganizationResponse) GetResult() isUpdateOrganizationResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
-func (x *UpdateCollectionResponse) GetCollection() *Collection {
-	if p, ok := x.GetResult().(*UpdateCollectionResponse_Collection); ok {
-		return p.Collection
+func (x *UpdateOrganizationResponse) GetOrganization() *Organization {
+	if p, ok := x.GetResult().(*UpdateOrganizationResponse_Organization); ok {
+		return p.Organization
 	}
 	return nil
 }
 
-func (x *UpdateCollectionResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*UpdateCollectionResponse_Error); ok {
+func (x *UpdateOrganizationResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*UpdateOrganizationResponse_Error); ok {
 		return p.Error
 	}
 	return nil
 }
 
 // XXX_OneofWrappers is for the internal use of the prutal package.
-func (*UpdateCollectionResponse) XXX_OneofWrappers() []interface{} {
+func (*UpdateOrganizationResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*UpdateCollectionResponse_Collection)(nil),
-		(*UpdateCollectionResponse_Error)(nil),
+		(*UpdateOrganizationResponse_Organization)(nil),
+		(*UpdateOrganizationResponse_Error)(nil),
 	}
 }
 
-type isUpdateCollectionResponse_Result interface {
-	isUpdateCollectionResponse_Result()
+type isUpdateOrganizationResponse_Result interface {
+	isUpdateOrganizationResponse_Result()
 }
 
-type UpdateCollectionResponse_Collection struct {
-	Collection *Collection `protobuf:"bytes,1,opt,name=collection" json:"collection,omitempty"`
+type UpdateOrganizationResponse_Organization struct {
+	Organization *Organization `protobuf:"bytes,1,opt,name=organization" json:"organization,omitempty"`
 }
 
-func (*UpdateCollectionResponse_Collection) isUpdateCollectionResponse_Result() {}
+func (*UpdateOrganizationResponse_Organization) isUpdateOrganizationResponse_Result() {}
 
-type UpdateCollectionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+type UpdateOrganizationResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
-func (*UpdateCollectionResponse_Error) isUpdateCollectionResponse_Result() {}
+func (*UpdateOrganizationResponse_Error) isUpdateOrganizationResponse_Result() {}
 
-// 删除收藏夹请求
-type DeleteCollectionRequest struct {
-	Id     string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	UserId string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+// 删除组织请求
+type DeleteOrganizationRequest struct {
+	Id      string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	UserId  string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	Cascade bool   `protobuf:"varint,3,opt,name=cascade" json:"cascade,omitempty"` // 是否级联删除子组织
 }
 
-func (x *DeleteCollectionRequest) Reset() { *x = DeleteCollectionRequest{} }
+func (x *DeleteOrganizationRequest) Reset() { *x = DeleteOrganizationRequest{} }
 
-func (x *DeleteCollectionRequest) Marshal(in []byte) ([]byte, error) {
+func (x *DeleteOrganizationRequest) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *DeleteCollectionRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *DeleteOrganizationRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *DeleteCollectionRequest) GetId() string {
+func (x *DeleteOrganizationRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *DeleteCollectionRequest) GetUserId() string {
+func (x *DeleteOrganizationRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-// 删除收藏夹响应
-type DeleteCollectionResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*DeleteCollectionResponse_Success
-	//	*DeleteCollectionResponse_Error
-	Result isDeleteCollectionResponse_Result `protobuf_oneof:"result"`
+func (x *DeleteOrganizationRequest) GetCascade() bool {
+	if x != nil {
+		return x.Cascade
+	}
+	return false
 }
 
-func (x *DeleteCollectionResponse) Reset() { *x = DeleteCollectionResponse{} }
+// 删除组织响应
+type DeleteOrganizationResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*DeleteOrganizationResponse_Success
+	//	*DeleteOrganizationResponse_Error
+	Result isDeleteOrganizationResponse_Result `protobuf_oneof:"result"`
+}
 
-func (x *DeleteCollectionResponse) Marshal(in []byte) ([]byte, error) {
+func (x *DeleteOrganizationResponse) Reset() { *x = DeleteOrganizationResponse{} }
+
+func (x *DeleteOrganizationResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *DeleteCollectionResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *DeleteOrganizationResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *DeleteCollectionResponse) GetResult() isDeleteCollectionResponse_Result {
+func (x *DeleteOrganizationResponse) GetResult() isDeleteOrganizationResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
-func (x *DeleteCollectionResponse) GetSuccess() bool {
-	if p, ok := x.GetResult().(*DeleteCollectionResponse_Success); ok {
+func (x *DeleteOrganizationResponse) GetSuccess() bool {
+	if p, ok := x.GetResult().(*DeleteOrganizationResponse_Success); ok {
 		return p.Success
 	}
 	return false
 }
 
-func (x *DeleteCollectionResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*DeleteCollectionResponse_Error); ok {
+func (x *DeleteOrganizationResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*DeleteOrganizationResponse_Error); ok {
 		return p.Error
 	}
 	return nil
 }
 
 // XXX_OneofWrappers is for the internal use of the prutal package.
-func (*DeleteCollectionResponse) XXX_OneofWrappers() []interface{} {
+func (*DeleteOrganizationResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*DeleteCollectionResponse_Success)(nil),
-		(*DeleteCollectionResponse_Error)(nil),
+		(*DeleteOrganizationResponse_Success)(nil),
+		(*DeleteOrganizationResponse_Error)(nil),
 	}
 }
 
-type isDeleteCollectionResponse_Result interface {
-	isDeleteCollectionResponse_Result()
+type isDeleteOrganizationResponse_Result interface {
+	isDeleteOrganizationResponse_Result()
 }
 
-type DeleteCollectionResponse_Success struct {
+type DeleteOrganizationResponse_Success struct {
 	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
 }
 
-func (*DeleteCollectionResponse_Success) isDeleteCollectionResponse_Result() {}
+func (*DeleteOrganizationResponse_Success) isDeleteOrganizationResponse_Result() {}
 
-type DeleteCollectionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+type DeleteOrganizationResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
-func (*DeleteCollectionResponse_Error) isDeleteCollectionResponse_Result() {}
+func (*DeleteOrganizationResponse_Error) isDeleteOrganizationResponse_Result() {}
 
-// 获取用户收藏夹请求
-type GetUserCollectionsRequest struct {
+// 获取用户组织请求
+type GetUserOrganizationsRequest struct {
 	UserId string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
 }
 
-func (x *GetUserCollectionsRequest) Reset() { *x = GetUserCollectionsRequest{} }
+func (x *GetUserOrganizationsRequest) Reset() { *x = GetUserOrganizationsRequest{} }
 
-func (x *GetUserCollectionsRequest) Marshal(in []byte) ([]byte, error) {
+func (x *GetUserOrganizationsRequest) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *GetUserCollectionsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *GetUserOrganizationsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *GetUserCollectionsRequest) GetUserId() string {
+func (x *GetUserOrganizationsRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-// 获取用户收藏夹响应
-type GetUserCollectionsResponse struct {
+// 获取用户组织响应
+type GetUserOrganizationsResponse struct {
 	// Types that are assignable to Result:
 	//
-	//	*GetUserCollectionsResponse_Collections
-	//	*GetUserCollectionsResponse_Error
-	Result isGetUserCollectionsResponse_Result `protobuf_oneof:"result"`
+	//	*GetUserOrganizationsResponse_Organizations
+	//	*GetUserOrganizationsResponse_Error
+	Result isGetUserOrganizationsResponse_Result `protobuf_oneof:"result"`
 }
 
-func (x *GetUserCollectionsResponse) Reset() { *x = GetUserCollectionsResponse{} }
+func (x *GetUserOrganizationsResponse) Reset() { *x = GetUserOrganizationsResponse{} }
 
-func (x *GetUserCollectionsResponse) Marshal(in []byte) ([]byte, error) {
+func (x *GetUserOrganizationsResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *GetUserCollectionsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *GetUserOrganizationsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *GetUserCollectionsResponse) GetResult() isGetUserCollectionsResponse_Result {
+func (x *GetUserOrganizationsResponse) GetResult() isGetUserOrganizationsResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
-func (x *GetUserCollectionsResponse) GetCollections() *CollectionsData {
-	if p, ok := x.GetResult().(*GetUserCollectionsResponse_Collections); ok {
-		return p.Collections
+func (x *GetUserOrganizationsResponse) GetOrganizations() *OrganizationsData {
+	if p, ok := x.GetResult().(*GetUserOrganizationsResponse_Organizations); ok {
+		return p.Organizations
 	}
 	return nil
 }
 
-func (x *GetUserCollectionsResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*GetUserCollectionsResponse_Error); ok {
+func (x *GetUserOrganizationsResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*GetUserOrganizationsResponse_Error); ok {
 		return p.Error
 	}
 	return nil
 }
 
 // XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GetUserCollectionsResponse) XXX_OneofWrappers() []interface{} {
+func (*GetUserOrganizationsResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*GetUserCollectionsResponse_Collections)(nil),
-		(*GetUserCollectionsResponse_Error)(nil),
+		(*GetUserOrganizationsResponse_Organizations)(nil),
+		(*GetUserOrganizationsResponse_Error)(nil),
 	}
 }
 
-type isGetUserCollectionsResponse_Result interface {
-	isGetUserCollectionsResponse_Result()
+type isGetUserOrganizationsResponse_Result interface {
+	isGetUserOrganizationsResponse_Result()
 }
 
-type GetUserCollectionsResponse_Collections struct {
-	Collections *CollectionsData `protobuf:"bytes,1,opt,name=collections" json:"collections,omitempty"`
+type GetUserOrganizationsResponse_Organizations struct {
+	Organizations *OrganizationsData `protobuf:"bytes,1,opt,name=organizations" json:"organizations,omitempty"`
 }
 
-func (*GetUserCollectionsResponse_Collections) isGetUserCollectionsResponse_Result() {}
+func (*GetUserOrganizationsResponse_Organizations) isGetUserOrganizationsResponse_Result() {}
 
-type GetUserCollectionsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+type GetUserOrganizationsResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
-func (*GetUserCollectionsResponse_Error) isGetUserCollectionsResponse_Result() {}
+func (*GetUserOrganizationsResponse_Error) isGetUserOrganizationsResponse_Result() {}
 
-// 收藏夹数据
-type CollectionsData struct {
-	Collections []*Collection `protobuf:"bytes,1,rep,name=collections" json:"collections,omitempty"`
+// 组织数据
+type OrganizationsData struct {
+	Organizations []*Organization `protobuf:"bytes,1,rep,name=organizations" json:"organizations,omitempty"`
 }
 
-func (x *CollectionsData) Reset() { *x = CollectionsData{} }
+func (x *OrganizationsData) Reset() { *x = OrganizationsData{} }
 
-func (x *CollectionsData) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *OrganizationsData) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *CollectionsData) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *OrganizationsData) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *CollectionsData) GetCollections() []*Collection {
+func (x *OrganizationsData) GetOrganizations() []*Organization {
 	if x != nil {
-		return x.Collections
+		return x.Organizations
 	}
 	return nil
 }
 
-// 移动收藏夹请求
-type MoveCollectionRequest struct {
-	Id          string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	UserId      string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	NewParentId string `protobuf:"bytes,3,opt,name=new_parent_id" json:"new_parent_id,omitempty"` // 空字符串表示移动到根目录
+// 获取组织树请求
+type GetOrganizationTreeRequest struct {
+	UserId   string  `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	RootCode *string `protobuf:"bytes,2,opt,name=root_code" json:"root_code,omitempty"` // 根节点代码，不提供则获取全部树
 }
 
-func (x *MoveCollectionRequest) Reset() { *x = MoveCollectionRequest{} }
+func (x *GetOrganizationTreeRequest) Reset() { *x = GetOrganizationTreeRequest{} }
 
-func (x *MoveCollectionRequest) Marshal(in []byte) ([]byte, error) {
+func (x *GetOrganizationTreeRequest) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *MoveCollectionRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *GetOrganizationTreeRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *MoveCollectionRequest) GetId() string {
+func (x *GetOrganizationTreeRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetOrganizationTreeRequest) GetRootCode() string {
+	if x != nil && x.RootCode != nil {
+		return *x.RootCode
+	}
+	return ""
+}
+
+// 组织树节点
+type OrganizationTreeNode struct {
+	Data     *Organization           `protobuf:"bytes,1,opt,name=data" json:"data,omitempty"`
+	Children []*OrganizationTreeNode `protobuf:"bytes,2,rep,name=children" json:"children,omitempty"`
+}
+
+func (x *OrganizationTreeNode) Reset() { *x = OrganizationTreeNode{} }
+
+func (x *OrganizationTreeNode) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *OrganizationTreeNode) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *OrganizationTreeNode) GetData() *Organization {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *OrganizationTreeNode) GetChildren() []*OrganizationTreeNode {
+	if x != nil {
+		return x.Children
+	}
+	return nil
+}
+
+// 获取组织树响应
+type GetOrganizationTreeResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*GetOrganizationTreeResponse_Root
+	//	*GetOrganizationTreeResponse_Error
+	Result isGetOrganizationTreeResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *GetOrganizationTreeResponse) Reset() { *x = GetOrganizationTreeResponse{} }
+
+func (x *GetOrganizationTreeResponse) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *GetOrganizationTreeResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetOrganizationTreeResponse) GetResult() isGetOrganizationTreeResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *GetOrganizationTreeResponse) GetRoot() *OrganizationTreeNode {
+	if p, ok := x.GetResult().(*GetOrganizationTreeResponse_Root); ok {
+		return p.Root
+	}
+	return nil
+}
+
+func (x *GetOrganizationTreeResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*GetOrganizationTreeResponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*GetOrganizationTreeResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*GetOrganizationTreeResponse_Root)(nil),
+		(*GetOrganizationTreeResponse_Error)(nil),
+	}
+}
+
+type isGetOrganizationTreeResponse_Result interface {
+	isGetOrganizationTreeResponse_Result()
+}
+
+type GetOrganizationTreeResponse_Root struct {
+	Root *OrganizationTreeNode `protobuf:"bytes,1,opt,name=root" json:"root,omitempty"`
+}
+
+func (*GetOrganizationTreeResponse_Root) isGetOrganizationTreeResponse_Result() {}
+
+type GetOrganizationTreeResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*GetOrganizationTreeResponse_Error) isGetOrganizationTreeResponse_Result() {}
+
+// 获取组织子节点请求
+type GetOrganizationChildrenRequest struct {
+	UserId     string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	ParentCode string `protobuf:"bytes,2,opt,name=parent_code" json:"parent_code,omitempty"`
+	Recursive  bool   `protobuf:"varint,3,opt,name=recursive" json:"recursive,omitempty"` // 是否递归获取所有子节点
+}
+
+func (x *GetOrganizationChildrenRequest) Reset() { *x = GetOrganizationChildrenRequest{} }
+
+func (x *GetOrganizationChildrenRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *GetOrganizationChildrenRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetOrganizationChildrenRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetOrganizationChildrenRequest) GetParentCode() string {
+	if x != nil {
+		return x.ParentCode
+	}
+	return ""
+}
+
+func (x *GetOrganizationChildrenRequest) GetRecursive() bool {
+	if x != nil {
+		return x.Recursive
+	}
+	return false
+}
+
+// 获取组织子节点响应
+type GetOrganizationChildrenResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*GetOrganizationChildrenResponse_Children
+	//	*GetOrganizationChildrenResponse_Error
+	Result isGetOrganizationChildrenResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *GetOrganizationChildrenResponse) Reset() { *x = GetOrganizationChildrenResponse{} }
+
+func (x *GetOrganizationChildrenResponse) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *GetOrganizationChildrenResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetOrganizationChildrenResponse) GetResult() isGetOrganizationChildrenResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *GetOrganizationChildrenResponse) GetChildren() *OrganizationsData {
+	if p, ok := x.GetResult().(*GetOrganizationChildrenResponse_Children); ok {
+		return p.Children
+	}
+	return nil
+}
+
+func (x *GetOrganizationChildrenResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*GetOrganizationChildrenResponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*GetOrganizationChildrenResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*GetOrganizationChildrenResponse_Children)(nil),
+		(*GetOrganizationChildrenResponse_Error)(nil),
+	}
+}
+
+type isGetOrganizationChildrenResponse_Result interface {
+	isGetOrganizationChildrenResponse_Result()
+}
+
+type GetOrganizationChildrenResponse_Children struct {
+	Children *OrganizationsData `protobuf:"bytes,1,opt,name=children" json:"children,omitempty"`
+}
+
+func (*GetOrganizationChildrenResponse_Children) isGetOrganizationChildrenResponse_Result() {}
+
+type GetOrganizationChildrenResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*GetOrganizationChildrenResponse_Error) isGetOrganizationChildrenResponse_Result() {}
+
+// 移动组织请求
+type MoveOrganizationRequest struct {
+	Id            string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	UserId        string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	NewParentCode string `protobuf:"bytes,3,opt,name=new_parent_code" json:"new_parent_code,omitempty"` // 新的父节点代码
+}
+
+func (x *MoveOrganizationRequest) Reset() { *x = MoveOrganizationRequest{} }
+
+func (x *MoveOrganizationRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *MoveOrganizationRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *MoveOrganizationRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *MoveCollectionRequest) GetUserId() string {
+func (x *MoveOrganizationRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *MoveCollectionRequest) GetNewParentId() string {
+func (x *MoveOrganizationRequest) GetNewParentCode() string {
 	if x != nil {
-		return x.NewParentId
+		return x.NewParentCode
 	}
 	return ""
 }
 
-// 移动收藏夹响应
-type MoveCollectionResponse struct {
+// 移动组织响应
+type MoveOrganizationResponse struct {
 	// Types that are assignable to Result:
 	//
-	//	*MoveCollectionResponse_Collection
-	//	*MoveCollectionResponse_Error
-	Result isMoveCollectionResponse_Result `protobuf_oneof:"result"`
+	//	*MoveOrganizationResponse_Success
+	//	*MoveOrganizationResponse_Error
+	Result isMoveOrganizationResponse_Result `protobuf_oneof:"result"`
 }
 
-func (x *MoveCollectionResponse) Reset() { *x = MoveCollectionResponse{} }
+func (x *MoveOrganizationResponse) Reset() { *x = MoveOrganizationResponse{} }
 
-func (x *MoveCollectionResponse) Marshal(in []byte) ([]byte, error) {
+func (x *MoveOrganizationResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *MoveCollectionResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *MoveOrganizationResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *MoveCollectionResponse) GetResult() isMoveCollectionResponse_Result {
+func (x *MoveOrganizationResponse) GetResult() isMoveOrganizationResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
-func (x *MoveCollectionResponse) GetCollection() *Collection {
-	if p, ok := x.GetResult().(*MoveCollectionResponse_Collection); ok {
-		return p.Collection
-	}
-	return nil
-}
-
-func (x *MoveCollectionResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*MoveCollectionResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*MoveCollectionResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*MoveCollectionResponse_Collection)(nil),
-		(*MoveCollectionResponse_Error)(nil),
-	}
-}
-
-type isMoveCollectionResponse_Result interface {
-	isMoveCollectionResponse_Result()
-}
-
-type MoveCollectionResponse_Collection struct {
-	Collection *Collection `protobuf:"bytes,1,opt,name=collection" json:"collection,omitempty"`
-}
-
-func (*MoveCollectionResponse_Collection) isMoveCollectionResponse_Result() {}
-
-type MoveCollectionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*MoveCollectionResponse_Error) isMoveCollectionResponse_Result() {}
-
-// 添加内容项到收藏夹请求
-type AddItemsToCollectionRequest struct {
-	CollectionId string   `protobuf:"bytes,1,opt,name=collection_id" json:"collection_id,omitempty"`
-	UserId       string   `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	ItemIds      []string `protobuf:"bytes,3,rep,name=item_ids" json:"item_ids,omitempty"`
-}
-
-func (x *AddItemsToCollectionRequest) Reset() { *x = AddItemsToCollectionRequest{} }
-
-func (x *AddItemsToCollectionRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *AddItemsToCollectionRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *AddItemsToCollectionRequest) GetCollectionId() string {
-	if x != nil {
-		return x.CollectionId
-	}
-	return ""
-}
-
-func (x *AddItemsToCollectionRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *AddItemsToCollectionRequest) GetItemIds() []string {
-	if x != nil {
-		return x.ItemIds
-	}
-	return nil
-}
-
-// 添加内容项到收藏夹响应
-type AddItemsToCollectionResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*AddItemsToCollectionResponse_Success
-	//	*AddItemsToCollectionResponse_Error
-	Result isAddItemsToCollectionResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *AddItemsToCollectionResponse) Reset() { *x = AddItemsToCollectionResponse{} }
-
-func (x *AddItemsToCollectionResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *AddItemsToCollectionResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *AddItemsToCollectionResponse) GetResult() isAddItemsToCollectionResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *AddItemsToCollectionResponse) GetSuccess() bool {
-	if p, ok := x.GetResult().(*AddItemsToCollectionResponse_Success); ok {
+func (x *MoveOrganizationResponse) GetSuccess() bool {
+	if p, ok := x.GetResult().(*MoveOrganizationResponse_Success); ok {
 		return p.Success
 	}
 	return false
 }
 
-func (x *AddItemsToCollectionResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*AddItemsToCollectionResponse_Error); ok {
+func (x *MoveOrganizationResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*MoveOrganizationResponse_Error); ok {
 		return p.Error
 	}
 	return nil
 }
 
 // XXX_OneofWrappers is for the internal use of the prutal package.
-func (*AddItemsToCollectionResponse) XXX_OneofWrappers() []interface{} {
+func (*MoveOrganizationResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*AddItemsToCollectionResponse_Success)(nil),
-		(*AddItemsToCollectionResponse_Error)(nil),
+		(*MoveOrganizationResponse_Success)(nil),
+		(*MoveOrganizationResponse_Error)(nil),
 	}
 }
 
-type isAddItemsToCollectionResponse_Result interface {
-	isAddItemsToCollectionResponse_Result()
+type isMoveOrganizationResponse_Result interface {
+	isMoveOrganizationResponse_Result()
 }
 
-type AddItemsToCollectionResponse_Success struct {
+type MoveOrganizationResponse_Success struct {
 	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
 }
 
-func (*AddItemsToCollectionResponse_Success) isAddItemsToCollectionResponse_Result() {}
+func (*MoveOrganizationResponse_Success) isMoveOrganizationResponse_Result() {}
 
-type AddItemsToCollectionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+type MoveOrganizationResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
-func (*AddItemsToCollectionResponse_Error) isAddItemsToCollectionResponse_Result() {}
+func (*MoveOrganizationResponse_Error) isMoveOrganizationResponse_Result() {}
 
-// 从收藏夹移除内容项请求
-type RemoveItemsFromCollectionRequest struct {
-	CollectionId string   `protobuf:"bytes,1,opt,name=collection_id" json:"collection_id,omitempty"`
-	UserId       string   `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	ItemIds      []string `protobuf:"bytes,3,rep,name=item_ids" json:"item_ids,omitempty"`
+// 批量保存组织请求
+type BatchSaveOrganizationRequest struct {
+	UserId        string          `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Organizations []*Organization `protobuf:"bytes,2,rep,name=organizations" json:"organizations,omitempty"`
 }
 
-func (x *RemoveItemsFromCollectionRequest) Reset() { *x = RemoveItemsFromCollectionRequest{} }
+func (x *BatchSaveOrganizationRequest) Reset() { *x = BatchSaveOrganizationRequest{} }
 
-func (x *RemoveItemsFromCollectionRequest) Marshal(in []byte) ([]byte, error) {
+func (x *BatchSaveOrganizationRequest) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *RemoveItemsFromCollectionRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *BatchSaveOrganizationRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *RemoveItemsFromCollectionRequest) GetCollectionId() string {
-	if x != nil {
-		return x.CollectionId
-	}
-	return ""
-}
-
-func (x *RemoveItemsFromCollectionRequest) GetUserId() string {
+func (x *BatchSaveOrganizationRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *RemoveItemsFromCollectionRequest) GetItemIds() []string {
+func (x *BatchSaveOrganizationRequest) GetOrganizations() []*Organization {
+	if x != nil {
+		return x.Organizations
+	}
+	return nil
+}
+
+// 批量保存组织响应
+type BatchSaveOrganizationResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*BatchSaveOrganizationResponse_Organizations
+	//	*BatchSaveOrganizationResponse_Error
+	Result isBatchSaveOrganizationResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *BatchSaveOrganizationResponse) Reset() { *x = BatchSaveOrganizationResponse{} }
+
+func (x *BatchSaveOrganizationResponse) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *BatchSaveOrganizationResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *BatchSaveOrganizationResponse) GetResult() isBatchSaveOrganizationResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *BatchSaveOrganizationResponse) GetOrganizations() *OrganizationsData {
+	if p, ok := x.GetResult().(*BatchSaveOrganizationResponse_Organizations); ok {
+		return p.Organizations
+	}
+	return nil
+}
+
+func (x *BatchSaveOrganizationResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*BatchSaveOrganizationResponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*BatchSaveOrganizationResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*BatchSaveOrganizationResponse_Organizations)(nil),
+		(*BatchSaveOrganizationResponse_Error)(nil),
+	}
+}
+
+type isBatchSaveOrganizationResponse_Result interface {
+	isBatchSaveOrganizationResponse_Result()
+}
+
+type BatchSaveOrganizationResponse_Organizations struct {
+	Organizations *OrganizationsData `protobuf:"bytes,1,opt,name=organizations" json:"organizations,omitempty"`
+}
+
+func (*BatchSaveOrganizationResponse_Organizations) isBatchSaveOrganizationResponse_Result() {}
+
+type BatchSaveOrganizationResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*BatchSaveOrganizationResponse_Error) isBatchSaveOrganizationResponse_Result() {}
+
+// 添加内容项到组织请求
+type AddItemsToOrganizationRequest struct {
+	OrganizationId string   `protobuf:"bytes,1,opt,name=organization_id" json:"organization_id,omitempty"`
+	UserId         string   `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	ItemIds        []string `protobuf:"bytes,3,rep,name=item_ids" json:"item_ids,omitempty"`
+}
+
+func (x *AddItemsToOrganizationRequest) Reset() { *x = AddItemsToOrganizationRequest{} }
+
+func (x *AddItemsToOrganizationRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *AddItemsToOrganizationRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *AddItemsToOrganizationRequest) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
+	}
+	return ""
+}
+
+func (x *AddItemsToOrganizationRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *AddItemsToOrganizationRequest) GetItemIds() []string {
 	if x != nil {
 		return x.ItemIds
 	}
 	return nil
 }
 
-// 从收藏夹移除内容项响应
-type RemoveItemsFromCollectionResponse struct {
+// 添加内容项到组织响应
+type AddItemsToOrganizationResponse struct {
 	// Types that are assignable to Result:
 	//
-	//	*RemoveItemsFromCollectionResponse_Success
-	//	*RemoveItemsFromCollectionResponse_Error
-	Result isRemoveItemsFromCollectionResponse_Result `protobuf_oneof:"result"`
+	//	*AddItemsToOrganizationResponse_Success
+	//	*AddItemsToOrganizationResponse_Error
+	Result isAddItemsToOrganizationResponse_Result `protobuf_oneof:"result"`
 }
 
-func (x *RemoveItemsFromCollectionResponse) Reset() { *x = RemoveItemsFromCollectionResponse{} }
+func (x *AddItemsToOrganizationResponse) Reset() { *x = AddItemsToOrganizationResponse{} }
 
-func (x *RemoveItemsFromCollectionResponse) Marshal(in []byte) ([]byte, error) {
+func (x *AddItemsToOrganizationResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *RemoveItemsFromCollectionResponse) Unmarshal(in []byte) error {
+func (x *AddItemsToOrganizationResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *AddItemsToOrganizationResponse) GetResult() isAddItemsToOrganizationResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *AddItemsToOrganizationResponse) GetSuccess() bool {
+	if p, ok := x.GetResult().(*AddItemsToOrganizationResponse_Success); ok {
+		return p.Success
+	}
+	return false
+}
+
+func (x *AddItemsToOrganizationResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*AddItemsToOrganizationResponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*AddItemsToOrganizationResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*AddItemsToOrganizationResponse_Success)(nil),
+		(*AddItemsToOrganizationResponse_Error)(nil),
+	}
+}
+
+type isAddItemsToOrganizationResponse_Result interface {
+	isAddItemsToOrganizationResponse_Result()
+}
+
+type AddItemsToOrganizationResponse_Success struct {
+	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
+}
+
+func (*AddItemsToOrganizationResponse_Success) isAddItemsToOrganizationResponse_Result() {}
+
+type AddItemsToOrganizationResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*AddItemsToOrganizationResponse_Error) isAddItemsToOrganizationResponse_Result() {}
+
+// 从组织移除内容项请求
+type RemoveItemsFromOrganizationRequest struct {
+	OrganizationId string   `protobuf:"bytes,1,opt,name=organization_id" json:"organization_id,omitempty"`
+	UserId         string   `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	ItemIds        []string `protobuf:"bytes,3,rep,name=item_ids" json:"item_ids,omitempty"`
+}
+
+func (x *RemoveItemsFromOrganizationRequest) Reset() { *x = RemoveItemsFromOrganizationRequest{} }
+
+func (x *RemoveItemsFromOrganizationRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *RemoveItemsFromOrganizationRequest) Unmarshal(in []byte) error {
 	return prutal.Unmarshal(in, x)
 }
 
-func (x *RemoveItemsFromCollectionResponse) GetResult() isRemoveItemsFromCollectionResponse_Result {
+func (x *RemoveItemsFromOrganizationRequest) GetOrganizationId() string {
 	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *RemoveItemsFromCollectionResponse) GetSuccess() bool {
-	if p, ok := x.GetResult().(*RemoveItemsFromCollectionResponse_Success); ok {
-		return p.Success
-	}
-	return false
-}
-
-func (x *RemoveItemsFromCollectionResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*RemoveItemsFromCollectionResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*RemoveItemsFromCollectionResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*RemoveItemsFromCollectionResponse_Success)(nil),
-		(*RemoveItemsFromCollectionResponse_Error)(nil),
-	}
-}
-
-type isRemoveItemsFromCollectionResponse_Result interface {
-	isRemoveItemsFromCollectionResponse_Result()
-}
-
-type RemoveItemsFromCollectionResponse_Success struct {
-	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
-}
-
-func (*RemoveItemsFromCollectionResponse_Success) isRemoveItemsFromCollectionResponse_Result() {}
-
-type RemoveItemsFromCollectionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*RemoveItemsFromCollectionResponse_Error) isRemoveItemsFromCollectionResponse_Result() {}
-
-// 获取收藏夹内容项请求
-type GetCollectionItemsRequest struct {
-	CollectionId string                        `protobuf:"bytes,1,opt,name=collection_id" json:"collection_id,omitempty"`
-	UserId       string                        `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Pagination   *pagination.PaginationRequest `protobuf:"bytes,3,opt,name=pagination" json:"pagination,omitempty"`
-	Sort         *pagination.SortRequest       `protobuf:"bytes,4,opt,name=sort" json:"sort,omitempty"`
-}
-
-func (x *GetCollectionItemsRequest) Reset() { *x = GetCollectionItemsRequest{} }
-
-func (x *GetCollectionItemsRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GetCollectionItemsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetCollectionItemsRequest) GetCollectionId() string {
-	if x != nil {
-		return x.CollectionId
+		return x.OrganizationId
 	}
 	return ""
 }
 
-func (x *GetCollectionItemsRequest) GetUserId() string {
+func (x *RemoveItemsFromOrganizationRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *GetCollectionItemsRequest) GetPagination() *pagination.PaginationRequest {
+func (x *RemoveItemsFromOrganizationRequest) GetItemIds() []string {
+	if x != nil {
+		return x.ItemIds
+	}
+	return nil
+}
+
+// 从组织移除内容项响应
+type RemoveItemsFromOrganizationResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*RemoveItemsFromOrganizationResponse_Success
+	//	*RemoveItemsFromOrganizationResponse_Error
+	Result isRemoveItemsFromOrganizationResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *RemoveItemsFromOrganizationResponse) Reset() { *x = RemoveItemsFromOrganizationResponse{} }
+
+func (x *RemoveItemsFromOrganizationResponse) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *RemoveItemsFromOrganizationResponse) Unmarshal(in []byte) error {
+	return prutal.Unmarshal(in, x)
+}
+
+func (x *RemoveItemsFromOrganizationResponse) GetResult() isRemoveItemsFromOrganizationResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *RemoveItemsFromOrganizationResponse) GetSuccess() bool {
+	if p, ok := x.GetResult().(*RemoveItemsFromOrganizationResponse_Success); ok {
+		return p.Success
+	}
+	return false
+}
+
+func (x *RemoveItemsFromOrganizationResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*RemoveItemsFromOrganizationResponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*RemoveItemsFromOrganizationResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*RemoveItemsFromOrganizationResponse_Success)(nil),
+		(*RemoveItemsFromOrganizationResponse_Error)(nil),
+	}
+}
+
+type isRemoveItemsFromOrganizationResponse_Result interface {
+	isRemoveItemsFromOrganizationResponse_Result()
+}
+
+type RemoveItemsFromOrganizationResponse_Success struct {
+	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
+}
+
+func (*RemoveItemsFromOrganizationResponse_Success) isRemoveItemsFromOrganizationResponse_Result() {}
+
+type RemoveItemsFromOrganizationResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*RemoveItemsFromOrganizationResponse_Error) isRemoveItemsFromOrganizationResponse_Result() {}
+
+// 获取组织内容项请求
+type GetOrganizationItemsRequest struct {
+	OrganizationId string                        `protobuf:"bytes,1,opt,name=organization_id" json:"organization_id,omitempty"`
+	UserId         string                        `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	Pagination     *pagination.PaginationRequest `protobuf:"bytes,3,opt,name=pagination" json:"pagination,omitempty"`
+	Sort           *pagination.SortRequest       `protobuf:"bytes,4,opt,name=sort" json:"sort,omitempty"`
+}
+
+func (x *GetOrganizationItemsRequest) Reset() { *x = GetOrganizationItemsRequest{} }
+
+func (x *GetOrganizationItemsRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *GetOrganizationItemsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetOrganizationItemsRequest) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
+	}
+	return ""
+}
+
+func (x *GetOrganizationItemsRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetOrganizationItemsRequest) GetPagination() *pagination.PaginationRequest {
 	if x != nil {
 		return x.Pagination
 	}
 	return nil
 }
 
-func (x *GetCollectionItemsRequest) GetSort() *pagination.SortRequest {
+func (x *GetOrganizationItemsRequest) GetSort() *pagination.SortRequest {
 	if x != nil {
 		return x.Sort
 	}
 	return nil
 }
 
-// 获取收藏夹内容项响应
-type GetCollectionItemsResponse struct {
+// 获取组织内容项响应
+type GetOrganizationItemsResponse struct {
 	// Types that are assignable to Result:
 	//
-	//	*GetCollectionItemsResponse_ItemsPage
-	//	*GetCollectionItemsResponse_Error
-	Result isGetCollectionItemsResponse_Result `protobuf_oneof:"result"`
+	//	*GetOrganizationItemsResponse_ItemsPage
+	//	*GetOrganizationItemsResponse_Error
+	Result isGetOrganizationItemsResponse_Result `protobuf_oneof:"result"`
 }
 
-func (x *GetCollectionItemsResponse) Reset() { *x = GetCollectionItemsResponse{} }
+func (x *GetOrganizationItemsResponse) Reset() { *x = GetOrganizationItemsResponse{} }
 
-func (x *GetCollectionItemsResponse) Marshal(in []byte) ([]byte, error) {
+func (x *GetOrganizationItemsResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *GetCollectionItemsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *GetOrganizationItemsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *GetCollectionItemsResponse) GetResult() isGetCollectionItemsResponse_Result {
+func (x *GetOrganizationItemsResponse) GetResult() isGetOrganizationItemsResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
-func (x *GetCollectionItemsResponse) GetItemsPage() *CollectionItemsPage {
-	if p, ok := x.GetResult().(*GetCollectionItemsResponse_ItemsPage); ok {
+func (x *GetOrganizationItemsResponse) GetItemsPage() *OrganizationItemsPage {
+	if p, ok := x.GetResult().(*GetOrganizationItemsResponse_ItemsPage); ok {
 		return p.ItemsPage
 	}
 	return nil
 }
 
-func (x *GetCollectionItemsResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*GetCollectionItemsResponse_Error); ok {
+func (x *GetOrganizationItemsResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*GetOrganizationItemsResponse_Error); ok {
 		return p.Error
 	}
 	return nil
 }
 
 // XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GetCollectionItemsResponse) XXX_OneofWrappers() []interface{} {
+func (*GetOrganizationItemsResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*GetCollectionItemsResponse_ItemsPage)(nil),
-		(*GetCollectionItemsResponse_Error)(nil),
+		(*GetOrganizationItemsResponse_ItemsPage)(nil),
+		(*GetOrganizationItemsResponse_Error)(nil),
 	}
 }
 
-type isGetCollectionItemsResponse_Result interface {
-	isGetCollectionItemsResponse_Result()
+type isGetOrganizationItemsResponse_Result interface {
+	isGetOrganizationItemsResponse_Result()
 }
 
-type GetCollectionItemsResponse_ItemsPage struct {
-	ItemsPage *CollectionItemsPage `protobuf:"bytes,1,opt,name=items_page" json:"items_page,omitempty"`
+type GetOrganizationItemsResponse_ItemsPage struct {
+	ItemsPage *OrganizationItemsPage `protobuf:"bytes,1,opt,name=items_page" json:"items_page,omitempty"`
 }
 
-func (*GetCollectionItemsResponse_ItemsPage) isGetCollectionItemsResponse_Result() {}
+func (*GetOrganizationItemsResponse_ItemsPage) isGetOrganizationItemsResponse_Result() {}
 
-type GetCollectionItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+type GetOrganizationItemsResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
-func (*GetCollectionItemsResponse_Error) isGetCollectionItemsResponse_Result() {}
+func (*GetOrganizationItemsResponse_Error) isGetOrganizationItemsResponse_Result() {}
 
-// 收藏夹内容项分页数据
-type CollectionItemsPage struct {
-	Items      []*CollectionItem          `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
+// 组织内容项分页数据
+type OrganizationItemsPage struct {
+	Items      []*OrganizationItem        `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
 	Pagination *pagination.PaginationMeta `protobuf:"bytes,2,opt,name=pagination" json:"pagination,omitempty"`
 }
 
-func (x *CollectionItemsPage) Reset() { *x = CollectionItemsPage{} }
+func (x *OrganizationItemsPage) Reset() { *x = OrganizationItemsPage{} }
 
-func (x *CollectionItemsPage) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *OrganizationItemsPage) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
 
-func (x *CollectionItemsPage) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *OrganizationItemsPage) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *CollectionItemsPage) GetItems() []*CollectionItem {
+func (x *OrganizationItemsPage) GetItems() []*OrganizationItem {
 	if x != nil {
 		return x.Items
 	}
 	return nil
 }
 
-func (x *CollectionItemsPage) GetPagination() *pagination.PaginationMeta {
+func (x *OrganizationItemsPage) GetPagination() *pagination.PaginationMeta {
 	if x != nil {
 		return x.Pagination
 	}
 	return nil
 }
 
-// 收藏夹内容项
-type CollectionItem struct {
-	Id           string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	CollectionId string                 `protobuf:"bytes,2,opt,name=collection_id" json:"collection_id,omitempty"`
-	ItemId       string                 `protobuf:"bytes,3,opt,name=item_id" json:"item_id,omitempty"`
-	Order        int32                  `protobuf:"varint,4,opt,name=order" json:"order,omitempty"`
-	AddedAt      *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=added_at" json:"added_at,omitempty"`
+// 组织内容项
+type OrganizationItem struct {
+	Id             string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	OrganizationId string                 `protobuf:"bytes,2,opt,name=organization_id" json:"organization_id,omitempty"`
+	ItemId         string                 `protobuf:"bytes,3,opt,name=item_id" json:"item_id,omitempty"`
+	SortOrder      int32                  `protobuf:"varint,4,opt,name=sort_order" json:"sort_order,omitempty"`
+	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at" json:"created_at,omitempty"`
 }
 
-func (x *CollectionItem) Reset() { *x = CollectionItem{} }
+func (x *OrganizationItem) Reset() { *x = OrganizationItem{} }
 
-func (x *CollectionItem) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *OrganizationItem) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *CollectionItem) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *OrganizationItem) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *CollectionItem) GetId() string {
+func (x *OrganizationItem) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *CollectionItem) GetCollectionId() string {
+func (x *OrganizationItem) GetOrganizationId() string {
 	if x != nil {
-		return x.CollectionId
+		return x.OrganizationId
 	}
 	return ""
 }
 
-func (x *CollectionItem) GetItemId() string {
+func (x *OrganizationItem) GetItemId() string {
 	if x != nil {
 		return x.ItemId
 	}
 	return ""
 }
 
-func (x *CollectionItem) GetOrder() int32 {
+func (x *OrganizationItem) GetSortOrder() int32 {
 	if x != nil {
-		return x.Order
+		return x.SortOrder
 	}
 	return 0
 }
 
-func (x *CollectionItem) GetAddedAt() *timestamppb.Timestamp {
+func (x *OrganizationItem) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.AddedAt
+		return x.CreatedAt
 	}
 	return nil
 }
 
-// 排序收藏夹内容项请求
-type ReorderCollectionItemsRequest struct {
-	CollectionId string       `protobuf:"bytes,1,opt,name=collection_id" json:"collection_id,omitempty"`
-	UserId       string       `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	ItemOrders   []*ItemOrder `protobuf:"bytes,3,rep,name=item_orders" json:"item_orders,omitempty"`
+// 排序组织内容项请求
+type ReorderOrganizationItemsRequest struct {
+	OrganizationId string       `protobuf:"bytes,1,opt,name=organization_id" json:"organization_id,omitempty"`
+	UserId         string       `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	ItemOrders     []*ItemOrder `protobuf:"bytes,3,rep,name=item_orders" json:"item_orders,omitempty"`
 }
 
-func (x *ReorderCollectionItemsRequest) Reset() { *x = ReorderCollectionItemsRequest{} }
+func (x *ReorderOrganizationItemsRequest) Reset() { *x = ReorderOrganizationItemsRequest{} }
 
-func (x *ReorderCollectionItemsRequest) Marshal(in []byte) ([]byte, error) {
+func (x *ReorderOrganizationItemsRequest) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *ReorderCollectionItemsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *ReorderOrganizationItemsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *ReorderCollectionItemsRequest) GetCollectionId() string {
+func (x *ReorderOrganizationItemsRequest) GetOrganizationId() string {
 	if x != nil {
-		return x.CollectionId
+		return x.OrganizationId
 	}
 	return ""
 }
 
-func (x *ReorderCollectionItemsRequest) GetUserId() string {
+func (x *ReorderOrganizationItemsRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *ReorderCollectionItemsRequest) GetItemOrders() []*ItemOrder {
+func (x *ReorderOrganizationItemsRequest) GetItemOrders() []*ItemOrder {
 	if x != nil {
 		return x.ItemOrders
 	}
@@ -1264,8 +1694,8 @@ func (x *ReorderCollectionItemsRequest) GetItemOrders() []*ItemOrder {
 
 // 内容项顺序
 type ItemOrder struct {
-	ItemId string `protobuf:"bytes,1,opt,name=item_id" json:"item_id,omitempty"`
-	Order  int32  `protobuf:"varint,2,opt,name=order" json:"order,omitempty"`
+	ItemId    string `protobuf:"bytes,1,opt,name=item_id" json:"item_id,omitempty"`
+	SortOrder int32  `protobuf:"varint,2,opt,name=sort_order" json:"sort_order,omitempty"`
 }
 
 func (x *ItemOrder) Reset() { *x = ItemOrder{} }
@@ -1281,374 +1711,374 @@ func (x *ItemOrder) GetItemId() string {
 	return ""
 }
 
-func (x *ItemOrder) GetOrder() int32 {
+func (x *ItemOrder) GetSortOrder() int32 {
 	if x != nil {
-		return x.Order
+		return x.SortOrder
 	}
 	return 0
 }
 
-// 排序收藏夹内容项响应
-type ReorderCollectionItemsResponse struct {
+// 排序组织内容项响应
+type ReorderOrganizationItemsResponse struct {
 	// Types that are assignable to Result:
 	//
-	//	*ReorderCollectionItemsResponse_Success
-	//	*ReorderCollectionItemsResponse_Error
-	Result isReorderCollectionItemsResponse_Result `protobuf_oneof:"result"`
+	//	*ReorderOrganizationItemsResponse_Success
+	//	*ReorderOrganizationItemsResponse_Error
+	Result isReorderOrganizationItemsResponse_Result `protobuf_oneof:"result"`
 }
 
-func (x *ReorderCollectionItemsResponse) Reset() { *x = ReorderCollectionItemsResponse{} }
+func (x *ReorderOrganizationItemsResponse) Reset() { *x = ReorderOrganizationItemsResponse{} }
 
-func (x *ReorderCollectionItemsResponse) Marshal(in []byte) ([]byte, error) {
+func (x *ReorderOrganizationItemsResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *ReorderCollectionItemsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *ReorderOrganizationItemsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *ReorderCollectionItemsResponse) GetResult() isReorderCollectionItemsResponse_Result {
+func (x *ReorderOrganizationItemsResponse) GetResult() isReorderOrganizationItemsResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
-func (x *ReorderCollectionItemsResponse) GetSuccess() bool {
-	if p, ok := x.GetResult().(*ReorderCollectionItemsResponse_Success); ok {
+func (x *ReorderOrganizationItemsResponse) GetSuccess() bool {
+	if p, ok := x.GetResult().(*ReorderOrganizationItemsResponse_Success); ok {
 		return p.Success
 	}
 	return false
 }
 
-func (x *ReorderCollectionItemsResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*ReorderCollectionItemsResponse_Error); ok {
+func (x *ReorderOrganizationItemsResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*ReorderOrganizationItemsResponse_Error); ok {
 		return p.Error
 	}
 	return nil
 }
 
 // XXX_OneofWrappers is for the internal use of the prutal package.
-func (*ReorderCollectionItemsResponse) XXX_OneofWrappers() []interface{} {
+func (*ReorderOrganizationItemsResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*ReorderCollectionItemsResponse_Success)(nil),
-		(*ReorderCollectionItemsResponse_Error)(nil),
+		(*ReorderOrganizationItemsResponse_Success)(nil),
+		(*ReorderOrganizationItemsResponse_Error)(nil),
 	}
 }
 
-type isReorderCollectionItemsResponse_Result interface {
-	isReorderCollectionItemsResponse_Result()
+type isReorderOrganizationItemsResponse_Result interface {
+	isReorderOrganizationItemsResponse_Result()
 }
 
-type ReorderCollectionItemsResponse_Success struct {
+type ReorderOrganizationItemsResponse_Success struct {
 	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
 }
 
-func (*ReorderCollectionItemsResponse_Success) isReorderCollectionItemsResponse_Result() {}
+func (*ReorderOrganizationItemsResponse_Success) isReorderOrganizationItemsResponse_Result() {}
 
-type ReorderCollectionItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+type ReorderOrganizationItemsResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
-func (*ReorderCollectionItemsResponse_Error) isReorderCollectionItemsResponse_Result() {}
+func (*ReorderOrganizationItemsResponse_Error) isReorderOrganizationItemsResponse_Result() {}
 
-// 排序收藏夹请求
-type ReorderCollectionsRequest struct {
-	UserId           string             `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	CollectionOrders []*CollectionOrder `protobuf:"bytes,2,rep,name=collection_orders" json:"collection_orders,omitempty"`
+// 排序组织请求
+type ReorderOrganizationsRequest struct {
+	UserId             string               `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	OrganizationOrders []*OrganizationOrder `protobuf:"bytes,2,rep,name=organization_orders" json:"organization_orders,omitempty"`
 }
 
-func (x *ReorderCollectionsRequest) Reset() { *x = ReorderCollectionsRequest{} }
+func (x *ReorderOrganizationsRequest) Reset() { *x = ReorderOrganizationsRequest{} }
 
-func (x *ReorderCollectionsRequest) Marshal(in []byte) ([]byte, error) {
+func (x *ReorderOrganizationsRequest) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *ReorderCollectionsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *ReorderOrganizationsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *ReorderCollectionsRequest) GetUserId() string {
+func (x *ReorderOrganizationsRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *ReorderCollectionsRequest) GetCollectionOrders() []*CollectionOrder {
+func (x *ReorderOrganizationsRequest) GetOrganizationOrders() []*OrganizationOrder {
 	if x != nil {
-		return x.CollectionOrders
+		return x.OrganizationOrders
 	}
 	return nil
 }
 
-// 收藏夹顺序
-type CollectionOrder struct {
-	CollectionId string `protobuf:"bytes,1,opt,name=collection_id" json:"collection_id,omitempty"`
-	Order        int32  `protobuf:"varint,2,opt,name=order" json:"order,omitempty"`
+// 组织顺序
+type OrganizationOrder struct {
+	OrganizationId string `protobuf:"bytes,1,opt,name=organization_id" json:"organization_id,omitempty"`
+	SortOrder      int32  `protobuf:"varint,2,opt,name=sort_order" json:"sort_order,omitempty"`
 }
 
-func (x *CollectionOrder) Reset() { *x = CollectionOrder{} }
+func (x *OrganizationOrder) Reset() { *x = OrganizationOrder{} }
 
-func (x *CollectionOrder) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *OrganizationOrder) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *CollectionOrder) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *OrganizationOrder) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *CollectionOrder) GetCollectionId() string {
+func (x *OrganizationOrder) GetOrganizationId() string {
 	if x != nil {
-		return x.CollectionId
+		return x.OrganizationId
 	}
 	return ""
 }
 
-func (x *CollectionOrder) GetOrder() int32 {
+func (x *OrganizationOrder) GetSortOrder() int32 {
 	if x != nil {
-		return x.Order
+		return x.SortOrder
 	}
 	return 0
 }
 
-// 排序收藏夹响应
-type ReorderCollectionsResponse struct {
+// 排序组织响应
+type ReorderOrganizationsResponse struct {
 	// Types that are assignable to Result:
 	//
-	//	*ReorderCollectionsResponse_Success
-	//	*ReorderCollectionsResponse_Error
-	Result isReorderCollectionsResponse_Result `protobuf_oneof:"result"`
+	//	*ReorderOrganizationsResponse_Success
+	//	*ReorderOrganizationsResponse_Error
+	Result isReorderOrganizationsResponse_Result `protobuf_oneof:"result"`
 }
 
-func (x *ReorderCollectionsResponse) Reset() { *x = ReorderCollectionsResponse{} }
+func (x *ReorderOrganizationsResponse) Reset() { *x = ReorderOrganizationsResponse{} }
 
-func (x *ReorderCollectionsResponse) Marshal(in []byte) ([]byte, error) {
+func (x *ReorderOrganizationsResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *ReorderCollectionsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *ReorderOrganizationsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *ReorderCollectionsResponse) GetResult() isReorderCollectionsResponse_Result {
+func (x *ReorderOrganizationsResponse) GetResult() isReorderOrganizationsResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
-func (x *ReorderCollectionsResponse) GetSuccess() bool {
-	if p, ok := x.GetResult().(*ReorderCollectionsResponse_Success); ok {
+func (x *ReorderOrganizationsResponse) GetSuccess() bool {
+	if p, ok := x.GetResult().(*ReorderOrganizationsResponse_Success); ok {
 		return p.Success
 	}
 	return false
 }
 
-func (x *ReorderCollectionsResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*ReorderCollectionsResponse_Error); ok {
+func (x *ReorderOrganizationsResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*ReorderOrganizationsResponse_Error); ok {
 		return p.Error
 	}
 	return nil
 }
 
 // XXX_OneofWrappers is for the internal use of the prutal package.
-func (*ReorderCollectionsResponse) XXX_OneofWrappers() []interface{} {
+func (*ReorderOrganizationsResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*ReorderCollectionsResponse_Success)(nil),
-		(*ReorderCollectionsResponse_Error)(nil),
+		(*ReorderOrganizationsResponse_Success)(nil),
+		(*ReorderOrganizationsResponse_Error)(nil),
 	}
 }
 
-type isReorderCollectionsResponse_Result interface {
-	isReorderCollectionsResponse_Result()
+type isReorderOrganizationsResponse_Result interface {
+	isReorderOrganizationsResponse_Result()
 }
 
-type ReorderCollectionsResponse_Success struct {
+type ReorderOrganizationsResponse_Success struct {
 	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
 }
 
-func (*ReorderCollectionsResponse_Success) isReorderCollectionsResponse_Result() {}
+func (*ReorderOrganizationsResponse_Success) isReorderOrganizationsResponse_Result() {}
 
-type ReorderCollectionsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+type ReorderOrganizationsResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
-func (*ReorderCollectionsResponse_Error) isReorderCollectionsResponse_Result() {}
+func (*ReorderOrganizationsResponse_Error) isReorderOrganizationsResponse_Result() {}
 
-// 收藏夹活动
-type CollectionActivity struct {
-	Id           string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	CollectionId string                 `protobuf:"bytes,2,opt,name=collection_id" json:"collection_id,omitempty"`
-	UserId       string                 `protobuf:"bytes,3,opt,name=user_id" json:"user_id,omitempty"`
-	Type         CollectionActivityType `protobuf:"varint,4,opt,name=type" json:"type,omitempty"`
-	ItemId       string                 `protobuf:"bytes,5,opt,name=item_id" json:"item_id,omitempty"` // 如果活动与内容项相关
-	Description  string                 `protobuf:"bytes,6,opt,name=description" json:"description,omitempty"`
-	CreatedAt    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at" json:"created_at,omitempty"`
+// 组织活动
+type OrganizationActivity struct {
+	Id             string                   `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	OrganizationId string                   `protobuf:"bytes,2,opt,name=organization_id" json:"organization_id,omitempty"`
+	UserId         string                   `protobuf:"bytes,3,opt,name=user_id" json:"user_id,omitempty"`
+	Type           OrganizationActivityType `protobuf:"varint,4,opt,name=type" json:"type,omitempty"`
+	ItemId         string                   `protobuf:"bytes,5,opt,name=item_id" json:"item_id,omitempty"` // 如果活动与内容项相关
+	Description    string                   `protobuf:"bytes,6,opt,name=description" json:"description,omitempty"`
+	CreatedAt      *timestamppb.Timestamp   `protobuf:"bytes,7,opt,name=created_at" json:"created_at,omitempty"`
 }
 
-func (x *CollectionActivity) Reset() { *x = CollectionActivity{} }
+func (x *OrganizationActivity) Reset() { *x = OrganizationActivity{} }
 
-func (x *CollectionActivity) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *OrganizationActivity) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *CollectionActivity) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *OrganizationActivity) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *CollectionActivity) GetId() string {
+func (x *OrganizationActivity) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *CollectionActivity) GetCollectionId() string {
+func (x *OrganizationActivity) GetOrganizationId() string {
 	if x != nil {
-		return x.CollectionId
+		return x.OrganizationId
 	}
 	return ""
 }
 
-func (x *CollectionActivity) GetUserId() string {
+func (x *OrganizationActivity) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *CollectionActivity) GetType() CollectionActivityType {
+func (x *OrganizationActivity) GetType() OrganizationActivityType {
 	if x != nil {
 		return x.Type
 	}
-	return CollectionActivityType_UNKNOWN_ACTIVITY
+	return OrganizationActivityType_UNKNOWN_ACTIVITY
 }
 
-func (x *CollectionActivity) GetItemId() string {
+func (x *OrganizationActivity) GetItemId() string {
 	if x != nil {
 		return x.ItemId
 	}
 	return ""
 }
 
-func (x *CollectionActivity) GetDescription() string {
+func (x *OrganizationActivity) GetDescription() string {
 	if x != nil {
 		return x.Description
 	}
 	return ""
 }
 
-func (x *CollectionActivity) GetCreatedAt() *timestamppb.Timestamp {
+func (x *OrganizationActivity) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
 	}
 	return nil
 }
 
-// 获取收藏夹活动请求
-type GetCollectionActivityRequest struct {
-	CollectionId string                        `protobuf:"bytes,1,opt,name=collection_id" json:"collection_id,omitempty"`
-	UserId       string                        `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Pagination   *pagination.PaginationRequest `protobuf:"bytes,3,opt,name=pagination" json:"pagination,omitempty"`
+// 获取组织活动请求
+type GetOrganizationActivityRequest struct {
+	OrganizationId string                        `protobuf:"bytes,1,opt,name=organization_id" json:"organization_id,omitempty"`
+	UserId         string                        `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	Pagination     *pagination.PaginationRequest `protobuf:"bytes,3,opt,name=pagination" json:"pagination,omitempty"`
 }
 
-func (x *GetCollectionActivityRequest) Reset() { *x = GetCollectionActivityRequest{} }
+func (x *GetOrganizationActivityRequest) Reset() { *x = GetOrganizationActivityRequest{} }
 
-func (x *GetCollectionActivityRequest) Marshal(in []byte) ([]byte, error) {
+func (x *GetOrganizationActivityRequest) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *GetCollectionActivityRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *GetOrganizationActivityRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *GetCollectionActivityRequest) GetCollectionId() string {
+func (x *GetOrganizationActivityRequest) GetOrganizationId() string {
 	if x != nil {
-		return x.CollectionId
+		return x.OrganizationId
 	}
 	return ""
 }
 
-func (x *GetCollectionActivityRequest) GetUserId() string {
+func (x *GetOrganizationActivityRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *GetCollectionActivityRequest) GetPagination() *pagination.PaginationRequest {
+func (x *GetOrganizationActivityRequest) GetPagination() *pagination.PaginationRequest {
 	if x != nil {
 		return x.Pagination
 	}
 	return nil
 }
 
-// 获取收藏夹活动响应
-type GetCollectionActivityResponse struct {
+// 获取组织活动响应
+type GetOrganizationActivityResponse struct {
 	// Types that are assignable to Result:
 	//
-	//	*GetCollectionActivityResponse_ActivityPage
-	//	*GetCollectionActivityResponse_Error
-	Result isGetCollectionActivityResponse_Result `protobuf_oneof:"result"`
+	//	*GetOrganizationActivityResponse_ActivityPage
+	//	*GetOrganizationActivityResponse_Error
+	Result isGetOrganizationActivityResponse_Result `protobuf_oneof:"result"`
 }
 
-func (x *GetCollectionActivityResponse) Reset() { *x = GetCollectionActivityResponse{} }
+func (x *GetOrganizationActivityResponse) Reset() { *x = GetOrganizationActivityResponse{} }
 
-func (x *GetCollectionActivityResponse) Marshal(in []byte) ([]byte, error) {
+func (x *GetOrganizationActivityResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *GetCollectionActivityResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *GetOrganizationActivityResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *GetCollectionActivityResponse) GetResult() isGetCollectionActivityResponse_Result {
+func (x *GetOrganizationActivityResponse) GetResult() isGetOrganizationActivityResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
-func (x *GetCollectionActivityResponse) GetActivityPage() *CollectionActivityPage {
-	if p, ok := x.GetResult().(*GetCollectionActivityResponse_ActivityPage); ok {
+func (x *GetOrganizationActivityResponse) GetActivityPage() *OrganizationActivityPage {
+	if p, ok := x.GetResult().(*GetOrganizationActivityResponse_ActivityPage); ok {
 		return p.ActivityPage
 	}
 	return nil
 }
 
-func (x *GetCollectionActivityResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*GetCollectionActivityResponse_Error); ok {
+func (x *GetOrganizationActivityResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*GetOrganizationActivityResponse_Error); ok {
 		return p.Error
 	}
 	return nil
 }
 
 // XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GetCollectionActivityResponse) XXX_OneofWrappers() []interface{} {
+func (*GetOrganizationActivityResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*GetCollectionActivityResponse_ActivityPage)(nil),
-		(*GetCollectionActivityResponse_Error)(nil),
+		(*GetOrganizationActivityResponse_ActivityPage)(nil),
+		(*GetOrganizationActivityResponse_Error)(nil),
 	}
 }
 
-type isGetCollectionActivityResponse_Result interface {
-	isGetCollectionActivityResponse_Result()
+type isGetOrganizationActivityResponse_Result interface {
+	isGetOrganizationActivityResponse_Result()
 }
 
-type GetCollectionActivityResponse_ActivityPage struct {
-	ActivityPage *CollectionActivityPage `protobuf:"bytes,1,opt,name=activity_page" json:"activity_page,omitempty"`
+type GetOrganizationActivityResponse_ActivityPage struct {
+	ActivityPage *OrganizationActivityPage `protobuf:"bytes,1,opt,name=activity_page" json:"activity_page,omitempty"`
 }
 
-func (*GetCollectionActivityResponse_ActivityPage) isGetCollectionActivityResponse_Result() {}
+func (*GetOrganizationActivityResponse_ActivityPage) isGetOrganizationActivityResponse_Result() {}
 
-type GetCollectionActivityResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+type GetOrganizationActivityResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
-func (*GetCollectionActivityResponse_Error) isGetCollectionActivityResponse_Result() {}
+func (*GetOrganizationActivityResponse_Error) isGetOrganizationActivityResponse_Result() {}
 
-// 收藏夹活动分页数据
-type CollectionActivityPage struct {
-	Activities []*CollectionActivity      `protobuf:"bytes,1,rep,name=activities" json:"activities,omitempty"`
+// 组织活动分页数据
+type OrganizationActivityPage struct {
+	Activities []*OrganizationActivity    `protobuf:"bytes,1,rep,name=activities" json:"activities,omitempty"`
 	Pagination *pagination.PaginationMeta `protobuf:"bytes,2,opt,name=pagination" json:"pagination,omitempty"`
 }
 
-func (x *CollectionActivityPage) Reset() { *x = CollectionActivityPage{} }
+func (x *OrganizationActivityPage) Reset() { *x = OrganizationActivityPage{} }
 
-func (x *CollectionActivityPage) Marshal(in []byte) ([]byte, error) {
+func (x *OrganizationActivityPage) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *CollectionActivityPage) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *OrganizationActivityPage) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *CollectionActivityPage) GetActivities() []*CollectionActivity {
+func (x *OrganizationActivityPage) GetActivities() []*OrganizationActivity {
 	if x != nil {
 		return x.Activities
 	}
 	return nil
 }
 
-func (x *CollectionActivityPage) GetPagination() *pagination.PaginationMeta {
+func (x *OrganizationActivityPage) GetPagination() *pagination.PaginationMeta {
 	if x != nil {
 		return x.Pagination
 	}
@@ -1656,16 +2086,20 @@ func (x *CollectionActivityPage) GetPagination() *pagination.PaginationMeta {
 }
 
 type OrganizationService interface {
-	CreateCollection(ctx context.Context, req *CreateCollectionRequest) (res *CreateCollectionResponse, err error)
-	GetCollection(ctx context.Context, req *GetCollectionRequest) (res *GetCollectionResponse, err error)
-	UpdateCollection(ctx context.Context, req *UpdateCollectionRequest) (res *UpdateCollectionResponse, err error)
-	DeleteCollection(ctx context.Context, req *DeleteCollectionRequest) (res *DeleteCollectionResponse, err error)
-	GetUserCollections(ctx context.Context, req *GetUserCollectionsRequest) (res *GetUserCollectionsResponse, err error)
-	MoveCollection(ctx context.Context, req *MoveCollectionRequest) (res *MoveCollectionResponse, err error)
-	AddItemsToCollection(ctx context.Context, req *AddItemsToCollectionRequest) (res *AddItemsToCollectionResponse, err error)
-	RemoveItemsFromCollection(ctx context.Context, req *RemoveItemsFromCollectionRequest) (res *RemoveItemsFromCollectionResponse, err error)
-	GetCollectionItems(ctx context.Context, req *GetCollectionItemsRequest) (res *GetCollectionItemsResponse, err error)
-	ReorderCollectionItems(ctx context.Context, req *ReorderCollectionItemsRequest) (res *ReorderCollectionItemsResponse, err error)
-	ReorderCollections(ctx context.Context, req *ReorderCollectionsRequest) (res *ReorderCollectionsResponse, err error)
-	GetCollectionActivity(ctx context.Context, req *GetCollectionActivityRequest) (res *GetCollectionActivityResponse, err error)
+	CreateOrganization(ctx context.Context, req *CreateOrganizationRequest) (res *CreateOrganizationResponse, err error)
+	GetOrganization(ctx context.Context, req *GetOrganizationRequest) (res *GetOrganizationResponse, err error)
+	UpdateOrganization(ctx context.Context, req *UpdateOrganizationRequest) (res *UpdateOrganizationResponse, err error)
+	DeleteOrganization(ctx context.Context, req *DeleteOrganizationRequest) (res *DeleteOrganizationResponse, err error)
+	GetUserOrganizations(ctx context.Context, req *GetUserOrganizationsRequest) (res *GetUserOrganizationsResponse, err error)
+	MoveOrganization(ctx context.Context, req *MoveOrganizationRequest) (res *MoveOrganizationResponse, err error)
+	AddItemsToOrganization(ctx context.Context, req *AddItemsToOrganizationRequest) (res *AddItemsToOrganizationResponse, err error)
+	RemoveItemsFromOrganization(ctx context.Context, req *RemoveItemsFromOrganizationRequest) (res *RemoveItemsFromOrganizationResponse, err error)
+	GetOrganizationItems(ctx context.Context, req *GetOrganizationItemsRequest) (res *GetOrganizationItemsResponse, err error)
+	ReorderOrganizationItems(ctx context.Context, req *ReorderOrganizationItemsRequest) (res *ReorderOrganizationItemsResponse, err error)
+	ReorderOrganizations(ctx context.Context, req *ReorderOrganizationsRequest) (res *ReorderOrganizationsResponse, err error)
+	GetOrganizationActivity(ctx context.Context, req *GetOrganizationActivityRequest) (res *GetOrganizationActivityResponse, err error)
+	GetOrganizationByCode(ctx context.Context, req *GetOrganizationByCodeRequest) (res *GetOrganizationByCodeResponse, err error)
+	GetOrganizationTree(ctx context.Context, req *GetOrganizationTreeRequest) (res *GetOrganizationTreeResponse, err error)
+	GetOrganizationChildren(ctx context.Context, req *GetOrganizationChildrenRequest) (res *GetOrganizationChildrenResponse, err error)
+	BatchSaveOrganization(ctx context.Context, req *BatchSaveOrganizationRequest) (res *BatchSaveOrganizationResponse, err error)
 }

@@ -4,7 +4,7 @@ package user
 
 import (
 	"context"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/error"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -174,7 +174,7 @@ func (x *RegisterResponse) GetUser() *UserData {
 	return nil
 }
 
-func (x *RegisterResponse) GetError() *error.Error {
+func (x *RegisterResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*RegisterResponse_Error); ok {
 		return p.Error
 	}
@@ -200,7 +200,7 @@ type RegisterResponse_User struct {
 func (*RegisterResponse_User) isRegisterResponse_Result() {}
 
 type RegisterResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*RegisterResponse_Error) isRegisterResponse_Result() {}
@@ -333,7 +333,7 @@ func (x *LoginResponse) GetAuth() *AuthData {
 	return nil
 }
 
-func (x *LoginResponse) GetError() *error.Error {
+func (x *LoginResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*LoginResponse_Error); ok {
 		return p.Error
 	}
@@ -359,7 +359,7 @@ type LoginResponse_Auth struct {
 func (*LoginResponse_Auth) isLoginResponse_Result() {}
 
 type LoginResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*LoginResponse_Error) isLoginResponse_Result() {}
@@ -470,7 +470,7 @@ func (x *GetUserProfileResponse) GetProfile() *UserProfile {
 	return nil
 }
 
-func (x *GetUserProfileResponse) GetError() *error.Error {
+func (x *GetUserProfileResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetUserProfileResponse_Error); ok {
 		return p.Error
 	}
@@ -496,7 +496,7 @@ type GetUserProfileResponse_Profile struct {
 func (*GetUserProfileResponse_Profile) isGetUserProfileResponse_Result() {}
 
 type GetUserProfileResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetUserProfileResponse_Error) isGetUserProfileResponse_Result() {}
@@ -575,7 +575,7 @@ func (x *UpdateUserProfileResponse) GetProfile() *UserProfile {
 	return nil
 }
 
-func (x *UpdateUserProfileResponse) GetError() *error.Error {
+func (x *UpdateUserProfileResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*UpdateUserProfileResponse_Error); ok {
 		return p.Error
 	}
@@ -601,7 +601,7 @@ type UpdateUserProfileResponse_Profile struct {
 func (*UpdateUserProfileResponse_Profile) isUpdateUserProfileResponse_Result() {}
 
 type UpdateUserProfileResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*UpdateUserProfileResponse_Error) isUpdateUserProfileResponse_Result() {}
@@ -672,7 +672,7 @@ func (x *ChangePasswordResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *ChangePasswordResponse) GetError() *error.Error {
+func (x *ChangePasswordResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*ChangePasswordResponse_Error); ok {
 		return p.Error
 	}
@@ -698,7 +698,7 @@ type ChangePasswordResponse_Success struct {
 func (*ChangePasswordResponse_Success) isChangePasswordResponse_Result() {}
 
 type ChangePasswordResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*ChangePasswordResponse_Error) isChangePasswordResponse_Result() {}
@@ -753,7 +753,7 @@ func (x *ForgotPasswordResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *ForgotPasswordResponse) GetError() *error.Error {
+func (x *ForgotPasswordResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*ForgotPasswordResponse_Error); ok {
 		return p.Error
 	}
@@ -779,7 +779,7 @@ type ForgotPasswordResponse_Success struct {
 func (*ForgotPasswordResponse_Success) isForgotPasswordResponse_Result() {}
 
 type ForgotPasswordResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*ForgotPasswordResponse_Error) isForgotPasswordResponse_Result() {}
@@ -840,7 +840,7 @@ func (x *ResetPasswordResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *ResetPasswordResponse) GetError() *error.Error {
+func (x *ResetPasswordResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*ResetPasswordResponse_Error); ok {
 		return p.Error
 	}
@@ -866,7 +866,7 @@ type ResetPasswordResponse_Success struct {
 func (*ResetPasswordResponse_Success) isResetPasswordResponse_Result() {}
 
 type ResetPasswordResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*ResetPasswordResponse_Error) isResetPasswordResponse_Result() {}
@@ -927,7 +927,7 @@ func (x *DeleteAccountResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *DeleteAccountResponse) GetError() *error.Error {
+func (x *DeleteAccountResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*DeleteAccountResponse_Error); ok {
 		return p.Error
 	}
@@ -953,7 +953,7 @@ type DeleteAccountResponse_Success struct {
 func (*DeleteAccountResponse_Success) isDeleteAccountResponse_Result() {}
 
 type DeleteAccountResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*DeleteAccountResponse_Error) isDeleteAccountResponse_Result() {}
@@ -1036,7 +1036,7 @@ func (x *ListUsersResponse) GetUsersPage() *UsersPage {
 	return nil
 }
 
-func (x *ListUsersResponse) GetError() *error.Error {
+func (x *ListUsersResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*ListUsersResponse_Error); ok {
 		return p.Error
 	}
@@ -1062,7 +1062,7 @@ type ListUsersResponse_UsersPage struct {
 func (*ListUsersResponse_UsersPage) isListUsersResponse_Result() {}
 
 type ListUsersResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*ListUsersResponse_Error) isListUsersResponse_Result() {}
@@ -1147,7 +1147,7 @@ func (x *LogoutResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *LogoutResponse) GetError() *error.Error {
+func (x *LogoutResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*LogoutResponse_Error); ok {
 		return p.Error
 	}
@@ -1173,7 +1173,7 @@ type LogoutResponse_Success struct {
 func (*LogoutResponse_Success) isLogoutResponse_Result() {}
 
 type LogoutResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*LogoutResponse_Error) isLogoutResponse_Result() {}
@@ -1224,7 +1224,7 @@ func (x *RefreshTokenResponse) GetAuth() *AuthData {
 	return nil
 }
 
-func (x *RefreshTokenResponse) GetError() *error.Error {
+func (x *RefreshTokenResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*RefreshTokenResponse_Error); ok {
 		return p.Error
 	}
@@ -1250,7 +1250,7 @@ type RefreshTokenResponse_Auth struct {
 func (*RefreshTokenResponse_Auth) isRefreshTokenResponse_Result() {}
 
 type RefreshTokenResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*RefreshTokenResponse_Error) isRefreshTokenResponse_Result() {}
@@ -1375,7 +1375,7 @@ func (x *GetUserSubscriptionResponse) GetSubscription() *Subscription {
 	return nil
 }
 
-func (x *GetUserSubscriptionResponse) GetError() *error.Error {
+func (x *GetUserSubscriptionResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetUserSubscriptionResponse_Error); ok {
 		return p.Error
 	}
@@ -1401,7 +1401,7 @@ type GetUserSubscriptionResponse_Subscription struct {
 func (*GetUserSubscriptionResponse_Subscription) isGetUserSubscriptionResponse_Result() {}
 
 type GetUserSubscriptionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetUserSubscriptionResponse_Error) isGetUserSubscriptionResponse_Result() {}
@@ -1472,7 +1472,7 @@ func (x *UpdateUserSubscriptionResponse) GetSubscription() *Subscription {
 	return nil
 }
 
-func (x *UpdateUserSubscriptionResponse) GetError() *error.Error {
+func (x *UpdateUserSubscriptionResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*UpdateUserSubscriptionResponse_Error); ok {
 		return p.Error
 	}
@@ -1498,7 +1498,7 @@ type UpdateUserSubscriptionResponse_Subscription struct {
 func (*UpdateUserSubscriptionResponse_Subscription) isUpdateUserSubscriptionResponse_Result() {}
 
 type UpdateUserSubscriptionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*UpdateUserSubscriptionResponse_Error) isUpdateUserSubscriptionResponse_Result() {}
