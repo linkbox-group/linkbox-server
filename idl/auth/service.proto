@@ -7,18 +7,22 @@ option go_package = "auth";
 
 import "google/protobuf/empty.proto";
 
-service Token {
-  rpc RefreshToken(TokenRequest) returns (AccessToken) {}
+service authService {
+  rpc GenerateRefreshToken(GenerateTokenReq) returns (TokenString) {}
+  rpc GenerateAccessToken(GenerateTokenReq) returns (TokenString) {}
+  rpc RefreshToken(TokenRequest) returns (TokenString) {}
   rpc DestroyRefreshToken(TokenRequest) returns (google.protobuf.Empty) {}
   rpc VerifyAccessToken(TokenRequest) returns (AccessTokenInfo) {}
 }
-
+message GenerateTokenReq{
+  string uid =1;
+}
 message TokenRequest {
   string token = 1;
 }
 
-message AccessToken {
-  string access_token = 1;
+message TokenString {
+  string token = 1;
 }
 
 message AccessTokenInfo {
