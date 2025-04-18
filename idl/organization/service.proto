@@ -1,4 +1,3 @@
-// organization/service.proto
 syntax = "proto3";
 
 package organization;
@@ -6,239 +5,315 @@ package organization;
 option go_package = "organization";
 
 import "google/protobuf/timestamp.proto";
-import "common/error/error.proto";
+import "common/cError/error.proto";
 import "common/pagination/pagination.proto";
 import "common/types/types.proto";
 
 // 组织服务定义
 service OrganizationService {
-  // 创建收藏夹
-  rpc CreateCollection(CreateCollectionRequest) returns (CreateCollectionResponse);
+  // 创建组织
+  rpc CreateOrganization(CreateOrganizationRequest) returns (CreateOrganizationResponse);
 
-  // 获取收藏夹
-  rpc GetCollection(GetCollectionRequest) returns (GetCollectionResponse);
+  // 获取组织
+  rpc GetOrganization(GetOrganizationRequest) returns (GetOrganizationResponse);
 
-  // 更新收藏夹
-  rpc UpdateCollection(UpdateCollectionRequest) returns (UpdateCollectionResponse);
+  // 更新组织
+  rpc UpdateOrganization(UpdateOrganizationRequest) returns (UpdateOrganizationResponse);
 
-  // 删除收藏夹
-  rpc DeleteCollection(DeleteCollectionRequest) returns (DeleteCollectionResponse);
+  // 删除组织
+  rpc DeleteOrganization(DeleteOrganizationRequest) returns (DeleteOrganizationResponse);
 
-  // 获取用户的收藏夹层级结构
-  rpc GetUserCollections(GetUserCollectionsRequest) returns (GetUserCollectionsResponse);
+  // 获取用户的组织层级结构
+  rpc GetUserOrganizations(GetUserOrganizationsRequest) returns (GetUserOrganizationsResponse);
 
-  // 移动收藏夹（变更父级）
-  rpc MoveCollection(MoveCollectionRequest) returns (MoveCollectionResponse);
+  // 移动组织（变更父级）
+  rpc MoveOrganization(MoveOrganizationRequest) returns (MoveOrganizationResponse);
 
-  // 将内容项添加到收藏夹
-  rpc AddItemsToCollection(AddItemsToCollectionRequest) returns (AddItemsToCollectionResponse);
+  // 将内容项添加到组织
+  rpc AddItemsToOrganization(AddItemsToOrganizationRequest) returns (AddItemsToOrganizationResponse);
 
-  // 从收藏夹移除内容项
-  rpc RemoveItemsFromCollection(RemoveItemsFromCollectionRequest) returns (RemoveItemsFromCollectionResponse);
+  // 从组织移除内容项
+  rpc RemoveItemsFromOrganization(RemoveItemsFromOrganizationRequest) returns (RemoveItemsFromOrganizationResponse);
 
-  // 获取收藏夹中的内容项
-  rpc GetCollectionItems(GetCollectionItemsRequest) returns (GetCollectionItemsResponse);
+  // 获取组织中的内容项
+  rpc GetOrganizationItems(GetOrganizationItemsRequest) returns (GetOrganizationItemsResponse);
 
-  // 排序收藏夹中的内容项
-  rpc ReorderCollectionItems(ReorderCollectionItemsRequest) returns (ReorderCollectionItemsResponse);
+  // 排序组织中的内容项
+  rpc ReorderOrganizationItems(ReorderOrganizationItemsRequest) returns (ReorderOrganizationItemsResponse);
 
-  // 排序收藏夹
-  rpc ReorderCollections(ReorderCollectionsRequest) returns (ReorderCollectionsResponse);
+  // 排序组织
+  rpc ReorderOrganizations(ReorderOrganizationsRequest) returns (ReorderOrganizationsResponse);
 
-  // 获取收藏夹最近活动
-  rpc GetCollectionActivity(GetCollectionActivityRequest) returns (GetCollectionActivityResponse);
+  // 获取组织最近活动
+  rpc GetOrganizationActivity(GetOrganizationActivityRequest) returns (GetOrganizationActivityResponse);
+
+  // 根据代码获取组织
+  rpc GetOrganizationByCode(GetOrganizationByCodeRequest) returns (GetOrganizationByCodeResponse);
+
+  // 获取组织树
+  rpc GetOrganizationTree(GetOrganizationTreeRequest) returns (GetOrganizationTreeResponse);
+
+  // 获取组织子节点
+  rpc GetOrganizationChildren(GetOrganizationChildrenRequest) returns (GetOrganizationChildrenResponse);
+
+  // 批量保存组织
+  rpc BatchSaveOrganization(BatchSaveOrganizationRequest) returns (BatchSaveOrganizationResponse);
 }
 
-// 收藏夹图标类型
-enum CollectionIconType {
-  DEFAULT_ICON = 0;
-  EMOJI = 1;
-  CUSTOM = 2;
-}
-
-// 收藏夹
-message Collection {
+// 组织
+message Organization {
   string id = 1;
-  string user_id = 2;
-  string name = 3;
-  string description = 4;
-  string parent_id = 5;  // 空字符串表示根收藏夹
-  string icon = 6;
-  CollectionIconType icon_type = 7;
-  string color = 8;
-  bool is_default = 9;
-  bool is_private = 10;
-  int32 order = 11;
-  int32 item_count = 12;
-  google.protobuf.Timestamp created_at = 13;
-  google.protobuf.Timestamp updated_at = 14;
+  string code = 2;
+  string parent_code = 3;
+  string parent_codes = 4;
+  string tree_leaf = 5;
+  int32 tree_level = 6;
+  string tree_names = 7;
+  string name = 8;
+  string user_id = 9;
+  string description = 10;
+  bool is_default = 11;
+  bool is_shared = 12;
+  string share_code = 13;
+  google.protobuf.Timestamp share_expire_at = 14;
+  int32 sort_order = 15;
+  uint32 items_count = 16;
+  google.protobuf.Timestamp created_at = 17;
+  google.protobuf.Timestamp updated_at = 18;
 }
 
-// 创建收藏夹请求
-message CreateCollectionRequest {
+// 创建组织请求
+message CreateOrganizationRequest {
   string user_id = 1;
   string name = 2;
-  optional string description = 3;
-  optional string parent_id = 4;
-  optional string icon = 5;
-  optional CollectionIconType icon_type = 6;
-  optional string color = 7;
-  optional bool is_private = 8;
+  string code = 3;
+  optional string parent_code = 4;
+  optional string description = 5;
+  optional bool is_default = 6;
+  optional bool is_shared = 7;
+  optional string share_code = 8;
+  optional google.protobuf.Timestamp share_expire_at = 9;
+  optional int32 sort_order = 10;
 }
 
-// 创建收藏夹响应
-message CreateCollectionResponse {
+// 创建组织响应
+message CreateOrganizationResponse {
   oneof result {
-    Collection collection = 1;
-    common.error.Error error = 2;
+    Organization organization = 1;
+    common.cError.Error error = 2;
   }
 }
 
-// 获取收藏夹请求
-message GetCollectionRequest {
+// 获取组织请求
+message GetOrganizationRequest {
   string id = 1;
   string user_id = 2;
 }
 
-// 获取收藏夹响应
-message GetCollectionResponse {
+// 获取组织响应
+message GetOrganizationResponse {
   oneof result {
-    Collection collection = 1;
-    common.error.Error error = 2;
+    Organization organization = 1;
+    common.cError.Error error = 2;
   }
 }
 
-// 更新收藏夹请求
-message UpdateCollectionRequest {
+// 根据代码获取组织请求
+message GetOrganizationByCodeRequest {
+  string code = 1;
+  string user_id = 2;
+}
+
+// 根据代码获取组织响应
+message GetOrganizationByCodeResponse {
+  oneof result {
+    Organization organization = 1;
+    common.cError.Error error = 2;
+  }
+}
+
+// 更新组织请求
+message UpdateOrganizationRequest {
   string id = 1;
   string user_id = 2;
   optional string name = 3;
   optional string description = 4;
-  optional string icon = 5;
-  optional CollectionIconType icon_type = 6;
-  optional string color = 7;
-  optional bool is_private = 8;
+  optional bool is_default = 5;
+  optional bool is_shared = 6;
+  optional string share_code = 7;
+  optional google.protobuf.Timestamp share_expire_at = 8;
+  optional int32 sort_order = 9;
 }
 
-// 更新收藏夹响应
-message UpdateCollectionResponse {
+// 更新组织响应
+message UpdateOrganizationResponse {
   oneof result {
-    Collection collection = 1;
-    common.error.Error error = 2;
+    Organization organization = 1;
+    common.cError.Error error = 2;
   }
 }
 
-// 删除收藏夹请求
-message DeleteCollectionRequest {
+// 删除组织请求
+message DeleteOrganizationRequest {
   string id = 1;
   string user_id = 2;
+  bool cascade = 3; // 是否级联删除子组织
 }
 
-// 删除收藏夹响应
-message DeleteCollectionResponse {
+// 删除组织响应
+message DeleteOrganizationResponse {
   oneof result {
     bool success = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
-// 获取用户收藏夹请求
-message GetUserCollectionsRequest {
+// 获取用户组织请求
+message GetUserOrganizationsRequest {
   string user_id = 1;
 }
 
-// 获取用户收藏夹响应
-message GetUserCollectionsResponse {
+// 获取用户组织响应
+message GetUserOrganizationsResponse {
   oneof result {
-    CollectionsData collections = 1;
-    common.error.Error error = 2;
+    OrganizationsData organizations = 1;
+    common.cError.Error error = 2;
   }
 }
 
-// 收藏夹数据
-message CollectionsData {
-  repeated Collection collections = 1;
+// 组织数据
+message OrganizationsData {
+  repeated Organization organizations = 1;
 }
 
-// 移动收藏夹请求
-message MoveCollectionRequest {
+// 获取组织树请求
+message GetOrganizationTreeRequest {
+  string user_id = 1;
+  optional string root_code = 2; // 根节点代码，不提供则获取全部树
+}
+
+// 组织树节点
+message OrganizationTreeNode {
+  Organization data = 1;
+  repeated OrganizationTreeNode children = 2;
+}
+
+// 获取组织树响应
+message GetOrganizationTreeResponse {
+  oneof result {
+    OrganizationTreeNode root = 1;
+    common.cError.Error error = 2;
+  }
+}
+
+// 获取组织子节点请求
+message GetOrganizationChildrenRequest {
+  string user_id = 1;
+  string parent_code = 2;
+  bool recursive = 3; // 是否递归获取所有子节点
+}
+
+// 获取组织子节点响应
+message GetOrganizationChildrenResponse {
+  oneof result {
+    OrganizationsData children = 1;
+    common.cError.Error error = 2;
+  }
+}
+
+// 移动组织请求
+message MoveOrganizationRequest {
   string id = 1;
   string user_id = 2;
-  string new_parent_id = 3;  // 空字符串表示移动到根目录
+  string new_parent_code = 3; // 新的父节点代码
 }
 
-// 移动收藏夹响应
-message MoveCollectionResponse {
+// 移动组织响应
+message MoveOrganizationResponse {
   oneof result {
-    Collection collection = 1;
-    common.error.Error error = 2;
+    bool success = 1;
+    common.cError.Error error = 2;
   }
 }
 
-// 添加内容项到收藏夹请求
-message AddItemsToCollectionRequest {
-  string collection_id = 1;
+// 批量保存组织请求
+message BatchSaveOrganizationRequest {
+  string user_id = 1;
+  repeated Organization organizations = 2;
+}
+
+// 批量保存组织响应
+message BatchSaveOrganizationResponse {
+  oneof result {
+    OrganizationsData organizations = 1;
+    common.cError.Error error = 2;
+  }
+}
+
+// 添加内容项到组织请求
+message AddItemsToOrganizationRequest {
+  string organization_id = 1;
   string user_id = 2;
   repeated string item_ids = 3;
 }
 
-// 添加内容项到收藏夹响应
-message AddItemsToCollectionResponse {
+// 添加内容项到组织响应
+message AddItemsToOrganizationResponse {
   oneof result {
     bool success = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
-// 从收藏夹移除内容项请求
-message RemoveItemsFromCollectionRequest {
-  string collection_id = 1;
+// 从组织移除内容项请求
+message RemoveItemsFromOrganizationRequest {
+  string organization_id = 1;
   string user_id = 2;
   repeated string item_ids = 3;
 }
 
-// 从收藏夹移除内容项响应
-message RemoveItemsFromCollectionResponse {
+// 从组织移除内容项响应
+message RemoveItemsFromOrganizationResponse {
   oneof result {
     bool success = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
-// 获取收藏夹内容项请求
-message GetCollectionItemsRequest {
-  string collection_id = 1;
+// 获取组织内容项请求
+message GetOrganizationItemsRequest {
+  string organization_id = 1;
   string user_id = 2;
   common.pagination.PaginationRequest pagination = 3;
   common.pagination.SortRequest sort = 4;
 }
 
-// 获取收藏夹内容项响应
-message GetCollectionItemsResponse {
+// 获取组织内容项响应
+message GetOrganizationItemsResponse {
   oneof result {
-    CollectionItemsPage items_page = 1;
-    common.error.Error error = 2;
+    OrganizationItemsPage items_page = 1;
+    common.cError.Error error = 2;
   }
 }
 
-// 收藏夹内容项分页数据
-message CollectionItemsPage {
-  repeated CollectionItem items = 1;
+// 组织内容项分页数据
+message OrganizationItemsPage {
+  repeated OrganizationItem items = 1;
   common.pagination.PaginationMeta pagination = 2;
 }
 
-// 收藏夹内容项
-message CollectionItem {
+// 组织内容项
+message OrganizationItem {
   string id = 1;
-  string collection_id = 2;
+  string organization_id = 2;
   string item_id = 3;
-  int32 order = 4;
-  google.protobuf.Timestamp added_at = 5;
+  int32 sort_order = 4;
+  google.protobuf.Timestamp created_at = 5;
 }
 
-// 排序收藏夹内容项请求
-message ReorderCollectionItemsRequest {
-  string collection_id = 1;
+// 排序组织内容项请求
+message ReorderOrganizationItemsRequest {
+  string organization_id = 1;
   string user_id = 2;
   repeated ItemOrder item_orders = 3;
 }
@@ -246,75 +321,75 @@ message ReorderCollectionItemsRequest {
 // 内容项顺序
 message ItemOrder {
   string item_id = 1;
-  int32 order = 2;
+  int32 sort_order = 2;
 }
 
-// 排序收藏夹内容项响应
-message ReorderCollectionItemsResponse {
+// 排序组织内容项响应
+message ReorderOrganizationItemsResponse {
   oneof result {
     bool success = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
-// 排序收藏夹请求
-message ReorderCollectionsRequest {
+// 排序组织请求
+message ReorderOrganizationsRequest {
   string user_id = 1;
-  repeated CollectionOrder collection_orders = 2;
+  repeated OrganizationOrder organization_orders = 2;
 }
 
-// 收藏夹顺序
-message CollectionOrder {
-  string collection_id = 1;
-  int32 order = 2;
+// 组织顺序
+message OrganizationOrder {
+  string organization_id = 1;
+  int32 sort_order = 2;
 }
 
-// 排序收藏夹响应
-message ReorderCollectionsResponse {
+// 排序组织响应
+message ReorderOrganizationsResponse {
   oneof result {
     bool success = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
-// 收藏夹活动类型
-enum CollectionActivityType {
+// 组织活动类型
+enum OrganizationActivityType {
   UNKNOWN_ACTIVITY = 0;
   ITEM_ADDED = 1;
   ITEM_REMOVED = 2;
-  COLLECTION_CREATED = 3;
-  COLLECTION_UPDATED = 4;
-  COLLECTION_DELETED = 5;
+  ORGANIZATION_CREATED = 3;
+  ORGANIZATION_UPDATED = 4;
+  ORGANIZATION_DELETED = 5;
 }
 
-// 收藏夹活动
-message CollectionActivity {
+// 组织活动
+message OrganizationActivity {
   string id = 1;
-  string collection_id = 2;
+  string organization_id = 2;
   string user_id = 3;
-  CollectionActivityType type = 4;
+  OrganizationActivityType type = 4;
   string item_id = 5;  // 如果活动与内容项相关
   string description = 6;
   google.protobuf.Timestamp created_at = 7;
 }
 
-// 获取收藏夹活动请求
-message GetCollectionActivityRequest {
-  string collection_id = 1;
+// 获取组织活动请求
+message GetOrganizationActivityRequest {
+  string organization_id = 1;
   string user_id = 2;
   common.pagination.PaginationRequest pagination = 3;
 }
 
-// 获取收藏夹活动响应
-message GetCollectionActivityResponse {
+// 获取组织活动响应
+message GetOrganizationActivityResponse {
   oneof result {
-    CollectionActivityPage activity_page = 1;
-    common.error.Error error = 2;
+    OrganizationActivityPage activity_page = 1;
+    common.cError.Error error = 2;
   }
 }
 
-// 收藏夹活动分页数据
-message CollectionActivityPage {
-  repeated CollectionActivity activities = 1;
+// 组织活动分页数据
+message OrganizationActivityPage {
+  repeated OrganizationActivity activities = 1;
   common.pagination.PaginationMeta pagination = 2;
 }

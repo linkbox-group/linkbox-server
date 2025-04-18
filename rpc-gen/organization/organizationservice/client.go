@@ -11,18 +11,22 @@ import (
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
-	CreateCollection(ctx context.Context, Req *organization.CreateCollectionRequest, callOptions ...callopt.Option) (r *organization.CreateCollectionResponse, err error)
-	GetCollection(ctx context.Context, Req *organization.GetCollectionRequest, callOptions ...callopt.Option) (r *organization.GetCollectionResponse, err error)
-	UpdateCollection(ctx context.Context, Req *organization.UpdateCollectionRequest, callOptions ...callopt.Option) (r *organization.UpdateCollectionResponse, err error)
-	DeleteCollection(ctx context.Context, Req *organization.DeleteCollectionRequest, callOptions ...callopt.Option) (r *organization.DeleteCollectionResponse, err error)
-	GetUserCollections(ctx context.Context, Req *organization.GetUserCollectionsRequest, callOptions ...callopt.Option) (r *organization.GetUserCollectionsResponse, err error)
-	MoveCollection(ctx context.Context, Req *organization.MoveCollectionRequest, callOptions ...callopt.Option) (r *organization.MoveCollectionResponse, err error)
-	AddItemsToCollection(ctx context.Context, Req *organization.AddItemsToCollectionRequest, callOptions ...callopt.Option) (r *organization.AddItemsToCollectionResponse, err error)
-	RemoveItemsFromCollection(ctx context.Context, Req *organization.RemoveItemsFromCollectionRequest, callOptions ...callopt.Option) (r *organization.RemoveItemsFromCollectionResponse, err error)
-	GetCollectionItems(ctx context.Context, Req *organization.GetCollectionItemsRequest, callOptions ...callopt.Option) (r *organization.GetCollectionItemsResponse, err error)
-	ReorderCollectionItems(ctx context.Context, Req *organization.ReorderCollectionItemsRequest, callOptions ...callopt.Option) (r *organization.ReorderCollectionItemsResponse, err error)
-	ReorderCollections(ctx context.Context, Req *organization.ReorderCollectionsRequest, callOptions ...callopt.Option) (r *organization.ReorderCollectionsResponse, err error)
-	GetCollectionActivity(ctx context.Context, Req *organization.GetCollectionActivityRequest, callOptions ...callopt.Option) (r *organization.GetCollectionActivityResponse, err error)
+	CreateOrganization(ctx context.Context, Req *organization.CreateOrganizationRequest, callOptions ...callopt.Option) (r *organization.CreateOrganizationResponse, err error)
+	GetOrganization(ctx context.Context, Req *organization.GetOrganizationRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationResponse, err error)
+	UpdateOrganization(ctx context.Context, Req *organization.UpdateOrganizationRequest, callOptions ...callopt.Option) (r *organization.UpdateOrganizationResponse, err error)
+	DeleteOrganization(ctx context.Context, Req *organization.DeleteOrganizationRequest, callOptions ...callopt.Option) (r *organization.DeleteOrganizationResponse, err error)
+	GetUserOrganizations(ctx context.Context, Req *organization.GetUserOrganizationsRequest, callOptions ...callopt.Option) (r *organization.GetUserOrganizationsResponse, err error)
+	MoveOrganization(ctx context.Context, Req *organization.MoveOrganizationRequest, callOptions ...callopt.Option) (r *organization.MoveOrganizationResponse, err error)
+	AddItemsToOrganization(ctx context.Context, Req *organization.AddItemsToOrganizationRequest, callOptions ...callopt.Option) (r *organization.AddItemsToOrganizationResponse, err error)
+	RemoveItemsFromOrganization(ctx context.Context, Req *organization.RemoveItemsFromOrganizationRequest, callOptions ...callopt.Option) (r *organization.RemoveItemsFromOrganizationResponse, err error)
+	GetOrganizationItems(ctx context.Context, Req *organization.GetOrganizationItemsRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationItemsResponse, err error)
+	ReorderOrganizationItems(ctx context.Context, Req *organization.ReorderOrganizationItemsRequest, callOptions ...callopt.Option) (r *organization.ReorderOrganizationItemsResponse, err error)
+	ReorderOrganizations(ctx context.Context, Req *organization.ReorderOrganizationsRequest, callOptions ...callopt.Option) (r *organization.ReorderOrganizationsResponse, err error)
+	GetOrganizationActivity(ctx context.Context, Req *organization.GetOrganizationActivityRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationActivityResponse, err error)
+	GetOrganizationByCode(ctx context.Context, Req *organization.GetOrganizationByCodeRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationByCodeResponse, err error)
+	GetOrganizationTree(ctx context.Context, Req *organization.GetOrganizationTreeRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationTreeResponse, err error)
+	GetOrganizationChildren(ctx context.Context, Req *organization.GetOrganizationChildrenRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationChildrenResponse, err error)
+	BatchSaveOrganization(ctx context.Context, Req *organization.BatchSaveOrganizationRequest, callOptions ...callopt.Option) (r *organization.BatchSaveOrganizationResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -54,62 +58,82 @@ type kOrganizationServiceClient struct {
 	*kClient
 }
 
-func (p *kOrganizationServiceClient) CreateCollection(ctx context.Context, Req *organization.CreateCollectionRequest, callOptions ...callopt.Option) (r *organization.CreateCollectionResponse, err error) {
+func (p *kOrganizationServiceClient) CreateOrganization(ctx context.Context, Req *organization.CreateOrganizationRequest, callOptions ...callopt.Option) (r *organization.CreateOrganizationResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.CreateCollection(ctx, Req)
+	return p.kClient.CreateOrganization(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) GetCollection(ctx context.Context, Req *organization.GetCollectionRequest, callOptions ...callopt.Option) (r *organization.GetCollectionResponse, err error) {
+func (p *kOrganizationServiceClient) GetOrganization(ctx context.Context, Req *organization.GetOrganizationRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetCollection(ctx, Req)
+	return p.kClient.GetOrganization(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) UpdateCollection(ctx context.Context, Req *organization.UpdateCollectionRequest, callOptions ...callopt.Option) (r *organization.UpdateCollectionResponse, err error) {
+func (p *kOrganizationServiceClient) UpdateOrganization(ctx context.Context, Req *organization.UpdateOrganizationRequest, callOptions ...callopt.Option) (r *organization.UpdateOrganizationResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.UpdateCollection(ctx, Req)
+	return p.kClient.UpdateOrganization(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) DeleteCollection(ctx context.Context, Req *organization.DeleteCollectionRequest, callOptions ...callopt.Option) (r *organization.DeleteCollectionResponse, err error) {
+func (p *kOrganizationServiceClient) DeleteOrganization(ctx context.Context, Req *organization.DeleteOrganizationRequest, callOptions ...callopt.Option) (r *organization.DeleteOrganizationResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.DeleteCollection(ctx, Req)
+	return p.kClient.DeleteOrganization(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) GetUserCollections(ctx context.Context, Req *organization.GetUserCollectionsRequest, callOptions ...callopt.Option) (r *organization.GetUserCollectionsResponse, err error) {
+func (p *kOrganizationServiceClient) GetUserOrganizations(ctx context.Context, Req *organization.GetUserOrganizationsRequest, callOptions ...callopt.Option) (r *organization.GetUserOrganizationsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetUserCollections(ctx, Req)
+	return p.kClient.GetUserOrganizations(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) MoveCollection(ctx context.Context, Req *organization.MoveCollectionRequest, callOptions ...callopt.Option) (r *organization.MoveCollectionResponse, err error) {
+func (p *kOrganizationServiceClient) MoveOrganization(ctx context.Context, Req *organization.MoveOrganizationRequest, callOptions ...callopt.Option) (r *organization.MoveOrganizationResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.MoveCollection(ctx, Req)
+	return p.kClient.MoveOrganization(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) AddItemsToCollection(ctx context.Context, Req *organization.AddItemsToCollectionRequest, callOptions ...callopt.Option) (r *organization.AddItemsToCollectionResponse, err error) {
+func (p *kOrganizationServiceClient) AddItemsToOrganization(ctx context.Context, Req *organization.AddItemsToOrganizationRequest, callOptions ...callopt.Option) (r *organization.AddItemsToOrganizationResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.AddItemsToCollection(ctx, Req)
+	return p.kClient.AddItemsToOrganization(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) RemoveItemsFromCollection(ctx context.Context, Req *organization.RemoveItemsFromCollectionRequest, callOptions ...callopt.Option) (r *organization.RemoveItemsFromCollectionResponse, err error) {
+func (p *kOrganizationServiceClient) RemoveItemsFromOrganization(ctx context.Context, Req *organization.RemoveItemsFromOrganizationRequest, callOptions ...callopt.Option) (r *organization.RemoveItemsFromOrganizationResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.RemoveItemsFromCollection(ctx, Req)
+	return p.kClient.RemoveItemsFromOrganization(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) GetCollectionItems(ctx context.Context, Req *organization.GetCollectionItemsRequest, callOptions ...callopt.Option) (r *organization.GetCollectionItemsResponse, err error) {
+func (p *kOrganizationServiceClient) GetOrganizationItems(ctx context.Context, Req *organization.GetOrganizationItemsRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationItemsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetCollectionItems(ctx, Req)
+	return p.kClient.GetOrganizationItems(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) ReorderCollectionItems(ctx context.Context, Req *organization.ReorderCollectionItemsRequest, callOptions ...callopt.Option) (r *organization.ReorderCollectionItemsResponse, err error) {
+func (p *kOrganizationServiceClient) ReorderOrganizationItems(ctx context.Context, Req *organization.ReorderOrganizationItemsRequest, callOptions ...callopt.Option) (r *organization.ReorderOrganizationItemsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.ReorderCollectionItems(ctx, Req)
+	return p.kClient.ReorderOrganizationItems(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) ReorderCollections(ctx context.Context, Req *organization.ReorderCollectionsRequest, callOptions ...callopt.Option) (r *organization.ReorderCollectionsResponse, err error) {
+func (p *kOrganizationServiceClient) ReorderOrganizations(ctx context.Context, Req *organization.ReorderOrganizationsRequest, callOptions ...callopt.Option) (r *organization.ReorderOrganizationsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.ReorderCollections(ctx, Req)
+	return p.kClient.ReorderOrganizations(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) GetCollectionActivity(ctx context.Context, Req *organization.GetCollectionActivityRequest, callOptions ...callopt.Option) (r *organization.GetCollectionActivityResponse, err error) {
+func (p *kOrganizationServiceClient) GetOrganizationActivity(ctx context.Context, Req *organization.GetOrganizationActivityRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationActivityResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetCollectionActivity(ctx, Req)
+	return p.kClient.GetOrganizationActivity(ctx, Req)
+}
+
+func (p *kOrganizationServiceClient) GetOrganizationByCode(ctx context.Context, Req *organization.GetOrganizationByCodeRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationByCodeResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetOrganizationByCode(ctx, Req)
+}
+
+func (p *kOrganizationServiceClient) GetOrganizationTree(ctx context.Context, Req *organization.GetOrganizationTreeRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationTreeResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetOrganizationTree(ctx, Req)
+}
+
+func (p *kOrganizationServiceClient) GetOrganizationChildren(ctx context.Context, Req *organization.GetOrganizationChildrenRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationChildrenResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetOrganizationChildren(ctx, Req)
+}
+
+func (p *kOrganizationServiceClient) BatchSaveOrganization(ctx context.Context, Req *organization.BatchSaveOrganizationRequest, callOptions ...callopt.Option) (r *organization.BatchSaveOrganizationResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.BatchSaveOrganization(ctx, Req)
 }

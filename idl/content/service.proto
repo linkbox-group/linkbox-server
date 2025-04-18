@@ -6,7 +6,7 @@ package content;
 option go_package = "content";
 
 import "google/protobuf/timestamp.proto";
-import "common/error/error.proto";
+import "common/cError/error.proto";
 import "common/pagination/pagination.proto";
 import "common/types/types.proto";
 
@@ -128,7 +128,7 @@ message CreateItemRequest {
 message CreateItemResponse {
   oneof result {
     Item item = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -142,7 +142,7 @@ message GetItemRequest {
 message GetItemResponse {
   oneof result {
     Item item = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -165,7 +165,7 @@ message UpdateItemRequest {
 message UpdateItemResponse {
   oneof result {
     Item item = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -179,7 +179,7 @@ message DeleteItemRequest {
 message DeleteItemResponse {
   oneof result {
     bool success = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -193,7 +193,7 @@ message GetItemsRequest {
 message GetItemsResponse {
   oneof result {
     ItemsData items = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -212,7 +212,7 @@ message BatchDeleteItemsRequest {
 message BatchDeleteItemsResponse {
   oneof result {
     BatchOperationResult data = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -234,7 +234,7 @@ message GetItemsByTagsRequest {
 message GetItemsByTagsResponse {
   oneof result {
     ItemsPage items_page = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -253,7 +253,7 @@ message ExtractMetadataRequest {
 message ExtractMetadataResponse {
   oneof result {
     ItemMetadata metadata = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -269,7 +269,7 @@ message GetRecentItemsRequest {
 message GetRecentItemsResponse {
   oneof result {
     ItemsData items = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -290,7 +290,7 @@ message BatchUpdateItemsRequest {
 message BatchUpdateItemsResponse {
   oneof result {
     BatchOperationResult data = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -306,7 +306,7 @@ message ImportFromFileRequest {
 message ImportFromFileResponse {
   oneof result {
     ImportResult data = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -331,7 +331,7 @@ message ExportToFileRequest {
 message ExportToFileResponse {
   oneof result {
     ExportResult data = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -360,7 +360,7 @@ message SearchItemsRequest {
 message SearchItemsResponse {
   oneof result {
     SearchResult data = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -389,7 +389,7 @@ message AddItemNoteRequest {
 message AddItemNoteResponse {
   oneof result {
     Item item = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -404,7 +404,7 @@ message UpdateItemNoteRequest {
 message UpdateItemNoteResponse {
   oneof result {
     Item item = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -418,7 +418,7 @@ message GetItemNoteRequest {
 message GetItemNoteResponse {
   oneof result {
     NoteData note = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 

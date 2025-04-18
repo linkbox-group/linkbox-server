@@ -4,7 +4,7 @@ package tag
 
 import (
 	"context"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/error"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -155,7 +155,7 @@ func (x *CreateTagResponse) GetTag() *Tag {
 	return nil
 }
 
-func (x *CreateTagResponse) GetError() *error.Error {
+func (x *CreateTagResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*CreateTagResponse_Error); ok {
 		return p.Error
 	}
@@ -181,7 +181,7 @@ type CreateTagResponse_Tag struct {
 func (*CreateTagResponse_Tag) isCreateTagResponse_Result() {}
 
 type CreateTagResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*CreateTagResponse_Error) isCreateTagResponse_Result() {}
@@ -240,7 +240,7 @@ func (x *GetTagResponse) GetTag() *Tag {
 	return nil
 }
 
-func (x *GetTagResponse) GetError() *error.Error {
+func (x *GetTagResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetTagResponse_Error); ok {
 		return p.Error
 	}
@@ -266,7 +266,7 @@ type GetTagResponse_Tag struct {
 func (*GetTagResponse_Tag) isGetTagResponse_Result() {}
 
 type GetTagResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetTagResponse_Error) isGetTagResponse_Result() {}
@@ -349,7 +349,7 @@ func (x *UpdateTagResponse) GetTag() *Tag {
 	return nil
 }
 
-func (x *UpdateTagResponse) GetError() *error.Error {
+func (x *UpdateTagResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*UpdateTagResponse_Error); ok {
 		return p.Error
 	}
@@ -375,7 +375,7 @@ type UpdateTagResponse_Tag struct {
 func (*UpdateTagResponse_Tag) isUpdateTagResponse_Result() {}
 
 type UpdateTagResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*UpdateTagResponse_Error) isUpdateTagResponse_Result() {}
@@ -434,7 +434,7 @@ func (x *DeleteTagResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *DeleteTagResponse) GetError() *error.Error {
+func (x *DeleteTagResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*DeleteTagResponse_Error); ok {
 		return p.Error
 	}
@@ -460,7 +460,7 @@ type DeleteTagResponse_Success struct {
 func (*DeleteTagResponse_Success) isDeleteTagResponse_Result() {}
 
 type DeleteTagResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*DeleteTagResponse_Error) isDeleteTagResponse_Result() {}
@@ -527,7 +527,7 @@ func (x *GetUserTagsResponse) GetTags() *TagsData {
 	return nil
 }
 
-func (x *GetUserTagsResponse) GetError() *error.Error {
+func (x *GetUserTagsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetUserTagsResponse_Error); ok {
 		return p.Error
 	}
@@ -553,7 +553,7 @@ type GetUserTagsResponse_Tags struct {
 func (*GetUserTagsResponse_Tags) isGetUserTagsResponse_Result() {}
 
 type GetUserTagsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetUserTagsResponse_Error) isGetUserTagsResponse_Result() {}
@@ -650,7 +650,7 @@ func (x *AddTagsToItemsResponse) GetData() *TagOperationResult {
 	return nil
 }
 
-func (x *AddTagsToItemsResponse) GetError() *error.Error {
+func (x *AddTagsToItemsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*AddTagsToItemsResponse_Error); ok {
 		return p.Error
 	}
@@ -676,7 +676,7 @@ type AddTagsToItemsResponse_Data struct {
 func (*AddTagsToItemsResponse_Data) isAddTagsToItemsResponse_Result() {}
 
 type AddTagsToItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*AddTagsToItemsResponse_Error) isAddTagsToItemsResponse_Result() {}
@@ -781,7 +781,7 @@ func (x *RemoveTagsFromItemsResponse) GetData() *TagOperationResult {
 	return nil
 }
 
-func (x *RemoveTagsFromItemsResponse) GetError() *error.Error {
+func (x *RemoveTagsFromItemsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*RemoveTagsFromItemsResponse_Error); ok {
 		return p.Error
 	}
@@ -807,7 +807,7 @@ type RemoveTagsFromItemsResponse_Data struct {
 func (*RemoveTagsFromItemsResponse_Data) isRemoveTagsFromItemsResponse_Result() {}
 
 type RemoveTagsFromItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*RemoveTagsFromItemsResponse_Error) isRemoveTagsFromItemsResponse_Result() {}
@@ -866,7 +866,7 @@ func (x *GetItemTagsResponse) GetTags() *ItemTagsData {
 	return nil
 }
 
-func (x *GetItemTagsResponse) GetError() *error.Error {
+func (x *GetItemTagsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetItemTagsResponse_Error); ok {
 		return p.Error
 	}
@@ -892,7 +892,7 @@ type GetItemTagsResponse_Tags struct {
 func (*GetItemTagsResponse_Tags) isGetItemTagsResponse_Result() {}
 
 type GetItemTagsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetItemTagsResponse_Error) isGetItemTagsResponse_Result() {}
@@ -993,7 +993,7 @@ func (x *MergeTagsResponse) GetData() *MergeTagsResult {
 	return nil
 }
 
-func (x *MergeTagsResponse) GetError() *error.Error {
+func (x *MergeTagsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*MergeTagsResponse_Error); ok {
 		return p.Error
 	}
@@ -1019,7 +1019,7 @@ type MergeTagsResponse_Data struct {
 func (*MergeTagsResponse_Data) isMergeTagsResponse_Result() {}
 
 type MergeTagsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*MergeTagsResponse_Error) isMergeTagsResponse_Result() {}
@@ -1112,7 +1112,7 @@ func (x *GetTagStatsResponse) GetStats() *TagStatsData {
 	return nil
 }
 
-func (x *GetTagStatsResponse) GetError() *error.Error {
+func (x *GetTagStatsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetTagStatsResponse_Error); ok {
 		return p.Error
 	}
@@ -1138,7 +1138,7 @@ type GetTagStatsResponse_Stats struct {
 func (*GetTagStatsResponse_Stats) isGetTagStatsResponse_Result() {}
 
 type GetTagStatsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetTagStatsResponse_Error) isGetTagStatsResponse_Result() {}
@@ -1311,7 +1311,7 @@ func (x *GetRelatedTagsResponse) GetRelatedTags() *RelatedTagsData {
 	return nil
 }
 
-func (x *GetRelatedTagsResponse) GetError() *error.Error {
+func (x *GetRelatedTagsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetRelatedTagsResponse_Error); ok {
 		return p.Error
 	}
@@ -1337,7 +1337,7 @@ type GetRelatedTagsResponse_RelatedTags struct {
 func (*GetRelatedTagsResponse_RelatedTags) isGetRelatedTagsResponse_Result() {}
 
 type GetRelatedTagsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetRelatedTagsResponse_Error) isGetRelatedTagsResponse_Result() {}
@@ -1480,7 +1480,7 @@ func (x *SuggestTagsResponse) GetSuggestedTags() *SuggestedTagsData {
 	return nil
 }
 
-func (x *SuggestTagsResponse) GetError() *error.Error {
+func (x *SuggestTagsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*SuggestTagsResponse_Error); ok {
 		return p.Error
 	}
@@ -1506,7 +1506,7 @@ type SuggestTagsResponse_SuggestedTags struct {
 func (*SuggestTagsResponse_SuggestedTags) isSuggestTagsResponse_Result() {}
 
 type SuggestTagsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*SuggestTagsResponse_Error) isSuggestTagsResponse_Result() {}

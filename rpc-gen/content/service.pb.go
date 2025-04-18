@@ -4,7 +4,7 @@ package content
 
 import (
 	"context"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/error"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -428,7 +428,7 @@ func (x *CreateItemResponse) GetItem() *Item {
 	return nil
 }
 
-func (x *CreateItemResponse) GetError() *error.Error {
+func (x *CreateItemResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*CreateItemResponse_Error); ok {
 		return p.Error
 	}
@@ -454,7 +454,7 @@ type CreateItemResponse_Item struct {
 func (*CreateItemResponse_Item) isCreateItemResponse_Result() {}
 
 type CreateItemResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*CreateItemResponse_Error) isCreateItemResponse_Result() {}
@@ -513,7 +513,7 @@ func (x *GetItemResponse) GetItem() *Item {
 	return nil
 }
 
-func (x *GetItemResponse) GetError() *error.Error {
+func (x *GetItemResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetItemResponse_Error); ok {
 		return p.Error
 	}
@@ -539,7 +539,7 @@ type GetItemResponse_Item struct {
 func (*GetItemResponse_Item) isGetItemResponse_Result() {}
 
 type GetItemResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetItemResponse_Error) isGetItemResponse_Result() {}
@@ -670,7 +670,7 @@ func (x *UpdateItemResponse) GetItem() *Item {
 	return nil
 }
 
-func (x *UpdateItemResponse) GetError() *error.Error {
+func (x *UpdateItemResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*UpdateItemResponse_Error); ok {
 		return p.Error
 	}
@@ -696,7 +696,7 @@ type UpdateItemResponse_Item struct {
 func (*UpdateItemResponse_Item) isUpdateItemResponse_Result() {}
 
 type UpdateItemResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*UpdateItemResponse_Error) isUpdateItemResponse_Result() {}
@@ -755,7 +755,7 @@ func (x *DeleteItemResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *DeleteItemResponse) GetError() *error.Error {
+func (x *DeleteItemResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*DeleteItemResponse_Error); ok {
 		return p.Error
 	}
@@ -781,7 +781,7 @@ type DeleteItemResponse_Success struct {
 func (*DeleteItemResponse_Success) isDeleteItemResponse_Result() {}
 
 type DeleteItemResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*DeleteItemResponse_Error) isDeleteItemResponse_Result() {}
@@ -840,7 +840,7 @@ func (x *GetItemsResponse) GetItems() *ItemsData {
 	return nil
 }
 
-func (x *GetItemsResponse) GetError() *error.Error {
+func (x *GetItemsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetItemsResponse_Error); ok {
 		return p.Error
 	}
@@ -866,7 +866,7 @@ type GetItemsResponse_Items struct {
 func (*GetItemsResponse_Items) isGetItemsResponse_Result() {}
 
 type GetItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetItemsResponse_Error) isGetItemsResponse_Result() {}
@@ -947,7 +947,7 @@ func (x *BatchDeleteItemsResponse) GetData() *BatchOperationResult {
 	return nil
 }
 
-func (x *BatchDeleteItemsResponse) GetError() *error.Error {
+func (x *BatchDeleteItemsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*BatchDeleteItemsResponse_Error); ok {
 		return p.Error
 	}
@@ -973,7 +973,7 @@ type BatchDeleteItemsResponse_Data struct {
 func (*BatchDeleteItemsResponse_Data) isBatchDeleteItemsResponse_Result() {}
 
 type BatchDeleteItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*BatchDeleteItemsResponse_Error) isBatchDeleteItemsResponse_Result() {}
@@ -1078,7 +1078,7 @@ func (x *GetItemsByTagsResponse) GetItemsPage() *ItemsPage {
 	return nil
 }
 
-func (x *GetItemsByTagsResponse) GetError() *error.Error {
+func (x *GetItemsByTagsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetItemsByTagsResponse_Error); ok {
 		return p.Error
 	}
@@ -1104,7 +1104,7 @@ type GetItemsByTagsResponse_ItemsPage struct {
 func (*GetItemsByTagsResponse_ItemsPage) isGetItemsByTagsResponse_Result() {}
 
 type GetItemsByTagsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetItemsByTagsResponse_Error) isGetItemsByTagsResponse_Result() {}
@@ -1185,7 +1185,7 @@ func (x *ExtractMetadataResponse) GetMetadata() *ItemMetadata {
 	return nil
 }
 
-func (x *ExtractMetadataResponse) GetError() *error.Error {
+func (x *ExtractMetadataResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*ExtractMetadataResponse_Error); ok {
 		return p.Error
 	}
@@ -1211,7 +1211,7 @@ type ExtractMetadataResponse_Metadata struct {
 func (*ExtractMetadataResponse_Metadata) isExtractMetadataResponse_Result() {}
 
 type ExtractMetadataResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*ExtractMetadataResponse_Error) isExtractMetadataResponse_Result() {}
@@ -1290,7 +1290,7 @@ func (x *GetRecentItemsResponse) GetItems() *ItemsData {
 	return nil
 }
 
-func (x *GetRecentItemsResponse) GetError() *error.Error {
+func (x *GetRecentItemsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetRecentItemsResponse_Error); ok {
 		return p.Error
 	}
@@ -1316,7 +1316,7 @@ type GetRecentItemsResponse_Items struct {
 func (*GetRecentItemsResponse_Items) isGetRecentItemsResponse_Result() {}
 
 type GetRecentItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetRecentItemsResponse_Error) isGetRecentItemsResponse_Result() {}
@@ -1435,7 +1435,7 @@ func (x *BatchUpdateItemsResponse) GetData() *BatchOperationResult {
 	return nil
 }
 
-func (x *BatchUpdateItemsResponse) GetError() *error.Error {
+func (x *BatchUpdateItemsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*BatchUpdateItemsResponse_Error); ok {
 		return p.Error
 	}
@@ -1461,7 +1461,7 @@ type BatchUpdateItemsResponse_Data struct {
 func (*BatchUpdateItemsResponse_Data) isBatchUpdateItemsResponse_Result() {}
 
 type BatchUpdateItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*BatchUpdateItemsResponse_Error) isBatchUpdateItemsResponse_Result() {}
@@ -1532,7 +1532,7 @@ func (x *ImportFromFileResponse) GetData() *ImportResult {
 	return nil
 }
 
-func (x *ImportFromFileResponse) GetError() *error.Error {
+func (x *ImportFromFileResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*ImportFromFileResponse_Error); ok {
 		return p.Error
 	}
@@ -1558,7 +1558,7 @@ type ImportFromFileResponse_Data struct {
 func (*ImportFromFileResponse_Data) isImportFromFileResponse_Result() {}
 
 type ImportFromFileResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*ImportFromFileResponse_Error) isImportFromFileResponse_Result() {}
@@ -1683,7 +1683,7 @@ func (x *ExportToFileResponse) GetData() *ExportResult {
 	return nil
 }
 
-func (x *ExportToFileResponse) GetError() *error.Error {
+func (x *ExportToFileResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*ExportToFileResponse_Error); ok {
 		return p.Error
 	}
@@ -1709,7 +1709,7 @@ type ExportToFileResponse_Data struct {
 func (*ExportToFileResponse_Data) isExportToFileResponse_Result() {}
 
 type ExportToFileResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*ExportToFileResponse_Error) isExportToFileResponse_Result() {}
@@ -1866,7 +1866,7 @@ func (x *SearchItemsResponse) GetData() *SearchResult {
 	return nil
 }
 
-func (x *SearchItemsResponse) GetError() *error.Error {
+func (x *SearchItemsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*SearchItemsResponse_Error); ok {
 		return p.Error
 	}
@@ -1892,7 +1892,7 @@ type SearchItemsResponse_Data struct {
 func (*SearchItemsResponse_Data) isSearchItemsResponse_Result() {}
 
 type SearchItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*SearchItemsResponse_Error) isSearchItemsResponse_Result() {}
@@ -2027,7 +2027,7 @@ func (x *AddItemNoteResponse) GetItem() *Item {
 	return nil
 }
 
-func (x *AddItemNoteResponse) GetError() *error.Error {
+func (x *AddItemNoteResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*AddItemNoteResponse_Error); ok {
 		return p.Error
 	}
@@ -2053,7 +2053,7 @@ type AddItemNoteResponse_Item struct {
 func (*AddItemNoteResponse_Item) isAddItemNoteResponse_Result() {}
 
 type AddItemNoteResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*AddItemNoteResponse_Error) isAddItemNoteResponse_Result() {}
@@ -2124,7 +2124,7 @@ func (x *UpdateItemNoteResponse) GetItem() *Item {
 	return nil
 }
 
-func (x *UpdateItemNoteResponse) GetError() *error.Error {
+func (x *UpdateItemNoteResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*UpdateItemNoteResponse_Error); ok {
 		return p.Error
 	}
@@ -2150,7 +2150,7 @@ type UpdateItemNoteResponse_Item struct {
 func (*UpdateItemNoteResponse_Item) isUpdateItemNoteResponse_Result() {}
 
 type UpdateItemNoteResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*UpdateItemNoteResponse_Error) isUpdateItemNoteResponse_Result() {}
@@ -2209,7 +2209,7 @@ func (x *GetItemNoteResponse) GetNote() *NoteData {
 	return nil
 }
 
-func (x *GetItemNoteResponse) GetError() *error.Error {
+func (x *GetItemNoteResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetItemNoteResponse_Error); ok {
 		return p.Error
 	}
@@ -2235,7 +2235,7 @@ type GetItemNoteResponse_Note struct {
 func (*GetItemNoteResponse_Note) isGetItemNoteResponse_Result() {}
 
 type GetItemNoteResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetItemNoteResponse_Error) isGetItemNoteResponse_Result() {}
