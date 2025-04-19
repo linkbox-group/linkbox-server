@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"context"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
@@ -29,9 +30,13 @@ func (d *ContentDelivery) CreateItem(ctx context.Context, req *content.CreateIte
 	return &content.CreateItemResponse{
 		Result: &content.CreateItemResponse_Item{
 			Item: &content.Item{
-				UserId: req.UserId,
-				Title:  item.Title,
-				Url:    item.URL,
+				Id:          item.ID,
+				UserId:      item.UserID,
+				Title:       item.Title,
+				Description: "",
+				Url:         item.URL,
+				CreatedAt:   timestamppb.New(item.CreatedAt),
+				UpdatedAt:   timestamppb.New(item.UpdatedAt),
 			},
 		},
 	}, nil
@@ -62,9 +67,13 @@ func (d *ContentDelivery) GetItem(ctx context.Context, req *content.GetItemReque
 	return &content.GetItemResponse{
 		Result: &content.GetItemResponse_Item{
 			Item: &content.Item{
-				UserId: req.UserId,
-				Title:  item.Title,
-				Url:    item.URL,
+				Id:          item.ID,
+				UserId:      item.UserID,
+				Title:       item.Title,
+				Description: "",
+				Url:         item.URL,
+				CreatedAt:   timestamppb.New(item.CreatedAt),
+				UpdatedAt:   timestamppb.New(item.UpdatedAt),
 			},
 		},
 	}, nil
