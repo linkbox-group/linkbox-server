@@ -105,9 +105,13 @@ func (d *ContentDelivery) UpdateItem(ctx context.Context, req *content.UpdateIte
 	return &content.UpdateItemResponse{
 		Result: &content.UpdateItemResponse_Item{
 			Item: &content.Item{
-				UserId: req.UserId,
-				Title:  item.Title,
-				Url:    item.URL,
+				Id:          item.ID,
+				UserId:      item.UserID,
+				Title:       item.Title,
+				Description: "",
+				Url:         item.URL,
+				CreatedAt:   timestamppb.New(item.CreatedAt),
+				UpdatedAt:   timestamppb.New(item.UpdatedAt),
 			},
 		},
 	}, nil
