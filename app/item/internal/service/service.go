@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/google/wire"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 
 	"github.com/linkbox-group/linkbox-server/item/internal/acl"
 	"github.com/linkbox-group/linkbox-server/model"
@@ -36,4 +37,7 @@ func (s *Service) UpdateItem(ctx context.Context, item *model.Item) error {
 
 func (s *Service) DeleteItem(ctx context.Context, item *model.Item) error {
 	return s.Repo.DeleteItem(ctx, item)
+}
+func (s *Service) GetItemsByTags(ctx context.Context, userID string, tagIDs []string, pagination *pagination.PaginationRequest) ([]model.Item, int, error) {
+	return s.Repo.GetItemsByTags(ctx, userID, tagIDs, pagination)
 }
