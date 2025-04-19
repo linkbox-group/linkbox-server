@@ -1,9 +1,9 @@
 // common/error/error.proto
 syntax = "proto3";
 
-package common.error;
+package common.cError;
 
-option go_package ="common/error";
+option go_package ="common/cError";
 // 系统错误码定义
 enum ErrorCode {
   // 成功

@@ -15,87 +15,115 @@ import (
 var errInvalidMessageType = errors.New("invalid message type for service method handler")
 
 var serviceMethods = map[string]kitex.MethodInfo{
-	"CreateCollection": kitex.NewMethodInfo(
-		createCollectionHandler,
-		newCreateCollectionArgs,
-		newCreateCollectionResult,
+	"CreateOrganization": kitex.NewMethodInfo(
+		createOrganizationHandler,
+		newCreateOrganizationArgs,
+		newCreateOrganizationResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"GetCollection": kitex.NewMethodInfo(
-		getCollectionHandler,
-		newGetCollectionArgs,
-		newGetCollectionResult,
+	"GetOrganization": kitex.NewMethodInfo(
+		getOrganizationHandler,
+		newGetOrganizationArgs,
+		newGetOrganizationResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"UpdateCollection": kitex.NewMethodInfo(
-		updateCollectionHandler,
-		newUpdateCollectionArgs,
-		newUpdateCollectionResult,
+	"UpdateOrganization": kitex.NewMethodInfo(
+		updateOrganizationHandler,
+		newUpdateOrganizationArgs,
+		newUpdateOrganizationResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"DeleteCollection": kitex.NewMethodInfo(
-		deleteCollectionHandler,
-		newDeleteCollectionArgs,
-		newDeleteCollectionResult,
+	"DeleteOrganization": kitex.NewMethodInfo(
+		deleteOrganizationHandler,
+		newDeleteOrganizationArgs,
+		newDeleteOrganizationResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"GetUserCollections": kitex.NewMethodInfo(
-		getUserCollectionsHandler,
-		newGetUserCollectionsArgs,
-		newGetUserCollectionsResult,
+	"GetUserOrganizations": kitex.NewMethodInfo(
+		getUserOrganizationsHandler,
+		newGetUserOrganizationsArgs,
+		newGetUserOrganizationsResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"MoveCollection": kitex.NewMethodInfo(
-		moveCollectionHandler,
-		newMoveCollectionArgs,
-		newMoveCollectionResult,
+	"MoveOrganization": kitex.NewMethodInfo(
+		moveOrganizationHandler,
+		newMoveOrganizationArgs,
+		newMoveOrganizationResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"AddItemsToCollection": kitex.NewMethodInfo(
-		addItemsToCollectionHandler,
-		newAddItemsToCollectionArgs,
-		newAddItemsToCollectionResult,
+	"AddItemsToOrganization": kitex.NewMethodInfo(
+		addItemsToOrganizationHandler,
+		newAddItemsToOrganizationArgs,
+		newAddItemsToOrganizationResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"RemoveItemsFromCollection": kitex.NewMethodInfo(
-		removeItemsFromCollectionHandler,
-		newRemoveItemsFromCollectionArgs,
-		newRemoveItemsFromCollectionResult,
+	"RemoveItemsFromOrganization": kitex.NewMethodInfo(
+		removeItemsFromOrganizationHandler,
+		newRemoveItemsFromOrganizationArgs,
+		newRemoveItemsFromOrganizationResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"GetCollectionItems": kitex.NewMethodInfo(
-		getCollectionItemsHandler,
-		newGetCollectionItemsArgs,
-		newGetCollectionItemsResult,
+	"GetOrganizationItems": kitex.NewMethodInfo(
+		getOrganizationItemsHandler,
+		newGetOrganizationItemsArgs,
+		newGetOrganizationItemsResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"ReorderCollectionItems": kitex.NewMethodInfo(
-		reorderCollectionItemsHandler,
-		newReorderCollectionItemsArgs,
-		newReorderCollectionItemsResult,
+	"ReorderOrganizationItems": kitex.NewMethodInfo(
+		reorderOrganizationItemsHandler,
+		newReorderOrganizationItemsArgs,
+		newReorderOrganizationItemsResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"ReorderCollections": kitex.NewMethodInfo(
-		reorderCollectionsHandler,
-		newReorderCollectionsArgs,
-		newReorderCollectionsResult,
+	"ReorderOrganizations": kitex.NewMethodInfo(
+		reorderOrganizationsHandler,
+		newReorderOrganizationsArgs,
+		newReorderOrganizationsResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"GetCollectionActivity": kitex.NewMethodInfo(
-		getCollectionActivityHandler,
-		newGetCollectionActivityArgs,
-		newGetCollectionActivityResult,
+	"GetOrganizationActivity": kitex.NewMethodInfo(
+		getOrganizationActivityHandler,
+		newGetOrganizationActivityArgs,
+		newGetOrganizationActivityResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"GetOrganizationByCode": kitex.NewMethodInfo(
+		getOrganizationByCodeHandler,
+		newGetOrganizationByCodeArgs,
+		newGetOrganizationByCodeResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"GetOrganizationTree": kitex.NewMethodInfo(
+		getOrganizationTreeHandler,
+		newGetOrganizationTreeArgs,
+		newGetOrganizationTreeResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"GetOrganizationChildren": kitex.NewMethodInfo(
+		getOrganizationChildrenHandler,
+		newGetOrganizationChildrenArgs,
+		newGetOrganizationChildrenResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"BatchSaveOrganization": kitex.NewMethodInfo(
+		batchSaveOrganizationHandler,
+		newBatchSaveOrganizationArgs,
+		newBatchSaveOrganizationResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
@@ -165,52 +193,52 @@ func newServiceInfo(hasStreaming bool, keepStreamingMethods bool, keepNonStreami
 	return svcInfo
 }
 
-func createCollectionHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func createOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.CreateCollectionRequest)
+		req := new(organization.CreateOrganizationRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).CreateCollection(ctx, req)
+		resp, err := handler.(organization.OrganizationService).CreateOrganization(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *CreateCollectionArgs:
-		success, err := handler.(organization.OrganizationService).CreateCollection(ctx, s.Req)
+	case *CreateOrganizationArgs:
+		success, err := handler.(organization.OrganizationService).CreateOrganization(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*CreateCollectionResult)
+		realResult := result.(*CreateOrganizationResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newCreateCollectionArgs() interface{} {
-	return &CreateCollectionArgs{}
+func newCreateOrganizationArgs() interface{} {
+	return &CreateOrganizationArgs{}
 }
 
-func newCreateCollectionResult() interface{} {
-	return &CreateCollectionResult{}
+func newCreateOrganizationResult() interface{} {
+	return &CreateOrganizationResult{}
 }
 
-type CreateCollectionArgs struct {
-	Req *organization.CreateCollectionRequest
+type CreateOrganizationArgs struct {
+	Req *organization.CreateOrganizationRequest
 }
 
-func (p *CreateCollectionArgs) Marshal(out []byte) ([]byte, error) {
+func (p *CreateOrganizationArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *CreateCollectionArgs) Unmarshal(in []byte) error {
-	msg := new(organization.CreateCollectionRequest)
+func (p *CreateOrganizationArgs) Unmarshal(in []byte) error {
+	msg := new(organization.CreateOrganizationRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -218,38 +246,38 @@ func (p *CreateCollectionArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var CreateCollectionArgs_Req_DEFAULT *organization.CreateCollectionRequest
+var CreateOrganizationArgs_Req_DEFAULT *organization.CreateOrganizationRequest
 
-func (p *CreateCollectionArgs) GetReq() *organization.CreateCollectionRequest {
+func (p *CreateOrganizationArgs) GetReq() *organization.CreateOrganizationRequest {
 	if !p.IsSetReq() {
-		return CreateCollectionArgs_Req_DEFAULT
+		return CreateOrganizationArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *CreateCollectionArgs) IsSetReq() bool {
+func (p *CreateOrganizationArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *CreateCollectionArgs) GetFirstArgument() interface{} {
+func (p *CreateOrganizationArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type CreateCollectionResult struct {
-	Success *organization.CreateCollectionResponse
+type CreateOrganizationResult struct {
+	Success *organization.CreateOrganizationResponse
 }
 
-var CreateCollectionResult_Success_DEFAULT *organization.CreateCollectionResponse
+var CreateOrganizationResult_Success_DEFAULT *organization.CreateOrganizationResponse
 
-func (p *CreateCollectionResult) Marshal(out []byte) ([]byte, error) {
+func (p *CreateOrganizationResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *CreateCollectionResult) Unmarshal(in []byte) error {
-	msg := new(organization.CreateCollectionResponse)
+func (p *CreateOrganizationResult) Unmarshal(in []byte) error {
+	msg := new(organization.CreateOrganizationResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -257,71 +285,71 @@ func (p *CreateCollectionResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *CreateCollectionResult) GetSuccess() *organization.CreateCollectionResponse {
+func (p *CreateOrganizationResult) GetSuccess() *organization.CreateOrganizationResponse {
 	if !p.IsSetSuccess() {
-		return CreateCollectionResult_Success_DEFAULT
+		return CreateOrganizationResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *CreateCollectionResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.CreateCollectionResponse)
+func (p *CreateOrganizationResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.CreateOrganizationResponse)
 }
 
-func (p *CreateCollectionResult) IsSetSuccess() bool {
+func (p *CreateOrganizationResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *CreateCollectionResult) GetResult() interface{} {
+func (p *CreateOrganizationResult) GetResult() interface{} {
 	return p.Success
 }
 
-func getCollectionHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func getOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.GetCollectionRequest)
+		req := new(organization.GetOrganizationRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).GetCollection(ctx, req)
+		resp, err := handler.(organization.OrganizationService).GetOrganization(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *GetCollectionArgs:
-		success, err := handler.(organization.OrganizationService).GetCollection(ctx, s.Req)
+	case *GetOrganizationArgs:
+		success, err := handler.(organization.OrganizationService).GetOrganization(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*GetCollectionResult)
+		realResult := result.(*GetOrganizationResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newGetCollectionArgs() interface{} {
-	return &GetCollectionArgs{}
+func newGetOrganizationArgs() interface{} {
+	return &GetOrganizationArgs{}
 }
 
-func newGetCollectionResult() interface{} {
-	return &GetCollectionResult{}
+func newGetOrganizationResult() interface{} {
+	return &GetOrganizationResult{}
 }
 
-type GetCollectionArgs struct {
-	Req *organization.GetCollectionRequest
+type GetOrganizationArgs struct {
+	Req *organization.GetOrganizationRequest
 }
 
-func (p *GetCollectionArgs) Marshal(out []byte) ([]byte, error) {
+func (p *GetOrganizationArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *GetCollectionArgs) Unmarshal(in []byte) error {
-	msg := new(organization.GetCollectionRequest)
+func (p *GetOrganizationArgs) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -329,38 +357,38 @@ func (p *GetCollectionArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var GetCollectionArgs_Req_DEFAULT *organization.GetCollectionRequest
+var GetOrganizationArgs_Req_DEFAULT *organization.GetOrganizationRequest
 
-func (p *GetCollectionArgs) GetReq() *organization.GetCollectionRequest {
+func (p *GetOrganizationArgs) GetReq() *organization.GetOrganizationRequest {
 	if !p.IsSetReq() {
-		return GetCollectionArgs_Req_DEFAULT
+		return GetOrganizationArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *GetCollectionArgs) IsSetReq() bool {
+func (p *GetOrganizationArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *GetCollectionArgs) GetFirstArgument() interface{} {
+func (p *GetOrganizationArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type GetCollectionResult struct {
-	Success *organization.GetCollectionResponse
+type GetOrganizationResult struct {
+	Success *organization.GetOrganizationResponse
 }
 
-var GetCollectionResult_Success_DEFAULT *organization.GetCollectionResponse
+var GetOrganizationResult_Success_DEFAULT *organization.GetOrganizationResponse
 
-func (p *GetCollectionResult) Marshal(out []byte) ([]byte, error) {
+func (p *GetOrganizationResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *GetCollectionResult) Unmarshal(in []byte) error {
-	msg := new(organization.GetCollectionResponse)
+func (p *GetOrganizationResult) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -368,71 +396,71 @@ func (p *GetCollectionResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *GetCollectionResult) GetSuccess() *organization.GetCollectionResponse {
+func (p *GetOrganizationResult) GetSuccess() *organization.GetOrganizationResponse {
 	if !p.IsSetSuccess() {
-		return GetCollectionResult_Success_DEFAULT
+		return GetOrganizationResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *GetCollectionResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.GetCollectionResponse)
+func (p *GetOrganizationResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.GetOrganizationResponse)
 }
 
-func (p *GetCollectionResult) IsSetSuccess() bool {
+func (p *GetOrganizationResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *GetCollectionResult) GetResult() interface{} {
+func (p *GetOrganizationResult) GetResult() interface{} {
 	return p.Success
 }
 
-func updateCollectionHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func updateOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.UpdateCollectionRequest)
+		req := new(organization.UpdateOrganizationRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).UpdateCollection(ctx, req)
+		resp, err := handler.(organization.OrganizationService).UpdateOrganization(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *UpdateCollectionArgs:
-		success, err := handler.(organization.OrganizationService).UpdateCollection(ctx, s.Req)
+	case *UpdateOrganizationArgs:
+		success, err := handler.(organization.OrganizationService).UpdateOrganization(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*UpdateCollectionResult)
+		realResult := result.(*UpdateOrganizationResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newUpdateCollectionArgs() interface{} {
-	return &UpdateCollectionArgs{}
+func newUpdateOrganizationArgs() interface{} {
+	return &UpdateOrganizationArgs{}
 }
 
-func newUpdateCollectionResult() interface{} {
-	return &UpdateCollectionResult{}
+func newUpdateOrganizationResult() interface{} {
+	return &UpdateOrganizationResult{}
 }
 
-type UpdateCollectionArgs struct {
-	Req *organization.UpdateCollectionRequest
+type UpdateOrganizationArgs struct {
+	Req *organization.UpdateOrganizationRequest
 }
 
-func (p *UpdateCollectionArgs) Marshal(out []byte) ([]byte, error) {
+func (p *UpdateOrganizationArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *UpdateCollectionArgs) Unmarshal(in []byte) error {
-	msg := new(organization.UpdateCollectionRequest)
+func (p *UpdateOrganizationArgs) Unmarshal(in []byte) error {
+	msg := new(organization.UpdateOrganizationRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -440,38 +468,38 @@ func (p *UpdateCollectionArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var UpdateCollectionArgs_Req_DEFAULT *organization.UpdateCollectionRequest
+var UpdateOrganizationArgs_Req_DEFAULT *organization.UpdateOrganizationRequest
 
-func (p *UpdateCollectionArgs) GetReq() *organization.UpdateCollectionRequest {
+func (p *UpdateOrganizationArgs) GetReq() *organization.UpdateOrganizationRequest {
 	if !p.IsSetReq() {
-		return UpdateCollectionArgs_Req_DEFAULT
+		return UpdateOrganizationArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *UpdateCollectionArgs) IsSetReq() bool {
+func (p *UpdateOrganizationArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *UpdateCollectionArgs) GetFirstArgument() interface{} {
+func (p *UpdateOrganizationArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type UpdateCollectionResult struct {
-	Success *organization.UpdateCollectionResponse
+type UpdateOrganizationResult struct {
+	Success *organization.UpdateOrganizationResponse
 }
 
-var UpdateCollectionResult_Success_DEFAULT *organization.UpdateCollectionResponse
+var UpdateOrganizationResult_Success_DEFAULT *organization.UpdateOrganizationResponse
 
-func (p *UpdateCollectionResult) Marshal(out []byte) ([]byte, error) {
+func (p *UpdateOrganizationResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *UpdateCollectionResult) Unmarshal(in []byte) error {
-	msg := new(organization.UpdateCollectionResponse)
+func (p *UpdateOrganizationResult) Unmarshal(in []byte) error {
+	msg := new(organization.UpdateOrganizationResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -479,71 +507,71 @@ func (p *UpdateCollectionResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *UpdateCollectionResult) GetSuccess() *organization.UpdateCollectionResponse {
+func (p *UpdateOrganizationResult) GetSuccess() *organization.UpdateOrganizationResponse {
 	if !p.IsSetSuccess() {
-		return UpdateCollectionResult_Success_DEFAULT
+		return UpdateOrganizationResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *UpdateCollectionResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.UpdateCollectionResponse)
+func (p *UpdateOrganizationResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.UpdateOrganizationResponse)
 }
 
-func (p *UpdateCollectionResult) IsSetSuccess() bool {
+func (p *UpdateOrganizationResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *UpdateCollectionResult) GetResult() interface{} {
+func (p *UpdateOrganizationResult) GetResult() interface{} {
 	return p.Success
 }
 
-func deleteCollectionHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func deleteOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.DeleteCollectionRequest)
+		req := new(organization.DeleteOrganizationRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).DeleteCollection(ctx, req)
+		resp, err := handler.(organization.OrganizationService).DeleteOrganization(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *DeleteCollectionArgs:
-		success, err := handler.(organization.OrganizationService).DeleteCollection(ctx, s.Req)
+	case *DeleteOrganizationArgs:
+		success, err := handler.(organization.OrganizationService).DeleteOrganization(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*DeleteCollectionResult)
+		realResult := result.(*DeleteOrganizationResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newDeleteCollectionArgs() interface{} {
-	return &DeleteCollectionArgs{}
+func newDeleteOrganizationArgs() interface{} {
+	return &DeleteOrganizationArgs{}
 }
 
-func newDeleteCollectionResult() interface{} {
-	return &DeleteCollectionResult{}
+func newDeleteOrganizationResult() interface{} {
+	return &DeleteOrganizationResult{}
 }
 
-type DeleteCollectionArgs struct {
-	Req *organization.DeleteCollectionRequest
+type DeleteOrganizationArgs struct {
+	Req *organization.DeleteOrganizationRequest
 }
 
-func (p *DeleteCollectionArgs) Marshal(out []byte) ([]byte, error) {
+func (p *DeleteOrganizationArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *DeleteCollectionArgs) Unmarshal(in []byte) error {
-	msg := new(organization.DeleteCollectionRequest)
+func (p *DeleteOrganizationArgs) Unmarshal(in []byte) error {
+	msg := new(organization.DeleteOrganizationRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -551,38 +579,38 @@ func (p *DeleteCollectionArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var DeleteCollectionArgs_Req_DEFAULT *organization.DeleteCollectionRequest
+var DeleteOrganizationArgs_Req_DEFAULT *organization.DeleteOrganizationRequest
 
-func (p *DeleteCollectionArgs) GetReq() *organization.DeleteCollectionRequest {
+func (p *DeleteOrganizationArgs) GetReq() *organization.DeleteOrganizationRequest {
 	if !p.IsSetReq() {
-		return DeleteCollectionArgs_Req_DEFAULT
+		return DeleteOrganizationArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *DeleteCollectionArgs) IsSetReq() bool {
+func (p *DeleteOrganizationArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *DeleteCollectionArgs) GetFirstArgument() interface{} {
+func (p *DeleteOrganizationArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type DeleteCollectionResult struct {
-	Success *organization.DeleteCollectionResponse
+type DeleteOrganizationResult struct {
+	Success *organization.DeleteOrganizationResponse
 }
 
-var DeleteCollectionResult_Success_DEFAULT *organization.DeleteCollectionResponse
+var DeleteOrganizationResult_Success_DEFAULT *organization.DeleteOrganizationResponse
 
-func (p *DeleteCollectionResult) Marshal(out []byte) ([]byte, error) {
+func (p *DeleteOrganizationResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *DeleteCollectionResult) Unmarshal(in []byte) error {
-	msg := new(organization.DeleteCollectionResponse)
+func (p *DeleteOrganizationResult) Unmarshal(in []byte) error {
+	msg := new(organization.DeleteOrganizationResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -590,71 +618,71 @@ func (p *DeleteCollectionResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *DeleteCollectionResult) GetSuccess() *organization.DeleteCollectionResponse {
+func (p *DeleteOrganizationResult) GetSuccess() *organization.DeleteOrganizationResponse {
 	if !p.IsSetSuccess() {
-		return DeleteCollectionResult_Success_DEFAULT
+		return DeleteOrganizationResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *DeleteCollectionResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.DeleteCollectionResponse)
+func (p *DeleteOrganizationResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.DeleteOrganizationResponse)
 }
 
-func (p *DeleteCollectionResult) IsSetSuccess() bool {
+func (p *DeleteOrganizationResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *DeleteCollectionResult) GetResult() interface{} {
+func (p *DeleteOrganizationResult) GetResult() interface{} {
 	return p.Success
 }
 
-func getUserCollectionsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func getUserOrganizationsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.GetUserCollectionsRequest)
+		req := new(organization.GetUserOrganizationsRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).GetUserCollections(ctx, req)
+		resp, err := handler.(organization.OrganizationService).GetUserOrganizations(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *GetUserCollectionsArgs:
-		success, err := handler.(organization.OrganizationService).GetUserCollections(ctx, s.Req)
+	case *GetUserOrganizationsArgs:
+		success, err := handler.(organization.OrganizationService).GetUserOrganizations(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*GetUserCollectionsResult)
+		realResult := result.(*GetUserOrganizationsResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newGetUserCollectionsArgs() interface{} {
-	return &GetUserCollectionsArgs{}
+func newGetUserOrganizationsArgs() interface{} {
+	return &GetUserOrganizationsArgs{}
 }
 
-func newGetUserCollectionsResult() interface{} {
-	return &GetUserCollectionsResult{}
+func newGetUserOrganizationsResult() interface{} {
+	return &GetUserOrganizationsResult{}
 }
 
-type GetUserCollectionsArgs struct {
-	Req *organization.GetUserCollectionsRequest
+type GetUserOrganizationsArgs struct {
+	Req *organization.GetUserOrganizationsRequest
 }
 
-func (p *GetUserCollectionsArgs) Marshal(out []byte) ([]byte, error) {
+func (p *GetUserOrganizationsArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *GetUserCollectionsArgs) Unmarshal(in []byte) error {
-	msg := new(organization.GetUserCollectionsRequest)
+func (p *GetUserOrganizationsArgs) Unmarshal(in []byte) error {
+	msg := new(organization.GetUserOrganizationsRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -662,38 +690,38 @@ func (p *GetUserCollectionsArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var GetUserCollectionsArgs_Req_DEFAULT *organization.GetUserCollectionsRequest
+var GetUserOrganizationsArgs_Req_DEFAULT *organization.GetUserOrganizationsRequest
 
-func (p *GetUserCollectionsArgs) GetReq() *organization.GetUserCollectionsRequest {
+func (p *GetUserOrganizationsArgs) GetReq() *organization.GetUserOrganizationsRequest {
 	if !p.IsSetReq() {
-		return GetUserCollectionsArgs_Req_DEFAULT
+		return GetUserOrganizationsArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *GetUserCollectionsArgs) IsSetReq() bool {
+func (p *GetUserOrganizationsArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *GetUserCollectionsArgs) GetFirstArgument() interface{} {
+func (p *GetUserOrganizationsArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type GetUserCollectionsResult struct {
-	Success *organization.GetUserCollectionsResponse
+type GetUserOrganizationsResult struct {
+	Success *organization.GetUserOrganizationsResponse
 }
 
-var GetUserCollectionsResult_Success_DEFAULT *organization.GetUserCollectionsResponse
+var GetUserOrganizationsResult_Success_DEFAULT *organization.GetUserOrganizationsResponse
 
-func (p *GetUserCollectionsResult) Marshal(out []byte) ([]byte, error) {
+func (p *GetUserOrganizationsResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *GetUserCollectionsResult) Unmarshal(in []byte) error {
-	msg := new(organization.GetUserCollectionsResponse)
+func (p *GetUserOrganizationsResult) Unmarshal(in []byte) error {
+	msg := new(organization.GetUserOrganizationsResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -701,71 +729,71 @@ func (p *GetUserCollectionsResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *GetUserCollectionsResult) GetSuccess() *organization.GetUserCollectionsResponse {
+func (p *GetUserOrganizationsResult) GetSuccess() *organization.GetUserOrganizationsResponse {
 	if !p.IsSetSuccess() {
-		return GetUserCollectionsResult_Success_DEFAULT
+		return GetUserOrganizationsResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *GetUserCollectionsResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.GetUserCollectionsResponse)
+func (p *GetUserOrganizationsResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.GetUserOrganizationsResponse)
 }
 
-func (p *GetUserCollectionsResult) IsSetSuccess() bool {
+func (p *GetUserOrganizationsResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *GetUserCollectionsResult) GetResult() interface{} {
+func (p *GetUserOrganizationsResult) GetResult() interface{} {
 	return p.Success
 }
 
-func moveCollectionHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func moveOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.MoveCollectionRequest)
+		req := new(organization.MoveOrganizationRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).MoveCollection(ctx, req)
+		resp, err := handler.(organization.OrganizationService).MoveOrganization(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *MoveCollectionArgs:
-		success, err := handler.(organization.OrganizationService).MoveCollection(ctx, s.Req)
+	case *MoveOrganizationArgs:
+		success, err := handler.(organization.OrganizationService).MoveOrganization(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*MoveCollectionResult)
+		realResult := result.(*MoveOrganizationResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newMoveCollectionArgs() interface{} {
-	return &MoveCollectionArgs{}
+func newMoveOrganizationArgs() interface{} {
+	return &MoveOrganizationArgs{}
 }
 
-func newMoveCollectionResult() interface{} {
-	return &MoveCollectionResult{}
+func newMoveOrganizationResult() interface{} {
+	return &MoveOrganizationResult{}
 }
 
-type MoveCollectionArgs struct {
-	Req *organization.MoveCollectionRequest
+type MoveOrganizationArgs struct {
+	Req *organization.MoveOrganizationRequest
 }
 
-func (p *MoveCollectionArgs) Marshal(out []byte) ([]byte, error) {
+func (p *MoveOrganizationArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *MoveCollectionArgs) Unmarshal(in []byte) error {
-	msg := new(organization.MoveCollectionRequest)
+func (p *MoveOrganizationArgs) Unmarshal(in []byte) error {
+	msg := new(organization.MoveOrganizationRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -773,38 +801,38 @@ func (p *MoveCollectionArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var MoveCollectionArgs_Req_DEFAULT *organization.MoveCollectionRequest
+var MoveOrganizationArgs_Req_DEFAULT *organization.MoveOrganizationRequest
 
-func (p *MoveCollectionArgs) GetReq() *organization.MoveCollectionRequest {
+func (p *MoveOrganizationArgs) GetReq() *organization.MoveOrganizationRequest {
 	if !p.IsSetReq() {
-		return MoveCollectionArgs_Req_DEFAULT
+		return MoveOrganizationArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *MoveCollectionArgs) IsSetReq() bool {
+func (p *MoveOrganizationArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *MoveCollectionArgs) GetFirstArgument() interface{} {
+func (p *MoveOrganizationArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type MoveCollectionResult struct {
-	Success *organization.MoveCollectionResponse
+type MoveOrganizationResult struct {
+	Success *organization.MoveOrganizationResponse
 }
 
-var MoveCollectionResult_Success_DEFAULT *organization.MoveCollectionResponse
+var MoveOrganizationResult_Success_DEFAULT *organization.MoveOrganizationResponse
 
-func (p *MoveCollectionResult) Marshal(out []byte) ([]byte, error) {
+func (p *MoveOrganizationResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *MoveCollectionResult) Unmarshal(in []byte) error {
-	msg := new(organization.MoveCollectionResponse)
+func (p *MoveOrganizationResult) Unmarshal(in []byte) error {
+	msg := new(organization.MoveOrganizationResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -812,71 +840,71 @@ func (p *MoveCollectionResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *MoveCollectionResult) GetSuccess() *organization.MoveCollectionResponse {
+func (p *MoveOrganizationResult) GetSuccess() *organization.MoveOrganizationResponse {
 	if !p.IsSetSuccess() {
-		return MoveCollectionResult_Success_DEFAULT
+		return MoveOrganizationResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *MoveCollectionResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.MoveCollectionResponse)
+func (p *MoveOrganizationResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.MoveOrganizationResponse)
 }
 
-func (p *MoveCollectionResult) IsSetSuccess() bool {
+func (p *MoveOrganizationResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MoveCollectionResult) GetResult() interface{} {
+func (p *MoveOrganizationResult) GetResult() interface{} {
 	return p.Success
 }
 
-func addItemsToCollectionHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func addItemsToOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.AddItemsToCollectionRequest)
+		req := new(organization.AddItemsToOrganizationRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).AddItemsToCollection(ctx, req)
+		resp, err := handler.(organization.OrganizationService).AddItemsToOrganization(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *AddItemsToCollectionArgs:
-		success, err := handler.(organization.OrganizationService).AddItemsToCollection(ctx, s.Req)
+	case *AddItemsToOrganizationArgs:
+		success, err := handler.(organization.OrganizationService).AddItemsToOrganization(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*AddItemsToCollectionResult)
+		realResult := result.(*AddItemsToOrganizationResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newAddItemsToCollectionArgs() interface{} {
-	return &AddItemsToCollectionArgs{}
+func newAddItemsToOrganizationArgs() interface{} {
+	return &AddItemsToOrganizationArgs{}
 }
 
-func newAddItemsToCollectionResult() interface{} {
-	return &AddItemsToCollectionResult{}
+func newAddItemsToOrganizationResult() interface{} {
+	return &AddItemsToOrganizationResult{}
 }
 
-type AddItemsToCollectionArgs struct {
-	Req *organization.AddItemsToCollectionRequest
+type AddItemsToOrganizationArgs struct {
+	Req *organization.AddItemsToOrganizationRequest
 }
 
-func (p *AddItemsToCollectionArgs) Marshal(out []byte) ([]byte, error) {
+func (p *AddItemsToOrganizationArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *AddItemsToCollectionArgs) Unmarshal(in []byte) error {
-	msg := new(organization.AddItemsToCollectionRequest)
+func (p *AddItemsToOrganizationArgs) Unmarshal(in []byte) error {
+	msg := new(organization.AddItemsToOrganizationRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -884,38 +912,38 @@ func (p *AddItemsToCollectionArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var AddItemsToCollectionArgs_Req_DEFAULT *organization.AddItemsToCollectionRequest
+var AddItemsToOrganizationArgs_Req_DEFAULT *organization.AddItemsToOrganizationRequest
 
-func (p *AddItemsToCollectionArgs) GetReq() *organization.AddItemsToCollectionRequest {
+func (p *AddItemsToOrganizationArgs) GetReq() *organization.AddItemsToOrganizationRequest {
 	if !p.IsSetReq() {
-		return AddItemsToCollectionArgs_Req_DEFAULT
+		return AddItemsToOrganizationArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *AddItemsToCollectionArgs) IsSetReq() bool {
+func (p *AddItemsToOrganizationArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *AddItemsToCollectionArgs) GetFirstArgument() interface{} {
+func (p *AddItemsToOrganizationArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type AddItemsToCollectionResult struct {
-	Success *organization.AddItemsToCollectionResponse
+type AddItemsToOrganizationResult struct {
+	Success *organization.AddItemsToOrganizationResponse
 }
 
-var AddItemsToCollectionResult_Success_DEFAULT *organization.AddItemsToCollectionResponse
+var AddItemsToOrganizationResult_Success_DEFAULT *organization.AddItemsToOrganizationResponse
 
-func (p *AddItemsToCollectionResult) Marshal(out []byte) ([]byte, error) {
+func (p *AddItemsToOrganizationResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *AddItemsToCollectionResult) Unmarshal(in []byte) error {
-	msg := new(organization.AddItemsToCollectionResponse)
+func (p *AddItemsToOrganizationResult) Unmarshal(in []byte) error {
+	msg := new(organization.AddItemsToOrganizationResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -923,71 +951,71 @@ func (p *AddItemsToCollectionResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *AddItemsToCollectionResult) GetSuccess() *organization.AddItemsToCollectionResponse {
+func (p *AddItemsToOrganizationResult) GetSuccess() *organization.AddItemsToOrganizationResponse {
 	if !p.IsSetSuccess() {
-		return AddItemsToCollectionResult_Success_DEFAULT
+		return AddItemsToOrganizationResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *AddItemsToCollectionResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.AddItemsToCollectionResponse)
+func (p *AddItemsToOrganizationResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.AddItemsToOrganizationResponse)
 }
 
-func (p *AddItemsToCollectionResult) IsSetSuccess() bool {
+func (p *AddItemsToOrganizationResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *AddItemsToCollectionResult) GetResult() interface{} {
+func (p *AddItemsToOrganizationResult) GetResult() interface{} {
 	return p.Success
 }
 
-func removeItemsFromCollectionHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func removeItemsFromOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.RemoveItemsFromCollectionRequest)
+		req := new(organization.RemoveItemsFromOrganizationRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).RemoveItemsFromCollection(ctx, req)
+		resp, err := handler.(organization.OrganizationService).RemoveItemsFromOrganization(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *RemoveItemsFromCollectionArgs:
-		success, err := handler.(organization.OrganizationService).RemoveItemsFromCollection(ctx, s.Req)
+	case *RemoveItemsFromOrganizationArgs:
+		success, err := handler.(organization.OrganizationService).RemoveItemsFromOrganization(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*RemoveItemsFromCollectionResult)
+		realResult := result.(*RemoveItemsFromOrganizationResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newRemoveItemsFromCollectionArgs() interface{} {
-	return &RemoveItemsFromCollectionArgs{}
+func newRemoveItemsFromOrganizationArgs() interface{} {
+	return &RemoveItemsFromOrganizationArgs{}
 }
 
-func newRemoveItemsFromCollectionResult() interface{} {
-	return &RemoveItemsFromCollectionResult{}
+func newRemoveItemsFromOrganizationResult() interface{} {
+	return &RemoveItemsFromOrganizationResult{}
 }
 
-type RemoveItemsFromCollectionArgs struct {
-	Req *organization.RemoveItemsFromCollectionRequest
+type RemoveItemsFromOrganizationArgs struct {
+	Req *organization.RemoveItemsFromOrganizationRequest
 }
 
-func (p *RemoveItemsFromCollectionArgs) Marshal(out []byte) ([]byte, error) {
+func (p *RemoveItemsFromOrganizationArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *RemoveItemsFromCollectionArgs) Unmarshal(in []byte) error {
-	msg := new(organization.RemoveItemsFromCollectionRequest)
+func (p *RemoveItemsFromOrganizationArgs) Unmarshal(in []byte) error {
+	msg := new(organization.RemoveItemsFromOrganizationRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -995,38 +1023,38 @@ func (p *RemoveItemsFromCollectionArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var RemoveItemsFromCollectionArgs_Req_DEFAULT *organization.RemoveItemsFromCollectionRequest
+var RemoveItemsFromOrganizationArgs_Req_DEFAULT *organization.RemoveItemsFromOrganizationRequest
 
-func (p *RemoveItemsFromCollectionArgs) GetReq() *organization.RemoveItemsFromCollectionRequest {
+func (p *RemoveItemsFromOrganizationArgs) GetReq() *organization.RemoveItemsFromOrganizationRequest {
 	if !p.IsSetReq() {
-		return RemoveItemsFromCollectionArgs_Req_DEFAULT
+		return RemoveItemsFromOrganizationArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *RemoveItemsFromCollectionArgs) IsSetReq() bool {
+func (p *RemoveItemsFromOrganizationArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *RemoveItemsFromCollectionArgs) GetFirstArgument() interface{} {
+func (p *RemoveItemsFromOrganizationArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type RemoveItemsFromCollectionResult struct {
-	Success *organization.RemoveItemsFromCollectionResponse
+type RemoveItemsFromOrganizationResult struct {
+	Success *organization.RemoveItemsFromOrganizationResponse
 }
 
-var RemoveItemsFromCollectionResult_Success_DEFAULT *organization.RemoveItemsFromCollectionResponse
+var RemoveItemsFromOrganizationResult_Success_DEFAULT *organization.RemoveItemsFromOrganizationResponse
 
-func (p *RemoveItemsFromCollectionResult) Marshal(out []byte) ([]byte, error) {
+func (p *RemoveItemsFromOrganizationResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *RemoveItemsFromCollectionResult) Unmarshal(in []byte) error {
-	msg := new(organization.RemoveItemsFromCollectionResponse)
+func (p *RemoveItemsFromOrganizationResult) Unmarshal(in []byte) error {
+	msg := new(organization.RemoveItemsFromOrganizationResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -1034,71 +1062,71 @@ func (p *RemoveItemsFromCollectionResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *RemoveItemsFromCollectionResult) GetSuccess() *organization.RemoveItemsFromCollectionResponse {
+func (p *RemoveItemsFromOrganizationResult) GetSuccess() *organization.RemoveItemsFromOrganizationResponse {
 	if !p.IsSetSuccess() {
-		return RemoveItemsFromCollectionResult_Success_DEFAULT
+		return RemoveItemsFromOrganizationResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *RemoveItemsFromCollectionResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.RemoveItemsFromCollectionResponse)
+func (p *RemoveItemsFromOrganizationResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.RemoveItemsFromOrganizationResponse)
 }
 
-func (p *RemoveItemsFromCollectionResult) IsSetSuccess() bool {
+func (p *RemoveItemsFromOrganizationResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *RemoveItemsFromCollectionResult) GetResult() interface{} {
+func (p *RemoveItemsFromOrganizationResult) GetResult() interface{} {
 	return p.Success
 }
 
-func getCollectionItemsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func getOrganizationItemsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.GetCollectionItemsRequest)
+		req := new(organization.GetOrganizationItemsRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).GetCollectionItems(ctx, req)
+		resp, err := handler.(organization.OrganizationService).GetOrganizationItems(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *GetCollectionItemsArgs:
-		success, err := handler.(organization.OrganizationService).GetCollectionItems(ctx, s.Req)
+	case *GetOrganizationItemsArgs:
+		success, err := handler.(organization.OrganizationService).GetOrganizationItems(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*GetCollectionItemsResult)
+		realResult := result.(*GetOrganizationItemsResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newGetCollectionItemsArgs() interface{} {
-	return &GetCollectionItemsArgs{}
+func newGetOrganizationItemsArgs() interface{} {
+	return &GetOrganizationItemsArgs{}
 }
 
-func newGetCollectionItemsResult() interface{} {
-	return &GetCollectionItemsResult{}
+func newGetOrganizationItemsResult() interface{} {
+	return &GetOrganizationItemsResult{}
 }
 
-type GetCollectionItemsArgs struct {
-	Req *organization.GetCollectionItemsRequest
+type GetOrganizationItemsArgs struct {
+	Req *organization.GetOrganizationItemsRequest
 }
 
-func (p *GetCollectionItemsArgs) Marshal(out []byte) ([]byte, error) {
+func (p *GetOrganizationItemsArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *GetCollectionItemsArgs) Unmarshal(in []byte) error {
-	msg := new(organization.GetCollectionItemsRequest)
+func (p *GetOrganizationItemsArgs) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationItemsRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -1106,38 +1134,38 @@ func (p *GetCollectionItemsArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var GetCollectionItemsArgs_Req_DEFAULT *organization.GetCollectionItemsRequest
+var GetOrganizationItemsArgs_Req_DEFAULT *organization.GetOrganizationItemsRequest
 
-func (p *GetCollectionItemsArgs) GetReq() *organization.GetCollectionItemsRequest {
+func (p *GetOrganizationItemsArgs) GetReq() *organization.GetOrganizationItemsRequest {
 	if !p.IsSetReq() {
-		return GetCollectionItemsArgs_Req_DEFAULT
+		return GetOrganizationItemsArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *GetCollectionItemsArgs) IsSetReq() bool {
+func (p *GetOrganizationItemsArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *GetCollectionItemsArgs) GetFirstArgument() interface{} {
+func (p *GetOrganizationItemsArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type GetCollectionItemsResult struct {
-	Success *organization.GetCollectionItemsResponse
+type GetOrganizationItemsResult struct {
+	Success *organization.GetOrganizationItemsResponse
 }
 
-var GetCollectionItemsResult_Success_DEFAULT *organization.GetCollectionItemsResponse
+var GetOrganizationItemsResult_Success_DEFAULT *organization.GetOrganizationItemsResponse
 
-func (p *GetCollectionItemsResult) Marshal(out []byte) ([]byte, error) {
+func (p *GetOrganizationItemsResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *GetCollectionItemsResult) Unmarshal(in []byte) error {
-	msg := new(organization.GetCollectionItemsResponse)
+func (p *GetOrganizationItemsResult) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationItemsResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -1145,71 +1173,71 @@ func (p *GetCollectionItemsResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *GetCollectionItemsResult) GetSuccess() *organization.GetCollectionItemsResponse {
+func (p *GetOrganizationItemsResult) GetSuccess() *organization.GetOrganizationItemsResponse {
 	if !p.IsSetSuccess() {
-		return GetCollectionItemsResult_Success_DEFAULT
+		return GetOrganizationItemsResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *GetCollectionItemsResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.GetCollectionItemsResponse)
+func (p *GetOrganizationItemsResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.GetOrganizationItemsResponse)
 }
 
-func (p *GetCollectionItemsResult) IsSetSuccess() bool {
+func (p *GetOrganizationItemsResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *GetCollectionItemsResult) GetResult() interface{} {
+func (p *GetOrganizationItemsResult) GetResult() interface{} {
 	return p.Success
 }
 
-func reorderCollectionItemsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func reorderOrganizationItemsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.ReorderCollectionItemsRequest)
+		req := new(organization.ReorderOrganizationItemsRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).ReorderCollectionItems(ctx, req)
+		resp, err := handler.(organization.OrganizationService).ReorderOrganizationItems(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *ReorderCollectionItemsArgs:
-		success, err := handler.(organization.OrganizationService).ReorderCollectionItems(ctx, s.Req)
+	case *ReorderOrganizationItemsArgs:
+		success, err := handler.(organization.OrganizationService).ReorderOrganizationItems(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*ReorderCollectionItemsResult)
+		realResult := result.(*ReorderOrganizationItemsResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newReorderCollectionItemsArgs() interface{} {
-	return &ReorderCollectionItemsArgs{}
+func newReorderOrganizationItemsArgs() interface{} {
+	return &ReorderOrganizationItemsArgs{}
 }
 
-func newReorderCollectionItemsResult() interface{} {
-	return &ReorderCollectionItemsResult{}
+func newReorderOrganizationItemsResult() interface{} {
+	return &ReorderOrganizationItemsResult{}
 }
 
-type ReorderCollectionItemsArgs struct {
-	Req *organization.ReorderCollectionItemsRequest
+type ReorderOrganizationItemsArgs struct {
+	Req *organization.ReorderOrganizationItemsRequest
 }
 
-func (p *ReorderCollectionItemsArgs) Marshal(out []byte) ([]byte, error) {
+func (p *ReorderOrganizationItemsArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *ReorderCollectionItemsArgs) Unmarshal(in []byte) error {
-	msg := new(organization.ReorderCollectionItemsRequest)
+func (p *ReorderOrganizationItemsArgs) Unmarshal(in []byte) error {
+	msg := new(organization.ReorderOrganizationItemsRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -1217,38 +1245,38 @@ func (p *ReorderCollectionItemsArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var ReorderCollectionItemsArgs_Req_DEFAULT *organization.ReorderCollectionItemsRequest
+var ReorderOrganizationItemsArgs_Req_DEFAULT *organization.ReorderOrganizationItemsRequest
 
-func (p *ReorderCollectionItemsArgs) GetReq() *organization.ReorderCollectionItemsRequest {
+func (p *ReorderOrganizationItemsArgs) GetReq() *organization.ReorderOrganizationItemsRequest {
 	if !p.IsSetReq() {
-		return ReorderCollectionItemsArgs_Req_DEFAULT
+		return ReorderOrganizationItemsArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *ReorderCollectionItemsArgs) IsSetReq() bool {
+func (p *ReorderOrganizationItemsArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *ReorderCollectionItemsArgs) GetFirstArgument() interface{} {
+func (p *ReorderOrganizationItemsArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type ReorderCollectionItemsResult struct {
-	Success *organization.ReorderCollectionItemsResponse
+type ReorderOrganizationItemsResult struct {
+	Success *organization.ReorderOrganizationItemsResponse
 }
 
-var ReorderCollectionItemsResult_Success_DEFAULT *organization.ReorderCollectionItemsResponse
+var ReorderOrganizationItemsResult_Success_DEFAULT *organization.ReorderOrganizationItemsResponse
 
-func (p *ReorderCollectionItemsResult) Marshal(out []byte) ([]byte, error) {
+func (p *ReorderOrganizationItemsResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *ReorderCollectionItemsResult) Unmarshal(in []byte) error {
-	msg := new(organization.ReorderCollectionItemsResponse)
+func (p *ReorderOrganizationItemsResult) Unmarshal(in []byte) error {
+	msg := new(organization.ReorderOrganizationItemsResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -1256,71 +1284,71 @@ func (p *ReorderCollectionItemsResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *ReorderCollectionItemsResult) GetSuccess() *organization.ReorderCollectionItemsResponse {
+func (p *ReorderOrganizationItemsResult) GetSuccess() *organization.ReorderOrganizationItemsResponse {
 	if !p.IsSetSuccess() {
-		return ReorderCollectionItemsResult_Success_DEFAULT
+		return ReorderOrganizationItemsResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *ReorderCollectionItemsResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.ReorderCollectionItemsResponse)
+func (p *ReorderOrganizationItemsResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.ReorderOrganizationItemsResponse)
 }
 
-func (p *ReorderCollectionItemsResult) IsSetSuccess() bool {
+func (p *ReorderOrganizationItemsResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *ReorderCollectionItemsResult) GetResult() interface{} {
+func (p *ReorderOrganizationItemsResult) GetResult() interface{} {
 	return p.Success
 }
 
-func reorderCollectionsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func reorderOrganizationsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.ReorderCollectionsRequest)
+		req := new(organization.ReorderOrganizationsRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).ReorderCollections(ctx, req)
+		resp, err := handler.(organization.OrganizationService).ReorderOrganizations(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *ReorderCollectionsArgs:
-		success, err := handler.(organization.OrganizationService).ReorderCollections(ctx, s.Req)
+	case *ReorderOrganizationsArgs:
+		success, err := handler.(organization.OrganizationService).ReorderOrganizations(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*ReorderCollectionsResult)
+		realResult := result.(*ReorderOrganizationsResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newReorderCollectionsArgs() interface{} {
-	return &ReorderCollectionsArgs{}
+func newReorderOrganizationsArgs() interface{} {
+	return &ReorderOrganizationsArgs{}
 }
 
-func newReorderCollectionsResult() interface{} {
-	return &ReorderCollectionsResult{}
+func newReorderOrganizationsResult() interface{} {
+	return &ReorderOrganizationsResult{}
 }
 
-type ReorderCollectionsArgs struct {
-	Req *organization.ReorderCollectionsRequest
+type ReorderOrganizationsArgs struct {
+	Req *organization.ReorderOrganizationsRequest
 }
 
-func (p *ReorderCollectionsArgs) Marshal(out []byte) ([]byte, error) {
+func (p *ReorderOrganizationsArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *ReorderCollectionsArgs) Unmarshal(in []byte) error {
-	msg := new(organization.ReorderCollectionsRequest)
+func (p *ReorderOrganizationsArgs) Unmarshal(in []byte) error {
+	msg := new(organization.ReorderOrganizationsRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -1328,38 +1356,38 @@ func (p *ReorderCollectionsArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var ReorderCollectionsArgs_Req_DEFAULT *organization.ReorderCollectionsRequest
+var ReorderOrganizationsArgs_Req_DEFAULT *organization.ReorderOrganizationsRequest
 
-func (p *ReorderCollectionsArgs) GetReq() *organization.ReorderCollectionsRequest {
+func (p *ReorderOrganizationsArgs) GetReq() *organization.ReorderOrganizationsRequest {
 	if !p.IsSetReq() {
-		return ReorderCollectionsArgs_Req_DEFAULT
+		return ReorderOrganizationsArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *ReorderCollectionsArgs) IsSetReq() bool {
+func (p *ReorderOrganizationsArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *ReorderCollectionsArgs) GetFirstArgument() interface{} {
+func (p *ReorderOrganizationsArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type ReorderCollectionsResult struct {
-	Success *organization.ReorderCollectionsResponse
+type ReorderOrganizationsResult struct {
+	Success *organization.ReorderOrganizationsResponse
 }
 
-var ReorderCollectionsResult_Success_DEFAULT *organization.ReorderCollectionsResponse
+var ReorderOrganizationsResult_Success_DEFAULT *organization.ReorderOrganizationsResponse
 
-func (p *ReorderCollectionsResult) Marshal(out []byte) ([]byte, error) {
+func (p *ReorderOrganizationsResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *ReorderCollectionsResult) Unmarshal(in []byte) error {
-	msg := new(organization.ReorderCollectionsResponse)
+func (p *ReorderOrganizationsResult) Unmarshal(in []byte) error {
+	msg := new(organization.ReorderOrganizationsResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -1367,71 +1395,71 @@ func (p *ReorderCollectionsResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *ReorderCollectionsResult) GetSuccess() *organization.ReorderCollectionsResponse {
+func (p *ReorderOrganizationsResult) GetSuccess() *organization.ReorderOrganizationsResponse {
 	if !p.IsSetSuccess() {
-		return ReorderCollectionsResult_Success_DEFAULT
+		return ReorderOrganizationsResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *ReorderCollectionsResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.ReorderCollectionsResponse)
+func (p *ReorderOrganizationsResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.ReorderOrganizationsResponse)
 }
 
-func (p *ReorderCollectionsResult) IsSetSuccess() bool {
+func (p *ReorderOrganizationsResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *ReorderCollectionsResult) GetResult() interface{} {
+func (p *ReorderOrganizationsResult) GetResult() interface{} {
 	return p.Success
 }
 
-func getCollectionActivityHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func getOrganizationActivityHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(organization.GetCollectionActivityRequest)
+		req := new(organization.GetOrganizationActivityRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(organization.OrganizationService).GetCollectionActivity(ctx, req)
+		resp, err := handler.(organization.OrganizationService).GetOrganizationActivity(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *GetCollectionActivityArgs:
-		success, err := handler.(organization.OrganizationService).GetCollectionActivity(ctx, s.Req)
+	case *GetOrganizationActivityArgs:
+		success, err := handler.(organization.OrganizationService).GetOrganizationActivity(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*GetCollectionActivityResult)
+		realResult := result.(*GetOrganizationActivityResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newGetCollectionActivityArgs() interface{} {
-	return &GetCollectionActivityArgs{}
+func newGetOrganizationActivityArgs() interface{} {
+	return &GetOrganizationActivityArgs{}
 }
 
-func newGetCollectionActivityResult() interface{} {
-	return &GetCollectionActivityResult{}
+func newGetOrganizationActivityResult() interface{} {
+	return &GetOrganizationActivityResult{}
 }
 
-type GetCollectionActivityArgs struct {
-	Req *organization.GetCollectionActivityRequest
+type GetOrganizationActivityArgs struct {
+	Req *organization.GetOrganizationActivityRequest
 }
 
-func (p *GetCollectionActivityArgs) Marshal(out []byte) ([]byte, error) {
+func (p *GetOrganizationActivityArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *GetCollectionActivityArgs) Unmarshal(in []byte) error {
-	msg := new(organization.GetCollectionActivityRequest)
+func (p *GetOrganizationActivityArgs) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationActivityRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -1439,38 +1467,38 @@ func (p *GetCollectionActivityArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var GetCollectionActivityArgs_Req_DEFAULT *organization.GetCollectionActivityRequest
+var GetOrganizationActivityArgs_Req_DEFAULT *organization.GetOrganizationActivityRequest
 
-func (p *GetCollectionActivityArgs) GetReq() *organization.GetCollectionActivityRequest {
+func (p *GetOrganizationActivityArgs) GetReq() *organization.GetOrganizationActivityRequest {
 	if !p.IsSetReq() {
-		return GetCollectionActivityArgs_Req_DEFAULT
+		return GetOrganizationActivityArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *GetCollectionActivityArgs) IsSetReq() bool {
+func (p *GetOrganizationActivityArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *GetCollectionActivityArgs) GetFirstArgument() interface{} {
+func (p *GetOrganizationActivityArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type GetCollectionActivityResult struct {
-	Success *organization.GetCollectionActivityResponse
+type GetOrganizationActivityResult struct {
+	Success *organization.GetOrganizationActivityResponse
 }
 
-var GetCollectionActivityResult_Success_DEFAULT *organization.GetCollectionActivityResponse
+var GetOrganizationActivityResult_Success_DEFAULT *organization.GetOrganizationActivityResponse
 
-func (p *GetCollectionActivityResult) Marshal(out []byte) ([]byte, error) {
+func (p *GetOrganizationActivityResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *GetCollectionActivityResult) Unmarshal(in []byte) error {
-	msg := new(organization.GetCollectionActivityResponse)
+func (p *GetOrganizationActivityResult) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationActivityResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -1478,22 +1506,466 @@ func (p *GetCollectionActivityResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *GetCollectionActivityResult) GetSuccess() *organization.GetCollectionActivityResponse {
+func (p *GetOrganizationActivityResult) GetSuccess() *organization.GetOrganizationActivityResponse {
 	if !p.IsSetSuccess() {
-		return GetCollectionActivityResult_Success_DEFAULT
+		return GetOrganizationActivityResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *GetCollectionActivityResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.GetCollectionActivityResponse)
+func (p *GetOrganizationActivityResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.GetOrganizationActivityResponse)
 }
 
-func (p *GetCollectionActivityResult) IsSetSuccess() bool {
+func (p *GetOrganizationActivityResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *GetCollectionActivityResult) GetResult() interface{} {
+func (p *GetOrganizationActivityResult) GetResult() interface{} {
+	return p.Success
+}
+
+func getOrganizationByCodeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(organization.GetOrganizationByCodeRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(organization.OrganizationService).GetOrganizationByCode(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *GetOrganizationByCodeArgs:
+		success, err := handler.(organization.OrganizationService).GetOrganizationByCode(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*GetOrganizationByCodeResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newGetOrganizationByCodeArgs() interface{} {
+	return &GetOrganizationByCodeArgs{}
+}
+
+func newGetOrganizationByCodeResult() interface{} {
+	return &GetOrganizationByCodeResult{}
+}
+
+type GetOrganizationByCodeArgs struct {
+	Req *organization.GetOrganizationByCodeRequest
+}
+
+func (p *GetOrganizationByCodeArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *GetOrganizationByCodeArgs) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationByCodeRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var GetOrganizationByCodeArgs_Req_DEFAULT *organization.GetOrganizationByCodeRequest
+
+func (p *GetOrganizationByCodeArgs) GetReq() *organization.GetOrganizationByCodeRequest {
+	if !p.IsSetReq() {
+		return GetOrganizationByCodeArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *GetOrganizationByCodeArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *GetOrganizationByCodeArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type GetOrganizationByCodeResult struct {
+	Success *organization.GetOrganizationByCodeResponse
+}
+
+var GetOrganizationByCodeResult_Success_DEFAULT *organization.GetOrganizationByCodeResponse
+
+func (p *GetOrganizationByCodeResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *GetOrganizationByCodeResult) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationByCodeResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *GetOrganizationByCodeResult) GetSuccess() *organization.GetOrganizationByCodeResponse {
+	if !p.IsSetSuccess() {
+		return GetOrganizationByCodeResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *GetOrganizationByCodeResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.GetOrganizationByCodeResponse)
+}
+
+func (p *GetOrganizationByCodeResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *GetOrganizationByCodeResult) GetResult() interface{} {
+	return p.Success
+}
+
+func getOrganizationTreeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(organization.GetOrganizationTreeRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(organization.OrganizationService).GetOrganizationTree(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *GetOrganizationTreeArgs:
+		success, err := handler.(organization.OrganizationService).GetOrganizationTree(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*GetOrganizationTreeResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newGetOrganizationTreeArgs() interface{} {
+	return &GetOrganizationTreeArgs{}
+}
+
+func newGetOrganizationTreeResult() interface{} {
+	return &GetOrganizationTreeResult{}
+}
+
+type GetOrganizationTreeArgs struct {
+	Req *organization.GetOrganizationTreeRequest
+}
+
+func (p *GetOrganizationTreeArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *GetOrganizationTreeArgs) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationTreeRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var GetOrganizationTreeArgs_Req_DEFAULT *organization.GetOrganizationTreeRequest
+
+func (p *GetOrganizationTreeArgs) GetReq() *organization.GetOrganizationTreeRequest {
+	if !p.IsSetReq() {
+		return GetOrganizationTreeArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *GetOrganizationTreeArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *GetOrganizationTreeArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type GetOrganizationTreeResult struct {
+	Success *organization.GetOrganizationTreeResponse
+}
+
+var GetOrganizationTreeResult_Success_DEFAULT *organization.GetOrganizationTreeResponse
+
+func (p *GetOrganizationTreeResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *GetOrganizationTreeResult) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationTreeResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *GetOrganizationTreeResult) GetSuccess() *organization.GetOrganizationTreeResponse {
+	if !p.IsSetSuccess() {
+		return GetOrganizationTreeResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *GetOrganizationTreeResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.GetOrganizationTreeResponse)
+}
+
+func (p *GetOrganizationTreeResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *GetOrganizationTreeResult) GetResult() interface{} {
+	return p.Success
+}
+
+func getOrganizationChildrenHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(organization.GetOrganizationChildrenRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(organization.OrganizationService).GetOrganizationChildren(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *GetOrganizationChildrenArgs:
+		success, err := handler.(organization.OrganizationService).GetOrganizationChildren(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*GetOrganizationChildrenResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newGetOrganizationChildrenArgs() interface{} {
+	return &GetOrganizationChildrenArgs{}
+}
+
+func newGetOrganizationChildrenResult() interface{} {
+	return &GetOrganizationChildrenResult{}
+}
+
+type GetOrganizationChildrenArgs struct {
+	Req *organization.GetOrganizationChildrenRequest
+}
+
+func (p *GetOrganizationChildrenArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *GetOrganizationChildrenArgs) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationChildrenRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var GetOrganizationChildrenArgs_Req_DEFAULT *organization.GetOrganizationChildrenRequest
+
+func (p *GetOrganizationChildrenArgs) GetReq() *organization.GetOrganizationChildrenRequest {
+	if !p.IsSetReq() {
+		return GetOrganizationChildrenArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *GetOrganizationChildrenArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *GetOrganizationChildrenArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type GetOrganizationChildrenResult struct {
+	Success *organization.GetOrganizationChildrenResponse
+}
+
+var GetOrganizationChildrenResult_Success_DEFAULT *organization.GetOrganizationChildrenResponse
+
+func (p *GetOrganizationChildrenResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *GetOrganizationChildrenResult) Unmarshal(in []byte) error {
+	msg := new(organization.GetOrganizationChildrenResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *GetOrganizationChildrenResult) GetSuccess() *organization.GetOrganizationChildrenResponse {
+	if !p.IsSetSuccess() {
+		return GetOrganizationChildrenResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *GetOrganizationChildrenResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.GetOrganizationChildrenResponse)
+}
+
+func (p *GetOrganizationChildrenResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *GetOrganizationChildrenResult) GetResult() interface{} {
+	return p.Success
+}
+
+func batchSaveOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(organization.BatchSaveOrganizationRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(organization.OrganizationService).BatchSaveOrganization(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *BatchSaveOrganizationArgs:
+		success, err := handler.(organization.OrganizationService).BatchSaveOrganization(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*BatchSaveOrganizationResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newBatchSaveOrganizationArgs() interface{} {
+	return &BatchSaveOrganizationArgs{}
+}
+
+func newBatchSaveOrganizationResult() interface{} {
+	return &BatchSaveOrganizationResult{}
+}
+
+type BatchSaveOrganizationArgs struct {
+	Req *organization.BatchSaveOrganizationRequest
+}
+
+func (p *BatchSaveOrganizationArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *BatchSaveOrganizationArgs) Unmarshal(in []byte) error {
+	msg := new(organization.BatchSaveOrganizationRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var BatchSaveOrganizationArgs_Req_DEFAULT *organization.BatchSaveOrganizationRequest
+
+func (p *BatchSaveOrganizationArgs) GetReq() *organization.BatchSaveOrganizationRequest {
+	if !p.IsSetReq() {
+		return BatchSaveOrganizationArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *BatchSaveOrganizationArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *BatchSaveOrganizationArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type BatchSaveOrganizationResult struct {
+	Success *organization.BatchSaveOrganizationResponse
+}
+
+var BatchSaveOrganizationResult_Success_DEFAULT *organization.BatchSaveOrganizationResponse
+
+func (p *BatchSaveOrganizationResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *BatchSaveOrganizationResult) Unmarshal(in []byte) error {
+	msg := new(organization.BatchSaveOrganizationResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *BatchSaveOrganizationResult) GetSuccess() *organization.BatchSaveOrganizationResponse {
+	if !p.IsSetSuccess() {
+		return BatchSaveOrganizationResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *BatchSaveOrganizationResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.BatchSaveOrganizationResponse)
+}
+
+func (p *BatchSaveOrganizationResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *BatchSaveOrganizationResult) GetResult() interface{} {
 	return p.Success
 }
 
@@ -1507,121 +1979,161 @@ func newServiceClient(c client.Client) *kClient {
 	}
 }
 
-func (p *kClient) CreateCollection(ctx context.Context, Req *organization.CreateCollectionRequest) (r *organization.CreateCollectionResponse, err error) {
-	var _args CreateCollectionArgs
+func (p *kClient) CreateOrganization(ctx context.Context, Req *organization.CreateOrganizationRequest) (r *organization.CreateOrganizationResponse, err error) {
+	var _args CreateOrganizationArgs
 	_args.Req = Req
-	var _result CreateCollectionResult
-	if err = p.c.Call(ctx, "CreateCollection", &_args, &_result); err != nil {
+	var _result CreateOrganizationResult
+	if err = p.c.Call(ctx, "CreateOrganization", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) GetCollection(ctx context.Context, Req *organization.GetCollectionRequest) (r *organization.GetCollectionResponse, err error) {
-	var _args GetCollectionArgs
+func (p *kClient) GetOrganization(ctx context.Context, Req *organization.GetOrganizationRequest) (r *organization.GetOrganizationResponse, err error) {
+	var _args GetOrganizationArgs
 	_args.Req = Req
-	var _result GetCollectionResult
-	if err = p.c.Call(ctx, "GetCollection", &_args, &_result); err != nil {
+	var _result GetOrganizationResult
+	if err = p.c.Call(ctx, "GetOrganization", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) UpdateCollection(ctx context.Context, Req *organization.UpdateCollectionRequest) (r *organization.UpdateCollectionResponse, err error) {
-	var _args UpdateCollectionArgs
+func (p *kClient) UpdateOrganization(ctx context.Context, Req *organization.UpdateOrganizationRequest) (r *organization.UpdateOrganizationResponse, err error) {
+	var _args UpdateOrganizationArgs
 	_args.Req = Req
-	var _result UpdateCollectionResult
-	if err = p.c.Call(ctx, "UpdateCollection", &_args, &_result); err != nil {
+	var _result UpdateOrganizationResult
+	if err = p.c.Call(ctx, "UpdateOrganization", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) DeleteCollection(ctx context.Context, Req *organization.DeleteCollectionRequest) (r *organization.DeleteCollectionResponse, err error) {
-	var _args DeleteCollectionArgs
+func (p *kClient) DeleteOrganization(ctx context.Context, Req *organization.DeleteOrganizationRequest) (r *organization.DeleteOrganizationResponse, err error) {
+	var _args DeleteOrganizationArgs
 	_args.Req = Req
-	var _result DeleteCollectionResult
-	if err = p.c.Call(ctx, "DeleteCollection", &_args, &_result); err != nil {
+	var _result DeleteOrganizationResult
+	if err = p.c.Call(ctx, "DeleteOrganization", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) GetUserCollections(ctx context.Context, Req *organization.GetUserCollectionsRequest) (r *organization.GetUserCollectionsResponse, err error) {
-	var _args GetUserCollectionsArgs
+func (p *kClient) GetUserOrganizations(ctx context.Context, Req *organization.GetUserOrganizationsRequest) (r *organization.GetUserOrganizationsResponse, err error) {
+	var _args GetUserOrganizationsArgs
 	_args.Req = Req
-	var _result GetUserCollectionsResult
-	if err = p.c.Call(ctx, "GetUserCollections", &_args, &_result); err != nil {
+	var _result GetUserOrganizationsResult
+	if err = p.c.Call(ctx, "GetUserOrganizations", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) MoveCollection(ctx context.Context, Req *organization.MoveCollectionRequest) (r *organization.MoveCollectionResponse, err error) {
-	var _args MoveCollectionArgs
+func (p *kClient) MoveOrganization(ctx context.Context, Req *organization.MoveOrganizationRequest) (r *organization.MoveOrganizationResponse, err error) {
+	var _args MoveOrganizationArgs
 	_args.Req = Req
-	var _result MoveCollectionResult
-	if err = p.c.Call(ctx, "MoveCollection", &_args, &_result); err != nil {
+	var _result MoveOrganizationResult
+	if err = p.c.Call(ctx, "MoveOrganization", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) AddItemsToCollection(ctx context.Context, Req *organization.AddItemsToCollectionRequest) (r *organization.AddItemsToCollectionResponse, err error) {
-	var _args AddItemsToCollectionArgs
+func (p *kClient) AddItemsToOrganization(ctx context.Context, Req *organization.AddItemsToOrganizationRequest) (r *organization.AddItemsToOrganizationResponse, err error) {
+	var _args AddItemsToOrganizationArgs
 	_args.Req = Req
-	var _result AddItemsToCollectionResult
-	if err = p.c.Call(ctx, "AddItemsToCollection", &_args, &_result); err != nil {
+	var _result AddItemsToOrganizationResult
+	if err = p.c.Call(ctx, "AddItemsToOrganization", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) RemoveItemsFromCollection(ctx context.Context, Req *organization.RemoveItemsFromCollectionRequest) (r *organization.RemoveItemsFromCollectionResponse, err error) {
-	var _args RemoveItemsFromCollectionArgs
+func (p *kClient) RemoveItemsFromOrganization(ctx context.Context, Req *organization.RemoveItemsFromOrganizationRequest) (r *organization.RemoveItemsFromOrganizationResponse, err error) {
+	var _args RemoveItemsFromOrganizationArgs
 	_args.Req = Req
-	var _result RemoveItemsFromCollectionResult
-	if err = p.c.Call(ctx, "RemoveItemsFromCollection", &_args, &_result); err != nil {
+	var _result RemoveItemsFromOrganizationResult
+	if err = p.c.Call(ctx, "RemoveItemsFromOrganization", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) GetCollectionItems(ctx context.Context, Req *organization.GetCollectionItemsRequest) (r *organization.GetCollectionItemsResponse, err error) {
-	var _args GetCollectionItemsArgs
+func (p *kClient) GetOrganizationItems(ctx context.Context, Req *organization.GetOrganizationItemsRequest) (r *organization.GetOrganizationItemsResponse, err error) {
+	var _args GetOrganizationItemsArgs
 	_args.Req = Req
-	var _result GetCollectionItemsResult
-	if err = p.c.Call(ctx, "GetCollectionItems", &_args, &_result); err != nil {
+	var _result GetOrganizationItemsResult
+	if err = p.c.Call(ctx, "GetOrganizationItems", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) ReorderCollectionItems(ctx context.Context, Req *organization.ReorderCollectionItemsRequest) (r *organization.ReorderCollectionItemsResponse, err error) {
-	var _args ReorderCollectionItemsArgs
+func (p *kClient) ReorderOrganizationItems(ctx context.Context, Req *organization.ReorderOrganizationItemsRequest) (r *organization.ReorderOrganizationItemsResponse, err error) {
+	var _args ReorderOrganizationItemsArgs
 	_args.Req = Req
-	var _result ReorderCollectionItemsResult
-	if err = p.c.Call(ctx, "ReorderCollectionItems", &_args, &_result); err != nil {
+	var _result ReorderOrganizationItemsResult
+	if err = p.c.Call(ctx, "ReorderOrganizationItems", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) ReorderCollections(ctx context.Context, Req *organization.ReorderCollectionsRequest) (r *organization.ReorderCollectionsResponse, err error) {
-	var _args ReorderCollectionsArgs
+func (p *kClient) ReorderOrganizations(ctx context.Context, Req *organization.ReorderOrganizationsRequest) (r *organization.ReorderOrganizationsResponse, err error) {
+	var _args ReorderOrganizationsArgs
 	_args.Req = Req
-	var _result ReorderCollectionsResult
-	if err = p.c.Call(ctx, "ReorderCollections", &_args, &_result); err != nil {
+	var _result ReorderOrganizationsResult
+	if err = p.c.Call(ctx, "ReorderOrganizations", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) GetCollectionActivity(ctx context.Context, Req *organization.GetCollectionActivityRequest) (r *organization.GetCollectionActivityResponse, err error) {
-	var _args GetCollectionActivityArgs
+func (p *kClient) GetOrganizationActivity(ctx context.Context, Req *organization.GetOrganizationActivityRequest) (r *organization.GetOrganizationActivityResponse, err error) {
+	var _args GetOrganizationActivityArgs
 	_args.Req = Req
-	var _result GetCollectionActivityResult
-	if err = p.c.Call(ctx, "GetCollectionActivity", &_args, &_result); err != nil {
+	var _result GetOrganizationActivityResult
+	if err = p.c.Call(ctx, "GetOrganizationActivity", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetOrganizationByCode(ctx context.Context, Req *organization.GetOrganizationByCodeRequest) (r *organization.GetOrganizationByCodeResponse, err error) {
+	var _args GetOrganizationByCodeArgs
+	_args.Req = Req
+	var _result GetOrganizationByCodeResult
+	if err = p.c.Call(ctx, "GetOrganizationByCode", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetOrganizationTree(ctx context.Context, Req *organization.GetOrganizationTreeRequest) (r *organization.GetOrganizationTreeResponse, err error) {
+	var _args GetOrganizationTreeArgs
+	_args.Req = Req
+	var _result GetOrganizationTreeResult
+	if err = p.c.Call(ctx, "GetOrganizationTree", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetOrganizationChildren(ctx context.Context, Req *organization.GetOrganizationChildrenRequest) (r *organization.GetOrganizationChildrenResponse, err error) {
+	var _args GetOrganizationChildrenArgs
+	_args.Req = Req
+	var _result GetOrganizationChildrenResult
+	if err = p.c.Call(ctx, "GetOrganizationChildren", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) BatchSaveOrganization(ctx context.Context, Req *organization.BatchSaveOrganizationRequest) (r *organization.BatchSaveOrganizationResponse, err error) {
+	var _args BatchSaveOrganizationArgs
+	_args.Req = Req
+	var _result BatchSaveOrganizationResult
+	if err = p.c.Call(ctx, "BatchSaveOrganization", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

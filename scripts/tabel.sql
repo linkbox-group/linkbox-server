@@ -33,27 +33,7 @@ CREATE TABLE `user_subscription` (
                                      CONSTRAINT `fk_subscription_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户订阅信息表';
 
--- 收藏夹表
-CREATE TABLE `collection` (
-                              `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
-                              `user_id` VARCHAR(36) NOT NULL COMMENT '用户ID',
-                              `parent_id` VARCHAR(36) NULL COMMENT '父收藏夹ID',
-                              `name` VARCHAR(100) NOT NULL COMMENT '收藏夹名称',
-                              `description` VARCHAR(500) NULL COMMENT '描述',
-                              `is_default` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否默认收藏夹',
-                              `is_shared` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否共享',
-                              `share_code` VARCHAR(32) NULL COMMENT '分享码',
-                              `share_expire_at` DATETIME NULL COMMENT '分享过期时间',
-                              `sort_order` INT NOT NULL DEFAULT 0 COMMENT '排序顺序',
-                              `items_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '收藏项目数',
-                              `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                              `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-                              PRIMARY KEY (`id`),
-                              KEY `idx_user_parent` (`user_id`, `parent_id`),
-                              KEY `idx_share_code` (`share_code`),
-                              CONSTRAINT `fk_collection_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-                              CONSTRAINT `fk_collection_parent_id` FOREIGN KEY (`parent_id`) REFERENCES `collection` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户收藏夹表';
+-- 组织表
 
 -- 收藏项目表
 CREATE TABLE `item` (
@@ -82,19 +62,46 @@ CREATE TABLE `item` (
                         CONSTRAINT `fk_item_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏项目表';
 
--- 收藏夹项目关联表
-CREATE TABLE `collection_item` (
-                                   `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
-                                   `collection_id` VARCHAR(36) NOT NULL COMMENT '收藏夹ID',
-                                   `item_id` VARCHAR(36) NOT NULL COMMENT '项目ID',
-                                   `sort_order` INT NOT NULL DEFAULT 0 COMMENT '排序顺序',
-                                   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                   PRIMARY KEY (`id`),
-                                   UNIQUE KEY `idx_collection_item` (`collection_id`, `item_id`),
-                                   KEY `idx_item_id` (`item_id`),
-                                   CONSTRAINT `fk_ci_collection_id` FOREIGN KEY (`collection_id`) REFERENCES `collection` (`id`) ON DELETE CASCADE,
-                                   CONSTRAINT `fk_ci_item_id` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏夹与项目关联表';
+CREATE TABLE `organization` (
+                                `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
+                                `code` VARCHAR(64) NOT NULL COMMENT '节点编码',
+                                `parent_code` VARCHAR(64) DEFAULT '0' COMMENT '节点上级编码',
+                                `parent_codes` VARCHAR(1000) DEFAULT '' COMMENT '节点所有上级编码',
+                                `tree_leaf` CHAR(1) DEFAULT '1' COMMENT '是否叶子节点(0:否 1:是)',
+                                `tree_level` DECIMAL(4,0) DEFAULT 0 COMMENT '节点层次级别(从0开始)',
+                                `tree_names` VARCHAR(1000) DEFAULT '' COMMENT '节点全名称(用/分隔)',
+                                `name` VARCHAR(100) NOT NULL COMMENT '组织名称',
+                                `user_id` VARCHAR(36) NOT NULL COMMENT '用户ID',
+                                `description` VARCHAR(500) NULL COMMENT '描述',
+                                `is_default` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否默认组织',
+                                `is_shared` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否共享',
+                                `share_code` VARCHAR(32) NULL COMMENT '分享码',
+                                `share_expire_at` DATETIME NULL COMMENT '分享过期时间',
+                                `sort_order` INT NOT NULL DEFAULT 0 COMMENT '排序顺序',
+                                `items_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '组织项目数',
+                                `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                PRIMARY KEY (`id`),
+                                UNIQUE KEY `uidx_code` (`code`),
+                                KEY `idx_parent_code` (`parent_code`),
+                                KEY `idx_user_code` (`user_id`),
+                                KEY `idx_share_code` (`share_code`),
+                                CONSTRAINT `fk_organization_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='组织表';
+
+CREATE TABLE `organization_item` (
+                                     `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
+                                     `organization_id` VARCHAR(36) NOT NULL COMMENT '组织ID',
+                                     `item_id` VARCHAR(36) NOT NULL COMMENT '项目ID',
+                                     `sort_order` INT NOT NULL DEFAULT 0 COMMENT '排序顺序',
+                                     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                     PRIMARY KEY (`id`),
+                                     UNIQUE KEY `uidx_organization_item` (`organization_id`, `item_id`),
+                                     KEY `idx_item_id` (`item_id`),
+                                     CONSTRAINT `fk_organization_item_organization_id` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`) ON DELETE CASCADE,
+                                     CONSTRAINT `fk_organization_item_item_id` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='组织项目关联表';
 
 -- 标签表
 CREATE TABLE `tag` (

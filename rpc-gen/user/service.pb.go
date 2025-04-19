@@ -4,1518 +4,543 @@ package user
 
 import (
 	"context"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/error"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/types"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cloudwego/prutal"
 )
 
-// 用户ID请求
-type UserIdRequest struct {
-	UserId string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+type SendCodeReq struct {
+	Email string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
 }
 
-func (x *UserIdRequest) Reset() { *x = UserIdRequest{} }
+func (x *SendCodeReq) Reset() { *x = SendCodeReq{} }
 
-func (x *UserIdRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *SendCodeReq) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *UserIdRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *SendCodeReq) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *UserIdRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-// 用户基本信息
-type UserProfile struct {
-	Id          string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	Username    string                 `protobuf:"bytes,2,opt,name=username" json:"username,omitempty"`
-	Email       string                 `protobuf:"bytes,3,opt,name=email" json:"email,omitempty"`
-	AvatarUrl   string                 `protobuf:"bytes,4,opt,name=avatar_url" json:"avatar_url,omitempty"`
-	DisplayName string                 `protobuf:"bytes,5,opt,name=display_name" json:"display_name,omitempty"`
-	Bio         string                 `protobuf:"bytes,6,opt,name=bio" json:"bio,omitempty"`
-	CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at" json:"created_at,omitempty"`
-	UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at" json:"updated_at,omitempty"`
-}
-
-func (x *UserProfile) Reset() { *x = UserProfile{} }
-
-func (x *UserProfile) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *UserProfile) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *UserProfile) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *UserProfile) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
-func (x *UserProfile) GetEmail() string {
+func (x *SendCodeReq) GetEmail() string {
 	if x != nil {
 		return x.Email
 	}
 	return ""
 }
 
-func (x *UserProfile) GetAvatarUrl() string {
+type SendCodeResp struct {
+	Success bool   `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
+	Message string `protobuf:"bytes,2,opt,name=message" json:"message,omitempty"`
+}
+
+func (x *SendCodeResp) Reset() { *x = SendCodeResp{} }
+
+func (x *SendCodeResp) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *SendCodeResp) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *SendCodeResp) GetSuccess() bool {
 	if x != nil {
-		return x.AvatarUrl
-	}
-	return ""
-}
-
-func (x *UserProfile) GetDisplayName() string {
-	if x != nil {
-		return x.DisplayName
-	}
-	return ""
-}
-
-func (x *UserProfile) GetBio() string {
-	if x != nil {
-		return x.Bio
-	}
-	return ""
-}
-
-func (x *UserProfile) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *UserProfile) GetUpdatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return nil
-}
-
-// 注册请求
-type RegisterRequest struct {
-	Email       string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
-	Password    string `protobuf:"bytes,2,opt,name=password" json:"password,omitempty"`
-	Username    string `protobuf:"bytes,3,opt,name=username" json:"username,omitempty"`
-	DisplayName string `protobuf:"bytes,4,opt,name=display_name" json:"display_name,omitempty"`
-}
-
-func (x *RegisterRequest) Reset() { *x = RegisterRequest{} }
-
-func (x *RegisterRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *RegisterRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *RegisterRequest) GetEmail() string {
-	if x != nil {
-		return x.Email
-	}
-	return ""
-}
-
-func (x *RegisterRequest) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
-func (x *RegisterRequest) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
-func (x *RegisterRequest) GetDisplayName() string {
-	if x != nil {
-		return x.DisplayName
-	}
-	return ""
-}
-
-// 注册响应
-type RegisterResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*RegisterResponse_User
-	//	*RegisterResponse_Error
-	Result isRegisterResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *RegisterResponse) Reset() { *x = RegisterResponse{} }
-
-func (x *RegisterResponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *RegisterResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *RegisterResponse) GetResult() isRegisterResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *RegisterResponse) GetUser() *UserData {
-	if p, ok := x.GetResult().(*RegisterResponse_User); ok {
-		return p.User
-	}
-	return nil
-}
-
-func (x *RegisterResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*RegisterResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*RegisterResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*RegisterResponse_User)(nil),
-		(*RegisterResponse_Error)(nil),
-	}
-}
-
-type isRegisterResponse_Result interface {
-	isRegisterResponse_Result()
-}
-
-type RegisterResponse_User struct {
-	User *UserData `protobuf:"bytes,1,opt,name=user" json:"user,omitempty"`
-}
-
-func (*RegisterResponse_User) isRegisterResponse_Result() {}
-
-type RegisterResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*RegisterResponse_Error) isRegisterResponse_Result() {}
-
-// 用户数据
-type UserData struct {
-	Id          string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	Username    string                 `protobuf:"bytes,2,opt,name=username" json:"username,omitempty"`
-	Email       string                 `protobuf:"bytes,3,opt,name=email" json:"email,omitempty"`
-	DisplayName string                 `protobuf:"bytes,4,opt,name=display_name" json:"display_name,omitempty"`
-	AvatarUrl   string                 `protobuf:"bytes,5,opt,name=avatar_url" json:"avatar_url,omitempty"`
-	Roles       []string               `protobuf:"bytes,6,rep,name=roles" json:"roles,omitempty"`
-	CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at" json:"created_at,omitempty"`
-}
-
-func (x *UserData) Reset() { *x = UserData{} }
-
-func (x *UserData) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *UserData) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *UserData) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *UserData) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
-func (x *UserData) GetEmail() string {
-	if x != nil {
-		return x.Email
-	}
-	return ""
-}
-
-func (x *UserData) GetDisplayName() string {
-	if x != nil {
-		return x.DisplayName
-	}
-	return ""
-}
-
-func (x *UserData) GetAvatarUrl() string {
-	if x != nil {
-		return x.AvatarUrl
-	}
-	return ""
-}
-
-func (x *UserData) GetRoles() []string {
-	if x != nil {
-		return x.Roles
-	}
-	return nil
-}
-
-func (x *UserData) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-// 登录请求
-type LoginRequest struct {
-	Email      string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
-	Password   string `protobuf:"bytes,2,opt,name=password" json:"password,omitempty"`
-	RememberMe bool   `protobuf:"varint,3,opt,name=remember_me" json:"remember_me,omitempty"`
-}
-
-func (x *LoginRequest) Reset() { *x = LoginRequest{} }
-
-func (x *LoginRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *LoginRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *LoginRequest) GetEmail() string {
-	if x != nil {
-		return x.Email
-	}
-	return ""
-}
-
-func (x *LoginRequest) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
-func (x *LoginRequest) GetRememberMe() bool {
-	if x != nil {
-		return x.RememberMe
+		return x.Success
 	}
 	return false
 }
 
-// 登录响应
-type LoginResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*LoginResponse_Auth
-	//	*LoginResponse_Error
-	Result isLoginResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *LoginResponse) Reset() { *x = LoginResponse{} }
-
-func (x *LoginResponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *LoginResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *LoginResponse) GetResult() isLoginResponse_Result {
+func (x *SendCodeResp) GetMessage() string {
 	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *LoginResponse) GetAuth() *AuthData {
-	if p, ok := x.GetResult().(*LoginResponse_Auth); ok {
-		return p.Auth
-	}
-	return nil
-}
-
-func (x *LoginResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*LoginResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*LoginResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*LoginResponse_Auth)(nil),
-		(*LoginResponse_Error)(nil),
-	}
-}
-
-type isLoginResponse_Result interface {
-	isLoginResponse_Result()
-}
-
-type LoginResponse_Auth struct {
-	Auth *AuthData `protobuf:"bytes,1,opt,name=auth" json:"auth,omitempty"`
-}
-
-func (*LoginResponse_Auth) isLoginResponse_Result() {}
-
-type LoginResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*LoginResponse_Error) isLoginResponse_Result() {}
-
-// 认证数据
-type AuthData struct {
-	AccessToken  string    `protobuf:"bytes,1,opt,name=access_token" json:"access_token,omitempty"`
-	RefreshToken string    `protobuf:"bytes,2,opt,name=refresh_token" json:"refresh_token,omitempty"`
-	ExpiresIn    int64     `protobuf:"varint,3,opt,name=expires_in" json:"expires_in,omitempty"`
-	User         *UserData `protobuf:"bytes,4,opt,name=user" json:"user,omitempty"`
-}
-
-func (x *AuthData) Reset() { *x = AuthData{} }
-
-func (x *AuthData) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *AuthData) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *AuthData) GetAccessToken() string {
-	if x != nil {
-		return x.AccessToken
+		return x.Message
 	}
 	return ""
 }
 
-func (x *AuthData) GetRefreshToken() string {
+type RegisterReq struct {
+	Email           string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
+	Code            string `protobuf:"bytes,2,opt,name=code" json:"code,omitempty"`
+	Password        string `protobuf:"bytes,3,opt,name=password" json:"password,omitempty"`
+	ConfirmPassword string `protobuf:"bytes,4,opt,name=confirm_password" json:"confirm_password,omitempty"`
+}
+
+func (x *RegisterReq) Reset() { *x = RegisterReq{} }
+
+func (x *RegisterReq) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *RegisterReq) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *RegisterReq) GetEmail() string {
 	if x != nil {
-		return x.RefreshToken
+		return x.Email
 	}
 	return ""
 }
 
-func (x *AuthData) GetExpiresIn() int64 {
-	if x != nil {
-		return x.ExpiresIn
-	}
-	return 0
-}
-
-func (x *AuthData) GetUser() *UserData {
-	if x != nil {
-		return x.User
-	}
-	return nil
-}
-
-// OAuth登录请求
-type OAuthLoginRequest struct {
-	Provider    string `protobuf:"bytes,1,opt,name=provider" json:"provider,omitempty"` // "google", "facebook", "twitter", etc.
-	Code        string `protobuf:"bytes,2,opt,name=code" json:"code,omitempty"`
-	RedirectUri string `protobuf:"bytes,3,opt,name=redirect_uri" json:"redirect_uri,omitempty"`
-}
-
-func (x *OAuthLoginRequest) Reset() { *x = OAuthLoginRequest{} }
-
-func (x *OAuthLoginRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *OAuthLoginRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *OAuthLoginRequest) GetProvider() string {
-	if x != nil {
-		return x.Provider
-	}
-	return ""
-}
-
-func (x *OAuthLoginRequest) GetCode() string {
+func (x *RegisterReq) GetCode() string {
 	if x != nil {
 		return x.Code
 	}
 	return ""
 }
 
-func (x *OAuthLoginRequest) GetRedirectUri() string {
-	if x != nil {
-		return x.RedirectUri
-	}
-	return ""
-}
-
-// 获取用户资料响应
-type GetUserProfileResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*GetUserProfileResponse_Profile
-	//	*GetUserProfileResponse_Error
-	Result isGetUserProfileResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *GetUserProfileResponse) Reset() { *x = GetUserProfileResponse{} }
-
-func (x *GetUserProfileResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GetUserProfileResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetUserProfileResponse) GetResult() isGetUserProfileResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *GetUserProfileResponse) GetProfile() *UserProfile {
-	if p, ok := x.GetResult().(*GetUserProfileResponse_Profile); ok {
-		return p.Profile
-	}
-	return nil
-}
-
-func (x *GetUserProfileResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*GetUserProfileResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GetUserProfileResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*GetUserProfileResponse_Profile)(nil),
-		(*GetUserProfileResponse_Error)(nil),
-	}
-}
-
-type isGetUserProfileResponse_Result interface {
-	isGetUserProfileResponse_Result()
-}
-
-type GetUserProfileResponse_Profile struct {
-	Profile *UserProfile `protobuf:"bytes,1,opt,name=profile" json:"profile,omitempty"`
-}
-
-func (*GetUserProfileResponse_Profile) isGetUserProfileResponse_Result() {}
-
-type GetUserProfileResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*GetUserProfileResponse_Error) isGetUserProfileResponse_Result() {}
-
-// 更新用户资料请求
-type UpdateUserProfileRequest struct {
-	UserId      string  `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	DisplayName *string `protobuf:"bytes,2,opt,name=display_name" json:"display_name,omitempty"`
-	Bio         *string `protobuf:"bytes,3,opt,name=bio" json:"bio,omitempty"`
-	AvatarUrl   *string `protobuf:"bytes,4,opt,name=avatar_url" json:"avatar_url,omitempty"`
-}
-
-func (x *UpdateUserProfileRequest) Reset() { *x = UpdateUserProfileRequest{} }
-
-func (x *UpdateUserProfileRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *UpdateUserProfileRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *UpdateUserProfileRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *UpdateUserProfileRequest) GetDisplayName() string {
-	if x != nil && x.DisplayName != nil {
-		return *x.DisplayName
-	}
-	return ""
-}
-
-func (x *UpdateUserProfileRequest) GetBio() string {
-	if x != nil && x.Bio != nil {
-		return *x.Bio
-	}
-	return ""
-}
-
-func (x *UpdateUserProfileRequest) GetAvatarUrl() string {
-	if x != nil && x.AvatarUrl != nil {
-		return *x.AvatarUrl
-	}
-	return ""
-}
-
-// 更新用户资料响应
-type UpdateUserProfileResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*UpdateUserProfileResponse_Profile
-	//	*UpdateUserProfileResponse_Error
-	Result isUpdateUserProfileResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *UpdateUserProfileResponse) Reset() { *x = UpdateUserProfileResponse{} }
-
-func (x *UpdateUserProfileResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *UpdateUserProfileResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *UpdateUserProfileResponse) GetResult() isUpdateUserProfileResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *UpdateUserProfileResponse) GetProfile() *UserProfile {
-	if p, ok := x.GetResult().(*UpdateUserProfileResponse_Profile); ok {
-		return p.Profile
-	}
-	return nil
-}
-
-func (x *UpdateUserProfileResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*UpdateUserProfileResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*UpdateUserProfileResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*UpdateUserProfileResponse_Profile)(nil),
-		(*UpdateUserProfileResponse_Error)(nil),
-	}
-}
-
-type isUpdateUserProfileResponse_Result interface {
-	isUpdateUserProfileResponse_Result()
-}
-
-type UpdateUserProfileResponse_Profile struct {
-	Profile *UserProfile `protobuf:"bytes,1,opt,name=profile" json:"profile,omitempty"`
-}
-
-func (*UpdateUserProfileResponse_Profile) isUpdateUserProfileResponse_Result() {}
-
-type UpdateUserProfileResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*UpdateUserProfileResponse_Error) isUpdateUserProfileResponse_Result() {}
-
-// 修改密码请求
-type ChangePasswordRequest struct {
-	UserId      string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	OldPassword string `protobuf:"bytes,2,opt,name=old_password" json:"old_password,omitempty"`
-	NewPassword string `protobuf:"bytes,3,opt,name=new_password" json:"new_password,omitempty"`
-}
-
-func (x *ChangePasswordRequest) Reset() { *x = ChangePasswordRequest{} }
-
-func (x *ChangePasswordRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ChangePasswordRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ChangePasswordRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *ChangePasswordRequest) GetOldPassword() string {
-	if x != nil {
-		return x.OldPassword
-	}
-	return ""
-}
-
-func (x *ChangePasswordRequest) GetNewPassword() string {
-	if x != nil {
-		return x.NewPassword
-	}
-	return ""
-}
-
-// 修改密码响应
-type ChangePasswordResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*ChangePasswordResponse_Success
-	//	*ChangePasswordResponse_Error
-	Result isChangePasswordResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *ChangePasswordResponse) Reset() { *x = ChangePasswordResponse{} }
-
-func (x *ChangePasswordResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ChangePasswordResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ChangePasswordResponse) GetResult() isChangePasswordResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *ChangePasswordResponse) GetSuccess() bool {
-	if p, ok := x.GetResult().(*ChangePasswordResponse_Success); ok {
-		return p.Success
-	}
-	return false
-}
-
-func (x *ChangePasswordResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*ChangePasswordResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*ChangePasswordResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*ChangePasswordResponse_Success)(nil),
-		(*ChangePasswordResponse_Error)(nil),
-	}
-}
-
-type isChangePasswordResponse_Result interface {
-	isChangePasswordResponse_Result()
-}
-
-type ChangePasswordResponse_Success struct {
-	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
-}
-
-func (*ChangePasswordResponse_Success) isChangePasswordResponse_Result() {}
-
-type ChangePasswordResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*ChangePasswordResponse_Error) isChangePasswordResponse_Result() {}
-
-// 忘记密码请求
-type ForgotPasswordRequest struct {
-	Email string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
-}
-
-func (x *ForgotPasswordRequest) Reset() { *x = ForgotPasswordRequest{} }
-
-func (x *ForgotPasswordRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ForgotPasswordRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ForgotPasswordRequest) GetEmail() string {
-	if x != nil {
-		return x.Email
-	}
-	return ""
-}
-
-// 忘记密码响应
-type ForgotPasswordResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*ForgotPasswordResponse_Success
-	//	*ForgotPasswordResponse_Error
-	Result isForgotPasswordResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *ForgotPasswordResponse) Reset() { *x = ForgotPasswordResponse{} }
-
-func (x *ForgotPasswordResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ForgotPasswordResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ForgotPasswordResponse) GetResult() isForgotPasswordResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *ForgotPasswordResponse) GetSuccess() bool {
-	if p, ok := x.GetResult().(*ForgotPasswordResponse_Success); ok {
-		return p.Success
-	}
-	return false
-}
-
-func (x *ForgotPasswordResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*ForgotPasswordResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*ForgotPasswordResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*ForgotPasswordResponse_Success)(nil),
-		(*ForgotPasswordResponse_Error)(nil),
-	}
-}
-
-type isForgotPasswordResponse_Result interface {
-	isForgotPasswordResponse_Result()
-}
-
-type ForgotPasswordResponse_Success struct {
-	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
-}
-
-func (*ForgotPasswordResponse_Success) isForgotPasswordResponse_Result() {}
-
-type ForgotPasswordResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*ForgotPasswordResponse_Error) isForgotPasswordResponse_Result() {}
-
-// 重置密码请求
-type ResetPasswordRequest struct {
-	Token       string `protobuf:"bytes,1,opt,name=token" json:"token,omitempty"`
-	NewPassword string `protobuf:"bytes,2,opt,name=new_password" json:"new_password,omitempty"`
-}
-
-func (x *ResetPasswordRequest) Reset() { *x = ResetPasswordRequest{} }
-
-func (x *ResetPasswordRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *ResetPasswordRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ResetPasswordRequest) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
-}
-
-func (x *ResetPasswordRequest) GetNewPassword() string {
-	if x != nil {
-		return x.NewPassword
-	}
-	return ""
-}
-
-// 重置密码响应
-type ResetPasswordResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*ResetPasswordResponse_Success
-	//	*ResetPasswordResponse_Error
-	Result isResetPasswordResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *ResetPasswordResponse) Reset() { *x = ResetPasswordResponse{} }
-
-func (x *ResetPasswordResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ResetPasswordResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ResetPasswordResponse) GetResult() isResetPasswordResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *ResetPasswordResponse) GetSuccess() bool {
-	if p, ok := x.GetResult().(*ResetPasswordResponse_Success); ok {
-		return p.Success
-	}
-	return false
-}
-
-func (x *ResetPasswordResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*ResetPasswordResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*ResetPasswordResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*ResetPasswordResponse_Success)(nil),
-		(*ResetPasswordResponse_Error)(nil),
-	}
-}
-
-type isResetPasswordResponse_Result interface {
-	isResetPasswordResponse_Result()
-}
-
-type ResetPasswordResponse_Success struct {
-	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
-}
-
-func (*ResetPasswordResponse_Success) isResetPasswordResponse_Result() {}
-
-type ResetPasswordResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*ResetPasswordResponse_Error) isResetPasswordResponse_Result() {}
-
-// 注销账号请求
-type DeleteAccountRequest struct {
-	UserId   string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	Password string `protobuf:"bytes,2,opt,name=password" json:"password,omitempty"`
-}
-
-func (x *DeleteAccountRequest) Reset() { *x = DeleteAccountRequest{} }
-
-func (x *DeleteAccountRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *DeleteAccountRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *DeleteAccountRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *DeleteAccountRequest) GetPassword() string {
+func (x *RegisterReq) GetPassword() string {
 	if x != nil {
 		return x.Password
 	}
 	return ""
 }
 
-// 注销账号响应
-type DeleteAccountResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*DeleteAccountResponse_Success
-	//	*DeleteAccountResponse_Error
-	Result isDeleteAccountResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *DeleteAccountResponse) Reset() { *x = DeleteAccountResponse{} }
-
-func (x *DeleteAccountResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *DeleteAccountResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *DeleteAccountResponse) GetResult() isDeleteAccountResponse_Result {
+func (x *RegisterReq) GetConfirmPassword() string {
 	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *DeleteAccountResponse) GetSuccess() bool {
-	if p, ok := x.GetResult().(*DeleteAccountResponse_Success); ok {
-		return p.Success
-	}
-	return false
-}
-
-func (x *DeleteAccountResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*DeleteAccountResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*DeleteAccountResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*DeleteAccountResponse_Success)(nil),
-		(*DeleteAccountResponse_Error)(nil),
-	}
-}
-
-type isDeleteAccountResponse_Result interface {
-	isDeleteAccountResponse_Result()
-}
-
-type DeleteAccountResponse_Success struct {
-	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
-}
-
-func (*DeleteAccountResponse_Success) isDeleteAccountResponse_Result() {}
-
-type DeleteAccountResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*DeleteAccountResponse_Error) isDeleteAccountResponse_Result() {}
-
-// 用户列表请求
-type ListUsersRequest struct {
-	Pagination   *pagination.PaginationRequest `protobuf:"bytes,1,opt,name=pagination" json:"pagination,omitempty"`
-	SearchQuery  string                        `protobuf:"bytes,2,opt,name=search_query" json:"search_query,omitempty"`
-	Roles        []string                      `protobuf:"bytes,3,rep,name=roles" json:"roles,omitempty"`
-	CreatedRange *types.TimeRange              `protobuf:"bytes,4,opt,name=created_range" json:"created_range,omitempty"`
-	Sort         *pagination.SortRequest       `protobuf:"bytes,5,opt,name=sort" json:"sort,omitempty"`
-}
-
-func (x *ListUsersRequest) Reset() { *x = ListUsersRequest{} }
-
-func (x *ListUsersRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *ListUsersRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ListUsersRequest) GetPagination() *pagination.PaginationRequest {
-	if x != nil {
-		return x.Pagination
-	}
-	return nil
-}
-
-func (x *ListUsersRequest) GetSearchQuery() string {
-	if x != nil {
-		return x.SearchQuery
+		return x.ConfirmPassword
 	}
 	return ""
 }
 
-func (x *ListUsersRequest) GetRoles() []string {
-	if x != nil {
-		return x.Roles
-	}
-	return nil
-}
-
-func (x *ListUsersRequest) GetCreatedRange() *types.TimeRange {
-	if x != nil {
-		return x.CreatedRange
-	}
-	return nil
-}
-
-func (x *ListUsersRequest) GetSort() *pagination.SortRequest {
-	if x != nil {
-		return x.Sort
-	}
-	return nil
-}
-
-// 用户列表响应
-type ListUsersResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*ListUsersResponse_UsersPage
-	//	*ListUsersResponse_Error
-	Result isListUsersResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *ListUsersResponse) Reset() { *x = ListUsersResponse{} }
-
-func (x *ListUsersResponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *ListUsersResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ListUsersResponse) GetResult() isListUsersResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *ListUsersResponse) GetUsersPage() *UsersPage {
-	if p, ok := x.GetResult().(*ListUsersResponse_UsersPage); ok {
-		return p.UsersPage
-	}
-	return nil
-}
-
-func (x *ListUsersResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*ListUsersResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*ListUsersResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*ListUsersResponse_UsersPage)(nil),
-		(*ListUsersResponse_Error)(nil),
-	}
-}
-
-type isListUsersResponse_Result interface {
-	isListUsersResponse_Result()
-}
-
-type ListUsersResponse_UsersPage struct {
-	UsersPage *UsersPage `protobuf:"bytes,1,opt,name=users_page" json:"users_page,omitempty"`
-}
-
-func (*ListUsersResponse_UsersPage) isListUsersResponse_Result() {}
-
-type ListUsersResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*ListUsersResponse_Error) isListUsersResponse_Result() {}
-
-// 用户分页信息
-type UsersPage struct {
-	Users      []*UserData                `protobuf:"bytes,1,rep,name=users" json:"users,omitempty"`
-	Pagination *pagination.PaginationMeta `protobuf:"bytes,2,opt,name=pagination" json:"pagination,omitempty"`
-}
-
-func (x *UsersPage) Reset() { *x = UsersPage{} }
-
-func (x *UsersPage) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *UsersPage) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *UsersPage) GetUsers() []*UserData {
-	if x != nil {
-		return x.Users
-	}
-	return nil
-}
-
-func (x *UsersPage) GetPagination() *pagination.PaginationMeta {
-	if x != nil {
-		return x.Pagination
-	}
-	return nil
-}
-
-// 登出请求
-type LogoutRequest struct {
+type RegisterResp struct {
 	UserId       string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	RefreshToken string `protobuf:"bytes,2,opt,name=refresh_token" json:"refresh_token,omitempty"`
+	Username     string `protobuf:"bytes,2,opt,name=username" json:"username,omitempty"`
+	Email        string `protobuf:"bytes,3,opt,name=email" json:"email,omitempty"`
+	Avatar       string `protobuf:"bytes,4,opt,name=avatar" json:"avatar,omitempty"`
+	Bio          string `protobuf:"bytes,5,opt,name=bio" json:"bio,omitempty"`
+	RegisterDate string `protobuf:"bytes,6,opt,name=register_date" json:"register_date,omitempty"`
+	Theme        string `protobuf:"bytes,7,opt,name=theme" json:"theme,omitempty"`
+	AccessToken  string `protobuf:"bytes,8,opt,name=access_token" json:"access_token,omitempty"`
+	RefreshToken string `protobuf:"bytes,9,opt,name=refresh_token" json:"refresh_token,omitempty"`
 }
 
-func (x *LogoutRequest) Reset() { *x = LogoutRequest{} }
+func (x *RegisterResp) Reset() { *x = RegisterResp{} }
 
-func (x *LogoutRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *RegisterResp) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *LogoutRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *RegisterResp) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *LogoutRequest) GetUserId() string {
+func (x *RegisterResp) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *LogoutRequest) GetRefreshToken() string {
+func (x *RegisterResp) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *RegisterResp) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *RegisterResp) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
+	}
+	return ""
+}
+
+func (x *RegisterResp) GetBio() string {
+	if x != nil {
+		return x.Bio
+	}
+	return ""
+}
+
+func (x *RegisterResp) GetRegisterDate() string {
+	if x != nil {
+		return x.RegisterDate
+	}
+	return ""
+}
+
+func (x *RegisterResp) GetTheme() string {
+	if x != nil {
+		return x.Theme
+	}
+	return ""
+}
+
+func (x *RegisterResp) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *RegisterResp) GetRefreshToken() string {
 	if x != nil {
 		return x.RefreshToken
 	}
 	return ""
 }
 
-// 登出响应
-type LogoutResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*LogoutResponse_Success
-	//	*LogoutResponse_Error
-	Result isLogoutResponse_Result `protobuf_oneof:"result"`
+type LoginReq struct {
+	Email    string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
+	Password string `protobuf:"bytes,2,opt,name=password" json:"password,omitempty"`
 }
 
-func (x *LogoutResponse) Reset() { *x = LogoutResponse{} }
+func (x *LoginReq) Reset() { *x = LoginReq{} }
 
-func (x *LogoutResponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *LoginReq) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *LogoutResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *LoginReq) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *LogoutResponse) GetResult() isLogoutResponse_Result {
+func (x *LoginReq) GetEmail() string {
 	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *LogoutResponse) GetSuccess() bool {
-	if p, ok := x.GetResult().(*LogoutResponse_Success); ok {
-		return p.Success
-	}
-	return false
-}
-
-func (x *LogoutResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*LogoutResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*LogoutResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*LogoutResponse_Success)(nil),
-		(*LogoutResponse_Error)(nil),
-	}
-}
-
-type isLogoutResponse_Result interface {
-	isLogoutResponse_Result()
-}
-
-type LogoutResponse_Success struct {
-	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
-}
-
-func (*LogoutResponse_Success) isLogoutResponse_Result() {}
-
-type LogoutResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*LogoutResponse_Error) isLogoutResponse_Result() {}
-
-// 刷新令牌请求
-type RefreshTokenRequest struct {
-	RefreshToken string `protobuf:"bytes,1,opt,name=refresh_token" json:"refresh_token,omitempty"`
-}
-
-func (x *RefreshTokenRequest) Reset() { *x = RefreshTokenRequest{} }
-
-func (x *RefreshTokenRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *RefreshTokenRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *RefreshTokenRequest) GetRefreshToken() string {
-	if x != nil {
-		return x.RefreshToken
+		return x.Email
 	}
 	return ""
 }
 
-// 刷新令牌响应
-type RefreshTokenResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*RefreshTokenResponse_Auth
-	//	*RefreshTokenResponse_Error
-	Result isRefreshTokenResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *RefreshTokenResponse) Reset() { *x = RefreshTokenResponse{} }
-
-func (x *RefreshTokenResponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *RefreshTokenResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *RefreshTokenResponse) GetResult() isRefreshTokenResponse_Result {
+func (x *LoginReq) GetPassword() string {
 	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *RefreshTokenResponse) GetAuth() *AuthData {
-	if p, ok := x.GetResult().(*RefreshTokenResponse_Auth); ok {
-		return p.Auth
-	}
-	return nil
-}
-
-func (x *RefreshTokenResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*RefreshTokenResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*RefreshTokenResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*RefreshTokenResponse_Auth)(nil),
-		(*RefreshTokenResponse_Error)(nil),
-	}
-}
-
-type isRefreshTokenResponse_Result interface {
-	isRefreshTokenResponse_Result()
-}
-
-type RefreshTokenResponse_Auth struct {
-	Auth *AuthData `protobuf:"bytes,1,opt,name=auth" json:"auth,omitempty"`
-}
-
-func (*RefreshTokenResponse_Auth) isRefreshTokenResponse_Result() {}
-
-type RefreshTokenResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*RefreshTokenResponse_Error) isRefreshTokenResponse_Result() {}
-
-// 订阅计划
-type Subscription struct {
-	Id              string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	PlanName        string                 `protobuf:"bytes,2,opt,name=plan_name" json:"plan_name,omitempty"`
-	PlanId          string                 `protobuf:"bytes,3,opt,name=plan_id" json:"plan_id,omitempty"`
-	StartDate       *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=start_date" json:"start_date,omitempty"`
-	EndDate         *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=end_date" json:"end_date,omitempty"`
-	IsActive        bool                   `protobuf:"varint,6,opt,name=is_active" json:"is_active,omitempty"`
-	AutoRenew       bool                   `protobuf:"varint,7,opt,name=auto_renew" json:"auto_renew,omitempty"`
-	NextBillingDate *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=next_billing_date" json:"next_billing_date,omitempty"`
-	PaymentMethod   string                 `protobuf:"bytes,9,opt,name=payment_method" json:"payment_method,omitempty"`
-	Features        []string               `protobuf:"bytes,10,rep,name=features" json:"features,omitempty"`
-}
-
-func (x *Subscription) Reset() { *x = Subscription{} }
-
-func (x *Subscription) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *Subscription) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *Subscription) GetId() string {
-	if x != nil {
-		return x.Id
+		return x.Password
 	}
 	return ""
 }
 
-func (x *Subscription) GetPlanName() string {
-	if x != nil {
-		return x.PlanName
-	}
-	return ""
+type LoginResp struct {
+	UserId       string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Username     string `protobuf:"bytes,2,opt,name=username" json:"username,omitempty"`
+	Email        string `protobuf:"bytes,3,opt,name=email" json:"email,omitempty"`
+	Avatar       string `protobuf:"bytes,4,opt,name=avatar" json:"avatar,omitempty"`
+	Bio          string `protobuf:"bytes,5,opt,name=bio" json:"bio,omitempty"`
+	RegisterDate string `protobuf:"bytes,6,opt,name=register_date" json:"register_date,omitempty"`
+	Theme        string `protobuf:"bytes,7,opt,name=theme" json:"theme,omitempty"`
+	AccessToken  string `protobuf:"bytes,8,opt,name=access_token" json:"access_token,omitempty"`
+	RefreshToken string `protobuf:"bytes,9,opt,name=refresh_token" json:"refresh_token,omitempty"`
 }
 
-func (x *Subscription) GetPlanId() string {
-	if x != nil {
-		return x.PlanId
-	}
-	return ""
-}
+func (x *LoginResp) Reset() { *x = LoginResp{} }
 
-func (x *Subscription) GetStartDate() *timestamppb.Timestamp {
-	if x != nil {
-		return x.StartDate
-	}
-	return nil
-}
+func (x *LoginResp) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *Subscription) GetEndDate() *timestamppb.Timestamp {
-	if x != nil {
-		return x.EndDate
-	}
-	return nil
-}
+func (x *LoginResp) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *Subscription) GetIsActive() bool {
-	if x != nil {
-		return x.IsActive
-	}
-	return false
-}
-
-func (x *Subscription) GetAutoRenew() bool {
-	if x != nil {
-		return x.AutoRenew
-	}
-	return false
-}
-
-func (x *Subscription) GetNextBillingDate() *timestamppb.Timestamp {
-	if x != nil {
-		return x.NextBillingDate
-	}
-	return nil
-}
-
-func (x *Subscription) GetPaymentMethod() string {
-	if x != nil {
-		return x.PaymentMethod
-	}
-	return ""
-}
-
-func (x *Subscription) GetFeatures() []string {
-	if x != nil {
-		return x.Features
-	}
-	return nil
-}
-
-// 获取用户订阅响应
-type GetUserSubscriptionResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*GetUserSubscriptionResponse_Subscription
-	//	*GetUserSubscriptionResponse_Error
-	Result isGetUserSubscriptionResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *GetUserSubscriptionResponse) Reset() { *x = GetUserSubscriptionResponse{} }
-
-func (x *GetUserSubscriptionResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GetUserSubscriptionResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetUserSubscriptionResponse) GetResult() isGetUserSubscriptionResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *GetUserSubscriptionResponse) GetSubscription() *Subscription {
-	if p, ok := x.GetResult().(*GetUserSubscriptionResponse_Subscription); ok {
-		return p.Subscription
-	}
-	return nil
-}
-
-func (x *GetUserSubscriptionResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*GetUserSubscriptionResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GetUserSubscriptionResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*GetUserSubscriptionResponse_Subscription)(nil),
-		(*GetUserSubscriptionResponse_Error)(nil),
-	}
-}
-
-type isGetUserSubscriptionResponse_Result interface {
-	isGetUserSubscriptionResponse_Result()
-}
-
-type GetUserSubscriptionResponse_Subscription struct {
-	Subscription *Subscription `protobuf:"bytes,1,opt,name=subscription" json:"subscription,omitempty"`
-}
-
-func (*GetUserSubscriptionResponse_Subscription) isGetUserSubscriptionResponse_Result() {}
-
-type GetUserSubscriptionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*GetUserSubscriptionResponse_Error) isGetUserSubscriptionResponse_Result() {}
-
-// 更新用户订阅请求
-type UpdateUserSubscriptionRequest struct {
-	UserId    string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	PlanId    string `protobuf:"bytes,2,opt,name=plan_id" json:"plan_id,omitempty"`
-	AutoRenew bool   `protobuf:"varint,3,opt,name=auto_renew" json:"auto_renew,omitempty"`
-}
-
-func (x *UpdateUserSubscriptionRequest) Reset() { *x = UpdateUserSubscriptionRequest{} }
-
-func (x *UpdateUserSubscriptionRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *UpdateUserSubscriptionRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *UpdateUserSubscriptionRequest) GetUserId() string {
+func (x *LoginResp) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *UpdateUserSubscriptionRequest) GetPlanId() string {
+func (x *LoginResp) GetUsername() string {
 	if x != nil {
-		return x.PlanId
+		return x.Username
 	}
 	return ""
 }
 
-func (x *UpdateUserSubscriptionRequest) GetAutoRenew() bool {
+func (x *LoginResp) GetEmail() string {
 	if x != nil {
-		return x.AutoRenew
+		return x.Email
+	}
+	return ""
+}
+
+func (x *LoginResp) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
+	}
+	return ""
+}
+
+func (x *LoginResp) GetBio() string {
+	if x != nil {
+		return x.Bio
+	}
+	return ""
+}
+
+func (x *LoginResp) GetRegisterDate() string {
+	if x != nil {
+		return x.RegisterDate
+	}
+	return ""
+}
+
+func (x *LoginResp) GetTheme() string {
+	if x != nil {
+		return x.Theme
+	}
+	return ""
+}
+
+func (x *LoginResp) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *LoginResp) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+// 新增请求和响应消息
+type UpdateUserInfoReq struct {
+	UserId   string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Username string `protobuf:"bytes,2,opt,name=username" json:"username,omitempty"`
+	Avatar   string `protobuf:"bytes,3,opt,name=avatar" json:"avatar,omitempty"`
+	Theme    string `protobuf:"bytes,4,opt,name=theme" json:"theme,omitempty"`
+	Bio      string `protobuf:"bytes,5,opt,name=bio" json:"bio,omitempty"`
+}
+
+func (x *UpdateUserInfoReq) Reset() { *x = UpdateUserInfoReq{} }
+
+func (x *UpdateUserInfoReq) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *UpdateUserInfoReq) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *UpdateUserInfoReq) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *UpdateUserInfoReq) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *UpdateUserInfoReq) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
+	}
+	return ""
+}
+
+func (x *UpdateUserInfoReq) GetTheme() string {
+	if x != nil {
+		return x.Theme
+	}
+	return ""
+}
+
+func (x *UpdateUserInfoReq) GetBio() string {
+	if x != nil {
+		return x.Bio
+	}
+	return ""
+}
+
+type ChangePasswordReq struct {
+	UserId      string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	OldPassword string `protobuf:"bytes,2,opt,name=old_password" json:"old_password,omitempty"`
+	NewPassword string `protobuf:"bytes,3,opt,name=new_password" json:"new_password,omitempty"`
+}
+
+func (x *ChangePasswordReq) Reset() { *x = ChangePasswordReq{} }
+
+func (x *ChangePasswordReq) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *ChangePasswordReq) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *ChangePasswordReq) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *ChangePasswordReq) GetOldPassword() string {
+	if x != nil {
+		return x.OldPassword
+	}
+	return ""
+}
+
+func (x *ChangePasswordReq) GetNewPassword() string {
+	if x != nil {
+		return x.NewPassword
+	}
+	return ""
+}
+
+type UpdateUserInfoResp struct {
+	Success bool   `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
+	Message string `protobuf:"bytes,2,opt,name=message" json:"message,omitempty"`
+}
+
+func (x *UpdateUserInfoResp) Reset() { *x = UpdateUserInfoResp{} }
+
+func (x *UpdateUserInfoResp) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *UpdateUserInfoResp) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *UpdateUserInfoResp) GetSuccess() bool {
+	if x != nil {
+		return x.Success
 	}
 	return false
 }
 
-// 更新用户订阅响应
-type UpdateUserSubscriptionResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*UpdateUserSubscriptionResponse_Subscription
-	//	*UpdateUserSubscriptionResponse_Error
-	Result isUpdateUserSubscriptionResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *UpdateUserSubscriptionResponse) Reset() { *x = UpdateUserSubscriptionResponse{} }
-
-func (x *UpdateUserSubscriptionResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *UpdateUserSubscriptionResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *UpdateUserSubscriptionResponse) GetResult() isUpdateUserSubscriptionResponse_Result {
+func (x *UpdateUserInfoResp) GetMessage() string {
 	if x != nil {
-		return x.Result
+		return x.Message
 	}
-	return nil
+	return ""
 }
-func (x *UpdateUserSubscriptionResponse) GetSubscription() *Subscription {
-	if p, ok := x.GetResult().(*UpdateUserSubscriptionResponse_Subscription); ok {
-		return p.Subscription
+
+type ChangePasswordResp struct {
+	Success bool   `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
+	Message string `protobuf:"bytes,2,opt,name=message" json:"message,omitempty"`
+}
+
+func (x *ChangePasswordResp) Reset() { *x = ChangePasswordResp{} }
+
+func (x *ChangePasswordResp) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *ChangePasswordResp) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *ChangePasswordResp) GetSuccess() bool {
+	if x != nil {
+		return x.Success
 	}
-	return nil
+	return false
 }
 
-func (x *UpdateUserSubscriptionResponse) GetError() *error.Error {
-	if p, ok := x.GetResult().(*UpdateUserSubscriptionResponse_Error); ok {
-		return p.Error
+func (x *ChangePasswordResp) GetMessage() string {
+	if x != nil {
+		return x.Message
 	}
-	return nil
+	return ""
 }
 
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*UpdateUserSubscriptionResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*UpdateUserSubscriptionResponse_Subscription)(nil),
-		(*UpdateUserSubscriptionResponse_Error)(nil),
+type GetUserInfoReq struct {
+	UserId string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+}
+
+func (x *GetUserInfoReq) Reset() { *x = GetUserInfoReq{} }
+
+func (x *GetUserInfoReq) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *GetUserInfoReq) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetUserInfoReq) GetUserId() string {
+	if x != nil {
+		return x.UserId
 	}
+	return ""
 }
 
-type isUpdateUserSubscriptionResponse_Result interface {
-	isUpdateUserSubscriptionResponse_Result()
+type GetUserInfoResp struct {
+	UserId       string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Username     string `protobuf:"bytes,2,opt,name=username" json:"username,omitempty"`
+	Email        string `protobuf:"bytes,3,opt,name=email" json:"email,omitempty"`
+	Avatar       string `protobuf:"bytes,4,opt,name=avatar" json:"avatar,omitempty"`
+	Bio          string `protobuf:"bytes,5,opt,name=bio" json:"bio,omitempty"`
+	RegisterDate string `protobuf:"bytes,6,opt,name=register_date" json:"register_date,omitempty"`
+	Theme        string `protobuf:"bytes,7,opt,name=theme" json:"theme,omitempty"`
 }
 
-type UpdateUserSubscriptionResponse_Subscription struct {
-	Subscription *Subscription `protobuf:"bytes,1,opt,name=subscription" json:"subscription,omitempty"`
+func (x *GetUserInfoResp) Reset() { *x = GetUserInfoResp{} }
+
+func (x *GetUserInfoResp) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *GetUserInfoResp) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetUserInfoResp) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
 }
 
-func (*UpdateUserSubscriptionResponse_Subscription) isUpdateUserSubscriptionResponse_Result() {}
-
-type UpdateUserSubscriptionResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+func (x *GetUserInfoResp) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
 }
 
-func (*UpdateUserSubscriptionResponse_Error) isUpdateUserSubscriptionResponse_Result() {}
+func (x *GetUserInfoResp) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *GetUserInfoResp) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
+	}
+	return ""
+}
+
+func (x *GetUserInfoResp) GetBio() string {
+	if x != nil {
+		return x.Bio
+	}
+	return ""
+}
+
+func (x *GetUserInfoResp) GetRegisterDate() string {
+	if x != nil {
+		return x.RegisterDate
+	}
+	return ""
+}
+
+func (x *GetUserInfoResp) GetTheme() string {
+	if x != nil {
+		return x.Theme
+	}
+	return ""
+}
+
+type DeleteUserReq struct {
+	UserId string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+}
+
+func (x *DeleteUserReq) Reset() { *x = DeleteUserReq{} }
+
+func (x *DeleteUserReq) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *DeleteUserReq) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *DeleteUserReq) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+type DeleteUserResp struct {
+	Success bool   `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
+	Message string `protobuf:"bytes,2,opt,name=message" json:"message,omitempty"`
+}
+
+func (x *DeleteUserResp) Reset() { *x = DeleteUserResp{} }
+
+func (x *DeleteUserResp) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *DeleteUserResp) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *DeleteUserResp) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *DeleteUserResp) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
 
 type UserService interface {
-	Register(ctx context.Context, req *RegisterRequest) (res *RegisterResponse, err error)
-	Login(ctx context.Context, req *LoginRequest) (res *LoginResponse, err error)
-	OAuthLogin(ctx context.Context, req *OAuthLoginRequest) (res *LoginResponse, err error)
-	GetUserProfile(ctx context.Context, req *UserIdRequest) (res *GetUserProfileResponse, err error)
-	UpdateUserProfile(ctx context.Context, req *UpdateUserProfileRequest) (res *UpdateUserProfileResponse, err error)
-	ChangePassword(ctx context.Context, req *ChangePasswordRequest) (res *ChangePasswordResponse, err error)
-	ForgotPassword(ctx context.Context, req *ForgotPasswordRequest) (res *ForgotPasswordResponse, err error)
-	ResetPassword(ctx context.Context, req *ResetPasswordRequest) (res *ResetPasswordResponse, err error)
-	DeleteAccount(ctx context.Context, req *DeleteAccountRequest) (res *DeleteAccountResponse, err error)
-	ListUsers(ctx context.Context, req *ListUsersRequest) (res *ListUsersResponse, err error)
-	Logout(ctx context.Context, req *LogoutRequest) (res *LogoutResponse, err error)
-	RefreshToken(ctx context.Context, req *RefreshTokenRequest) (res *RefreshTokenResponse, err error)
-	GetUserSubscription(ctx context.Context, req *UserIdRequest) (res *GetUserSubscriptionResponse, err error)
-	UpdateUserSubscription(ctx context.Context, req *UpdateUserSubscriptionRequest) (res *UpdateUserSubscriptionResponse, err error)
+	SendCode(ctx context.Context, req *SendCodeReq) (res *SendCodeResp, err error)
+	Register(ctx context.Context, req *RegisterReq) (res *RegisterResp, err error)
+	Login(ctx context.Context, req *LoginReq) (res *LoginResp, err error)
+	ChangePassword(ctx context.Context, req *ChangePasswordReq) (res *ChangePasswordResp, err error)
+	UpdateUserInfo(ctx context.Context, req *UpdateUserInfoReq) (res *UpdateUserInfoResp, err error)
+	GetUserInfo(ctx context.Context, req *GetUserInfoReq) (res *GetUserInfoResp, err error)
+	DeleteUser(ctx context.Context, req *DeleteUserReq) (res *DeleteUserResp, err error)
 }
