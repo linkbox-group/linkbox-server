@@ -7,6 +7,4 @@ import (
 
 type UserRepositoryItf interface {
 	CreateItem(ctx context.Context, req *model.Item) (err error)
-	GetItem(ctx context.Context, item *model.Item) error
-	UpdateItem(ctx context.Context, item *model.Item) error
 }
