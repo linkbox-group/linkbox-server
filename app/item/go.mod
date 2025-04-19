@@ -1,4 +1,4 @@
-module github.com/linkbox-group/linkbox-server/content
+module github.com/linkbox-group/linkbox-server/item
 
 go 1.23.6
 

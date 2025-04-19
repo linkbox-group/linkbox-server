@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/google/wire"
-	"github.com/linkbox-group/linkbox-server/content/internal/acl"
+	"github.com/linkbox-group/linkbox-server/item/internal/acl"
 	"github.com/linkbox-group/linkbox-server/model"
 	"gorm.io/gorm"
 )

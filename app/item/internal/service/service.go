@@ -4,11 +4,11 @@ import (
 	"context"
 	"github.com/google/wire"
 
-	"github.com/linkbox-group/linkbox-server/content/internal/acl"
+	"github.com/linkbox-group/linkbox-server/item/internal/acl"
 	"github.com/linkbox-group/linkbox-server/model"
 )
 
-var ProviderSet = wire.NewSet(wire.Bind(new(acl.UserServiceItf), new(*Service)), NewContentService)
+var ProviderSet = wire.NewSet(wire.Bind(new(acl.UserServiceItf), new(*Service)), NewItemService)
 
 var _ acl.UserServiceItf = &Service{}
 
@@ -16,7 +16,7 @@ type Service struct {
 	Repo acl.UserRepositoryItf
 }
 
-func NewContentService(r acl.UserRepositoryItf) *Service {
+func NewItemService(r acl.UserRepositoryItf) *Service {
 	return &Service{
 		Repo: r,
 	}

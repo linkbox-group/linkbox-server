@@ -1,9 +1,9 @@
-// content/service.proto
+// item/service.proto
 syntax = "proto3";
 
-package content;
+package item;
 
-option go_package = "content";
+option go_package = "item";
 
 import "google/protobuf/timestamp.proto";
 import "common/cError/error.proto";
@@ -11,7 +11,7 @@ import "common/pagination/pagination.proto";
 import "common/types/types.proto";
 
 // 内容服务定义
-service ContentService {
+service ItemService {
   // 创建内容项
   rpc CreateItem(CreateItemRequest) returns (CreateItemResponse);
 

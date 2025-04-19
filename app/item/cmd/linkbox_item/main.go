@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/cloudwego/kitex/server"
 	"github.com/linkbox-group/linkbox-server/common/serversuite"
-	"github.com/linkbox-group/linkbox-server/content/internal/core"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/content/contentservice"
+	"github.com/linkbox-group/linkbox-server/item/internal/core"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/item/itemservice"
 	"github.com/spf13/viper"
 	"log"
 	"net"
@@ -15,11 +15,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	contentHandler := NewContentHandler()
-	srv := contentservice.NewServer(contentHandler, kitexInit()...)
+	itemHandler := NewItemHandler()
+	srv := itemservice.NewServer(itemHandler, kitexInit()...)
 	err = srv.Run()
 	if err != nil {
-		log.Fatalf("Failed to run content service: %v", err)
+		log.Fatalf("Failed to run item service: %v", err)
 	}
 }
 func kitexInit() (opts []server.Option) {
