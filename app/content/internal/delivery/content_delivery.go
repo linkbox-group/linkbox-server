@@ -10,8 +10,9 @@ import (
 
 func (d *ContentDelivery) CreateItem(ctx context.Context, req *content.CreateItemRequest) (resp *content.CreateItemResponse, err error) {
 	item := model.Item{
-		Title: req.Title,
-		URL:   req.Url,
+		UserID: req.UserId,
+		Title:  req.Title,
+		URL:    req.Url,
 	}
 	err = d.s.CreateItem(ctx, &item)
 
@@ -28,8 +29,9 @@ func (d *ContentDelivery) CreateItem(ctx context.Context, req *content.CreateIte
 	return &content.CreateItemResponse{
 		Result: &content.CreateItemResponse_Item{
 			Item: &content.Item{
-				Title: item.Title,
-				Url:   item.URL,
+				UserId: req.UserId,
+				Title:  item.Title,
+				Url:    item.URL,
 			},
 		},
 	}, nil
