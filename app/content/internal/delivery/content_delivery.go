@@ -118,9 +118,30 @@ func (d *ContentDelivery) UpdateItem(ctx context.Context, req *content.UpdateIte
 }
 
 // DeleteItem implements the ContentDelivery interface.
-func (s *ContentDelivery) DeleteItem(ctx context.Context, req *content.DeleteItemRequest) (resp *content.DeleteItemResponse, err error) {
+func (d *ContentDelivery) DeleteItem(ctx context.Context, req *content.DeleteItemRequest) (resp *content.DeleteItemResponse, err error) {
 	// TODO: Your code here...
-	return
+	item := model.Item{
+		BaseModel: model.BaseModel{
+			ID: req.Id,
+		},
+		UserID: req.UserId,
+	}
+
+	err = d.s.DeleteItem(ctx, &item)
+
+	if err != nil {
+		return &content.DeleteItemResponse{
+			Result: &content.DeleteItemResponse_Success{
+				Success: false,
+			},
+		}, err
+	}
+
+	return &content.DeleteItemResponse{
+		Result: &content.DeleteItemResponse_Success{
+			Success: true,
+		},
+	}, nil
 }
 
 // GetItems implements the ContentDelivery interface.

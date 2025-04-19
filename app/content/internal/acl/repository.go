@@ -9,4 +9,5 @@ type UserRepositoryItf interface {
 	CreateItem(ctx context.Context, req *model.Item) (err error)
 	GetItem(ctx context.Context, req *model.Item) (err error)
 	UpdateItem(ctx context.Context, req *model.Item) (err error)
+	DeleteItem(ctx context.Context, req *model.Item) (err error)
 }
