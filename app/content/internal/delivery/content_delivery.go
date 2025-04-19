@@ -41,6 +41,9 @@ func (d *ContentDelivery) CreateItem(ctx context.Context, req *content.CreateIte
 // GetItem implements the ContentDelivery interface.
 func (d *ContentDelivery) GetItem(ctx context.Context, req *content.GetItemRequest) (resp *content.GetItemResponse, err error) {
 	item := model.Item{
+		BaseModel: model.BaseModel{
+			ID: req.Id,
+		},
 		UserID: req.UserId,
 	}
 	err = d.s.GetItem(ctx, &item)
