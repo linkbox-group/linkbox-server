@@ -11,20 +11,13 @@ import (
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
-	Register(ctx context.Context, Req *user.RegisterRequest, callOptions ...callopt.Option) (r *user.RegisterResponse, err error)
-	Login(ctx context.Context, Req *user.LoginRequest, callOptions ...callopt.Option) (r *user.LoginResponse, err error)
-	OAuthLogin(ctx context.Context, Req *user.OAuthLoginRequest, callOptions ...callopt.Option) (r *user.LoginResponse, err error)
-	GetUserProfile(ctx context.Context, Req *user.UserIdRequest, callOptions ...callopt.Option) (r *user.GetUserProfileResponse, err error)
-	UpdateUserProfile(ctx context.Context, Req *user.UpdateUserProfileRequest, callOptions ...callopt.Option) (r *user.UpdateUserProfileResponse, err error)
-	ChangePassword(ctx context.Context, Req *user.ChangePasswordRequest, callOptions ...callopt.Option) (r *user.ChangePasswordResponse, err error)
-	ForgotPassword(ctx context.Context, Req *user.ForgotPasswordRequest, callOptions ...callopt.Option) (r *user.ForgotPasswordResponse, err error)
-	ResetPassword(ctx context.Context, Req *user.ResetPasswordRequest, callOptions ...callopt.Option) (r *user.ResetPasswordResponse, err error)
-	DeleteAccount(ctx context.Context, Req *user.DeleteAccountRequest, callOptions ...callopt.Option) (r *user.DeleteAccountResponse, err error)
-	ListUsers(ctx context.Context, Req *user.ListUsersRequest, callOptions ...callopt.Option) (r *user.ListUsersResponse, err error)
-	Logout(ctx context.Context, Req *user.LogoutRequest, callOptions ...callopt.Option) (r *user.LogoutResponse, err error)
-	RefreshToken(ctx context.Context, Req *user.RefreshTokenRequest, callOptions ...callopt.Option) (r *user.RefreshTokenResponse, err error)
-	GetUserSubscription(ctx context.Context, Req *user.UserIdRequest, callOptions ...callopt.Option) (r *user.GetUserSubscriptionResponse, err error)
-	UpdateUserSubscription(ctx context.Context, Req *user.UpdateUserSubscriptionRequest, callOptions ...callopt.Option) (r *user.UpdateUserSubscriptionResponse, err error)
+	SendCode(ctx context.Context, Req *user.SendCodeReq, callOptions ...callopt.Option) (r *user.SendCodeResp, err error)
+	Register(ctx context.Context, Req *user.RegisterReq, callOptions ...callopt.Option) (r *user.RegisterResp, err error)
+	Login(ctx context.Context, Req *user.LoginReq, callOptions ...callopt.Option) (r *user.LoginResp, err error)
+	ChangePassword(ctx context.Context, Req *user.ChangePasswordReq, callOptions ...callopt.Option) (r *user.ChangePasswordResp, err error)
+	UpdateUserInfo(ctx context.Context, Req *user.UpdateUserInfoReq, callOptions ...callopt.Option) (r *user.UpdateUserInfoResp, err error)
+	GetUserInfo(ctx context.Context, Req *user.GetUserInfoReq, callOptions ...callopt.Option) (r *user.GetUserInfoResp, err error)
+	DeleteUser(ctx context.Context, Req *user.DeleteUserReq, callOptions ...callopt.Option) (r *user.DeleteUserResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -56,72 +49,37 @@ type kUserServiceClient struct {
 	*kClient
 }
 
-func (p *kUserServiceClient) Register(ctx context.Context, Req *user.RegisterRequest, callOptions ...callopt.Option) (r *user.RegisterResponse, err error) {
+func (p *kUserServiceClient) SendCode(ctx context.Context, Req *user.SendCodeReq, callOptions ...callopt.Option) (r *user.SendCodeResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.SendCode(ctx, Req)
+}
+
+func (p *kUserServiceClient) Register(ctx context.Context, Req *user.RegisterReq, callOptions ...callopt.Option) (r *user.RegisterResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.Register(ctx, Req)
 }
 
-func (p *kUserServiceClient) Login(ctx context.Context, Req *user.LoginRequest, callOptions ...callopt.Option) (r *user.LoginResponse, err error) {
+func (p *kUserServiceClient) Login(ctx context.Context, Req *user.LoginReq, callOptions ...callopt.Option) (r *user.LoginResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.Login(ctx, Req)
 }
 
-func (p *kUserServiceClient) OAuthLogin(ctx context.Context, Req *user.OAuthLoginRequest, callOptions ...callopt.Option) (r *user.LoginResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.OAuthLogin(ctx, Req)
-}
-
-func (p *kUserServiceClient) GetUserProfile(ctx context.Context, Req *user.UserIdRequest, callOptions ...callopt.Option) (r *user.GetUserProfileResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetUserProfile(ctx, Req)
-}
-
-func (p *kUserServiceClient) UpdateUserProfile(ctx context.Context, Req *user.UpdateUserProfileRequest, callOptions ...callopt.Option) (r *user.UpdateUserProfileResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.UpdateUserProfile(ctx, Req)
-}
-
-func (p *kUserServiceClient) ChangePassword(ctx context.Context, Req *user.ChangePasswordRequest, callOptions ...callopt.Option) (r *user.ChangePasswordResponse, err error) {
+func (p *kUserServiceClient) ChangePassword(ctx context.Context, Req *user.ChangePasswordReq, callOptions ...callopt.Option) (r *user.ChangePasswordResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.ChangePassword(ctx, Req)
 }
 
-func (p *kUserServiceClient) ForgotPassword(ctx context.Context, Req *user.ForgotPasswordRequest, callOptions ...callopt.Option) (r *user.ForgotPasswordResponse, err error) {
+func (p *kUserServiceClient) UpdateUserInfo(ctx context.Context, Req *user.UpdateUserInfoReq, callOptions ...callopt.Option) (r *user.UpdateUserInfoResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.ForgotPassword(ctx, Req)
+	return p.kClient.UpdateUserInfo(ctx, Req)
 }
 
-func (p *kUserServiceClient) ResetPassword(ctx context.Context, Req *user.ResetPasswordRequest, callOptions ...callopt.Option) (r *user.ResetPasswordResponse, err error) {
+func (p *kUserServiceClient) GetUserInfo(ctx context.Context, Req *user.GetUserInfoReq, callOptions ...callopt.Option) (r *user.GetUserInfoResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.ResetPassword(ctx, Req)
+	return p.kClient.GetUserInfo(ctx, Req)
 }
 
-func (p *kUserServiceClient) DeleteAccount(ctx context.Context, Req *user.DeleteAccountRequest, callOptions ...callopt.Option) (r *user.DeleteAccountResponse, err error) {
+func (p *kUserServiceClient) DeleteUser(ctx context.Context, Req *user.DeleteUserReq, callOptions ...callopt.Option) (r *user.DeleteUserResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.DeleteAccount(ctx, Req)
-}
-
-func (p *kUserServiceClient) ListUsers(ctx context.Context, Req *user.ListUsersRequest, callOptions ...callopt.Option) (r *user.ListUsersResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.ListUsers(ctx, Req)
-}
-
-func (p *kUserServiceClient) Logout(ctx context.Context, Req *user.LogoutRequest, callOptions ...callopt.Option) (r *user.LogoutResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.Logout(ctx, Req)
-}
-
-func (p *kUserServiceClient) RefreshToken(ctx context.Context, Req *user.RefreshTokenRequest, callOptions ...callopt.Option) (r *user.RefreshTokenResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.RefreshToken(ctx, Req)
-}
-
-func (p *kUserServiceClient) GetUserSubscription(ctx context.Context, Req *user.UserIdRequest, callOptions ...callopt.Option) (r *user.GetUserSubscriptionResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetUserSubscription(ctx, Req)
-}
-
-func (p *kUserServiceClient) UpdateUserSubscription(ctx context.Context, Req *user.UpdateUserSubscriptionRequest, callOptions ...callopt.Option) (r *user.UpdateUserSubscriptionResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.UpdateUserSubscription(ctx, Req)
+	return p.kClient.DeleteUser(ctx, Req)
 }
