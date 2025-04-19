@@ -7,12 +7,20 @@
 package main
 
 import (
+	"github.com/linkbox-group/linkbox-server/user/internal/core"
 	"github.com/linkbox-group/linkbox-server/user/internal/delivery"
+	"github.com/linkbox-group/linkbox-server/user/internal/repository"
+	"github.com/linkbox-group/linkbox-server/user/internal/service"
 )
 
 // Injectors from wire.go:
 
 func NewUserHandler() *delivery.UserDelivery {
-	userDelivery := delivery.NewUserDelivery()
+	context := core.NewContext()
+	db := core.NewDB(context)
+	mysqlUserRepo := repository.NewMysqlUserRepo(db)
+	client := core.NewRedis(context)
+	userService := service.NewConcreteUserUsecase(mysqlUserRepo, client)
+	userDelivery := delivery.NewUserDelivery(userService)
 	return userDelivery
 }
