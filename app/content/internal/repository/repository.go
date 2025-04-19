@@ -27,3 +27,9 @@ func (r *Repository) GetItem(ctx context.Context, item *model.Item) (err error) 
 		First(item).
 		Error
 }
+
+func (r *Repository) UpdateItem(ctx context.Context, req *model.Item) (err error) {
+	return r.db.
+		Where("id = ? AND user_id = ?", req.ID, req.UserID).
+		Updates(req).Error
+}

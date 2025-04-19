@@ -29,3 +29,7 @@ func (s *Service) CreateItem(ctx context.Context, item *model.Item) error {
 func (s *Service) GetItem(ctx context.Context, item *model.Item) error {
 	return s.Repo.GetItem(ctx, item)
 }
+
+func (s *Service) UpdateItem(ctx context.Context, item *model.Item) error {
+	return s.Repo.UpdateItem(ctx, item)
+}
