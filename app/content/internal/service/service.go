@@ -22,5 +22,10 @@ func NewContentService(r acl.UserRepositoryItf) *Service {
 	}
 }
 func (s *Service) CreateItem(ctx context.Context, item *model.Item) error {
+
 	return s.Repo.CreateItem(ctx, item)
+}
+
+func (s *Service) GetItem(ctx context.Context, item *model.Item) error {
+	return s.Repo.GetItem(ctx, item)
 }

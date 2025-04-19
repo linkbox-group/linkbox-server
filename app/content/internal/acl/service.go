@@ -7,4 +7,5 @@ import (
 
 type UserServiceItf interface {
 	CreateItem(ctx context.Context, req *model.Item) (err error)
+	GetItem(ctx context.Context, m *model.Item) error
 }

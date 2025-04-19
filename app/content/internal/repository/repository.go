@@ -20,3 +20,10 @@ func NewRepository(db *gorm.DB) *Repository {
 func (r *Repository) CreateItem(ctx context.Context, req *model.Item) (err error) {
 	return r.db.Create(req).Error
 }
+
+func (r *Repository) GetItem(ctx context.Context, item *model.Item) (err error) {
+	return r.db.
+		Where("id = ? AND user_id = ?", item.ID, item.UserID).
+		First(item).
+		Error
+}

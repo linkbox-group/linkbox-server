@@ -39,9 +39,32 @@ func (d *ContentDelivery) CreateItem(ctx context.Context, req *content.CreateIte
 }
 
 // GetItem implements the ContentDelivery interface.
-func (s *ContentDelivery) GetItem(ctx context.Context, req *content.GetItemRequest) (resp *content.GetItemResponse, err error) {
-	// TODO: Your code here...
-	return
+func (d *ContentDelivery) GetItem(ctx context.Context, req *content.GetItemRequest) (resp *content.GetItemResponse, err error) {
+	item := model.Item{
+		UserID: req.UserId,
+	}
+	err = d.s.GetItem(ctx, &item)
+
+	if err != nil {
+		return &content.GetItemResponse{
+			Result: &content.GetItemResponse_Error{
+				Error: &cError.Error{
+					Code:    40001,
+					Message: err.Error(),
+				},
+			},
+		}, err
+	}
+
+	return &content.GetItemResponse{
+		Result: &content.GetItemResponse_Item{
+			Item: &content.Item{
+				UserId: req.UserId,
+				Title:  item.Title,
+				Url:    item.URL,
+			},
+		},
+	}, nil
 }
 
 // UpdateItem implements the ContentDelivery interface.
