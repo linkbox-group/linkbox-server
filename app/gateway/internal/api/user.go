@@ -2,50 +2,64 @@ package api
 
 import (
 	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/auth"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/user"
 )
 
 var (
 	ErrInvalidParamCode = 40001
-	ErrRpcFailed        = 50050
+	ErrRpcFailedCode    = 50050
+	ErrAuthFailedCode   = 40100
+	ErrUserNotFoundCode = 40400
+	ErrTokenInvalidCode = 40101
 )
 
 type UserApi struct {
 }
 
-// Login 用户登录
-func (api *UserApi) Login(ctx *gin.Context) {
-	var req user.LoginRequest
+// SendCode 发送验证码
+func (api *UserApi) SendCode(ctx *gin.Context) {
+	var req user.SendCodeReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		fmt.Println(err)
 		domain.ErrorMsg(ctx, ErrInvalidParamCode, err.Error())
 		return
 	}
 
+	resp, err := rpc.UserClient.SendCode(ctx, &req)
+	if err != nil {
+		fmt.Println(err)
+		domain.ErrorMsg(ctx, ErrRpcFailedCode, err.Error())
+		return
+	}
+
+	domain.Success(ctx, resp)
+}
+
+// Login 用户登录
+func (api *UserApi) Login(ctx *gin.Context) {
+	var req user.LoginReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		domain.ErrorMsg(ctx, ErrInvalidParamCode, err.Error())
+	}
+
 	resp, err := rpc.UserClient.Login(ctx, &req)
 	if err != nil {
-		domain.ErrorMsg(ctx, ErrRpcFailed, err.Error())
+		domain.ErrorMsg(ctx, ErrRpcFailedCode, err.Error())
 		return
 	}
-	if resp.GetError() != nil {
-		domain.ErrorMsg(ctx, int(resp.GetError().Code), resp.GetError().Message)
-		return
-	}
-	res := resp.GetAuth()
 	vo := domain.UserLoginResp{
-		UserData: domain.UserData{
-			Id:          res.User.Id,
-			Username:    res.User.Username,
-			Email:       res.User.Email,
-			AvatarUrl:   res.User.AvatarUrl,
-			DisplayName: res.User.DisplayName,
-			Roles:       res.User.Roles,
-		},
-		AccessToken:  res.AccessToken,
-		RefreshToken: res.RefreshToken,
+		UserId:       resp.UserId,
+		Username:     resp.Username,
+		Email:        resp.Email,
+		Avatar:       resp.Avatar,
+		Bio:          resp.Bio,
+		Theme:        resp.Theme,
+		AccessToken:  resp.AccessToken,
+		RefreshToken: resp.RefreshToken,
 	}
 
 	domain.Success(ctx, vo)
@@ -53,39 +67,33 @@ func (api *UserApi) Login(ctx *gin.Context) {
 
 // Register 用户注册
 func (api *UserApi) Register(ctx *gin.Context) {
-	var req user.RegisterRequest
+	var req user.RegisterReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		domain.ErrorMsg(ctx, ErrInvalidParamCode, err.Error())
-		return
 	}
 
 	resp, err := rpc.UserClient.Register(ctx, &req)
 	if err != nil {
-		domain.ErrorMsg(ctx, ErrRpcFailed, err.Error())
+		domain.ErrorMsg(ctx, ErrRpcFailedCode, err.Error())
 		return
 	}
-	if resp.GetError() != nil {
-		domain.ErrorMsg(ctx, int(resp.GetError().Code), resp.GetError().Message)
-		return
-	}
-	res := resp.GetUser()
 	vo := domain.UserRegisterResp{
-		UserData: domain.UserData{
-			Id:          res.Id,
-			Username:    res.Username,
-			Email:       res.Email,
-			AvatarUrl:   res.AvatarUrl,
-			DisplayName: res.DisplayName,
-			Roles:       res.Roles,
-		},
+		UserId:       resp.UserId,
+		Username:     resp.Username,
+		Email:        resp.Email,
+		Avatar:       resp.Avatar,
+		Bio:          resp.Bio,
+		Theme:        resp.Theme,
+		AccessToken:  resp.AccessToken,
+		RefreshToken: resp.RefreshToken,
 	}
-	domain.Success(ctx, vo)
 
+	domain.Success(ctx, vo)
 }
 
 // ChangePassword 修改密码
 func (api *UserApi) ChangePassword(ctx *gin.Context) {
-	var req user.ChangePasswordRequest
+	var req user.ChangePasswordReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		domain.ErrorMsg(ctx, ErrInvalidParamCode, err.Error())
 		return
@@ -94,23 +102,19 @@ func (api *UserApi) ChangePassword(ctx *gin.Context) {
 	// 设置 userId
 	userId, err := domain.GetUserIdFromContext(ctx)
 	if err != nil {
-		domain.ErrorMsg(ctx, ErrInvalidParamCode, err.Error())
+		domain.ErrorMsg(ctx, ErrAuthFailedCode, err.Error())
 		return
 	}
 	req.UserId = userId
 
 	resp, err := rpc.UserClient.ChangePassword(ctx, &req)
 	if err != nil {
-		domain.ErrorMsg(ctx, ErrRpcFailed, err.Error())
+		domain.ErrorMsg(ctx, ErrRpcFailedCode, err.Error())
 		return
 	}
-	if resp.GetError() != nil {
-		domain.ErrorMsg(ctx, int(resp.GetError().Code), resp.GetError().Message)
-		return
-	}
-	res := resp.GetSuccess()
 	vo := domain.UserChangePasswordResp{
-		Success: res,
+		Success: resp.Success,
+		Message: resp.Message,
 	}
 
 	domain.Success(ctx, vo)
@@ -118,7 +122,7 @@ func (api *UserApi) ChangePassword(ctx *gin.Context) {
 
 // UpdateUserInfo 更新用户信息
 func (api *UserApi) UpdateUserInfo(ctx *gin.Context) {
-	var req user.UpdateUserProfileRequest
+	var req user.UpdateUserInfoReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		domain.ErrorMsg(ctx, ErrInvalidParamCode, err.Error())
 		return
@@ -127,37 +131,26 @@ func (api *UserApi) UpdateUserInfo(ctx *gin.Context) {
 	// 设置 userId
 	userId, err := domain.GetUserIdFromContext(ctx)
 	if err != nil {
-		domain.ErrorMsg(ctx, ErrInvalidParamCode, err.Error())
+		domain.ErrorMsg(ctx, ErrAuthFailedCode, err.Error())
 		return
 	}
 	req.UserId = userId
 
-	resp, err := rpc.UserClient.UpdateUserProfile(ctx, &req)
+	resp, err := rpc.UserClient.UpdateUserInfo(ctx, &req)
 	if err != nil {
-		domain.ErrorMsg(ctx, ErrRpcFailed, err.Error())
+		domain.ErrorMsg(ctx, ErrRpcFailedCode, err.Error())
 		return
 	}
-	if resp.GetError() != nil {
-		domain.ErrorMsg(ctx, int(resp.GetError().Code), resp.GetError().Message)
-		return
-	}
-	res := resp.GetProfile()
 	vo := domain.UserUpdateResp{
-		Id:          res.Id,
-		Username:    res.Username,
-		Email:       res.Email,
-		AvatarUrl:   res.AvatarUrl,
-		DisplayName: res.DisplayName,
-		Bio:         res.Bio,
-		CreatedAt:   res.CreatedAt.AsTime(),
-		UpdatedAt:   res.UpdatedAt.AsTime(),
+		Success: resp.Success,
+		Message: resp.Message,
 	}
 	domain.Success(ctx, vo)
 }
 
 // GetUserInfo 获取用户信息
 func (api *UserApi) GetUserInfo(ctx *gin.Context) {
-	var req user.UserIdRequest
+	var req user.GetUserInfoReq
 
 	// 设置 userId
 	userId, err := domain.GetUserIdFromContext(ctx)
@@ -165,29 +158,47 @@ func (api *UserApi) GetUserInfo(ctx *gin.Context) {
 	req.UserId = userId
 	fmt.Println("userID", req.UserId)
 	if err != nil {
-		domain.ErrorMsg(ctx, ErrInvalidParamCode, err.Error())
+		domain.ErrorMsg(ctx, ErrAuthFailedCode, err.Error())
 		return
 	}
 
-	resp, err := rpc.UserClient.GetUserProfile(ctx, &req)
+	resp, err := rpc.UserClient.GetUserInfo(ctx, &req)
 	if err != nil {
-		domain.ErrorMsg(ctx, ErrRpcFailed, err.Error())
+		domain.ErrorMsg(ctx, ErrRpcFailedCode, err.Error())
 		return
 	}
-	if resp.GetError() != nil {
-		domain.ErrorMsg(ctx, int(resp.GetError().Code), resp.GetError().Message)
-		return
-	}
-	res := resp.GetProfile()
 	vo := domain.UserGetInfoResp{
-		Id:          res.Id,
-		Username:    res.Username,
-		Email:       res.Email,
-		AvatarUrl:   res.AvatarUrl,
-		DisplayName: res.DisplayName,
-		Bio:         res.Bio,
-		CreatedAt:   res.CreatedAt.AsTime(),
-		UpdatedAt:   res.UpdatedAt.AsTime(),
+		UserId:   resp.UserId,
+		Username: resp.Username,
+		Email:    resp.Email,
+		Avatar:   resp.Avatar,
+		Bio:      resp.Bio,
+		Theme:    resp.Theme,
+	}
+
+	domain.Success(ctx, vo)
+}
+
+// DeleteUser 删除用户
+func (api *UserApi) DeleteUser(ctx *gin.Context) {
+	var req user.DeleteUserReq
+
+	// 设置 userId
+	userId, err := domain.GetUserIdFromContext(ctx)
+	if err != nil {
+		domain.ErrorMsg(ctx, ErrAuthFailedCode, err.Error())
+		return
+	}
+	req.UserId = userId
+
+	resp, err := rpc.UserClient.DeleteUser(ctx, &req)
+	if err != nil {
+		domain.ErrorMsg(ctx, ErrRpcFailedCode, err.Error())
+		return
+	}
+	vo := domain.UserLogoutResp{
+		Success: resp.Success,
+		Message: resp.Message,
 	}
 
 	domain.Success(ctx, vo)
@@ -195,53 +206,17 @@ func (api *UserApi) GetUserInfo(ctx *gin.Context) {
 
 // RefreshToken 刷新访问令牌
 func (api *UserApi) RefreshToken(ctx *gin.Context) {
-	var req user.RefreshTokenRequest
+	var req auth.TokenRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		domain.ErrorMsg(ctx, ErrInvalidParamCode, err.Error())
 		return
 	}
 
-	resp, err := rpc.UserClient.RefreshToken(ctx, &req)
+	resp, err := rpc.AuthClient.RefreshToken(ctx, &req)
 	if err != nil {
-		domain.ErrorMsg(ctx, ErrRpcFailed, err.Error())
-		return
-	}
-	if resp.GetError() != nil {
-		domain.ErrorMsg(ctx, int(resp.GetError().Code), resp.GetError().Message)
+		domain.ErrorMsg(ctx, ErrTokenInvalidCode, err.Error())
 		return
 	}
 
-	vo := domain.TokenRefreshResp{
-		AccessToken: resp.GetAuth().AccessToken,
-		Success:     true,
-	}
-
-	domain.Success(ctx, vo)
-}
-
-func (api *UserApi) DeleteUser(ctx *gin.Context) {
-	var req user.DeleteAccountRequest
-
-	// 设置 userId
-	userId, err := domain.GetUserIdFromContext(ctx)
-	if err != nil {
-		domain.ErrorMsg(ctx, ErrInvalidParamCode, err.Error())
-		return
-	}
-	req.UserId = userId
-
-	resp, err := rpc.UserClient.DeleteAccount(ctx, &req)
-	if err != nil {
-		domain.ErrorMsg(ctx, ErrRpcFailed, err.Error())
-		return
-	}
-	if resp.GetError() != nil {
-		domain.ErrorMsg(ctx, int(resp.GetError().Code), resp.GetError().Message)
-		return
-	}
-	vo := domain.UserLogoutResp{
-		Success: resp.GetSuccess(),
-	}
-
-	domain.Success(ctx, vo)
+	domain.Success(ctx, resp.Token)
 }
