@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-redis/redis/v8"
+	"github.com/google/uuid"
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/auth"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/user"
@@ -118,13 +119,14 @@ func (u *UserService) RegisterUser(ctx context.Context, email, code, password st
 
 	// 构建新用户
 	userModel = &model.User{
+		ID:           uuid.New().String(),
 		Username:     "默认用户",
 		Bio:          "该用户还没有没有填写个人简介",
 		AvatarUrl:    "https://avatars.githubusercontent.com/u/204012462?s=48&v=4",
 		Theme:        "light",
 		RegisterDate: time.Now(),
 		Email:        email,
-		Password:     passwordHash,
+		PasswordHash: passwordHash,
 	}
 
 	// 创建用户
@@ -135,14 +137,14 @@ func (u *UserService) RegisterUser(ctx context.Context, email, code, password st
 	}
 
 	accessToken, err := rpc.AuthClient.GenerateAccessToken(ctx, &auth.GenerateTokenReq{
-		Uid: userModel.UserID,
+		Uid: userModel.ID,
 	})
 	if err != nil {
 		logrus.Errorln(err)
 		return nil, errors.New("internal error: " + err.Error())
 	}
 	refreshToken, err := rpc.AuthClient.GenerateRefreshToken(ctx, &auth.GenerateTokenReq{
-		Uid: userModel.UserID,
+		Uid: userModel.ID,
 	})
 	if err != nil {
 		logrus.Errorln(err)
@@ -151,7 +153,7 @@ func (u *UserService) RegisterUser(ctx context.Context, email, code, password st
 
 	// 返回用户信息
 	return &user.RegisterResp{
-		UserId:       userModel.UserID,
+		UserId:       userModel.ID,
 		Username:     userModel.Username,
 		Email:        userModel.Email,
 		Bio:          userModel.Bio,
@@ -181,19 +183,19 @@ func (u *UserService) LoginUser(ctx context.Context, email, password string) (re
 	}
 
 	// 校验密码
-	if !encrypt.ComparePasswords(userModel.Password, password) {
+	if !encrypt.ComparePasswords(userModel.PasswordHash, password) {
 		logrus.Info(errPasswordNotMatch)
 		return nil, fmt.Errorf("password not match")
 	}
 	accessToken, err := rpc.AuthClient.GenerateAccessToken(ctx, &auth.GenerateTokenReq{
-		Uid: userModel.UserID,
+		Uid: userModel.ID,
 	})
 	if err != nil {
 		logrus.Errorln(err)
 		return nil, errors.New("internal error: " + err.Error())
 	}
 	refreshToken, err := rpc.AuthClient.GenerateRefreshToken(ctx, &auth.GenerateTokenReq{
-		Uid: userModel.UserID,
+		Uid: userModel.ID,
 	})
 	if err != nil {
 		logrus.Errorln(err)
@@ -201,7 +203,7 @@ func (u *UserService) LoginUser(ctx context.Context, email, password string) (re
 	}
 	// 返回用户信息
 	return &user.LoginResp{
-		UserId:       userModel.UserID,
+		UserId:       userModel.ID,
 		Username:     userModel.Username,
 		Email:        userModel.Email,
 		Bio:          userModel.Bio,
@@ -220,7 +222,7 @@ func (u *UserService) GetUser(ctx context.Context, id string) (resp *user.GetUse
 	}
 
 	return &user.GetUserInfoResp{
-		UserId:   userModel.UserID,
+		UserId:   userModel.ID,
 		Username: userModel.Username,
 		Email:    userModel.Email,
 		Bio:      userModel.Bio,
@@ -244,7 +246,7 @@ func (u *UserService) UpdatePassword(ctx context.Context, id string, oldPassword
 	}
 
 	// 校验密码
-	if !encrypt.ComparePasswords(userModel.Password, oldPassword) {
+	if !encrypt.ComparePasswords(userModel.PasswordHash, oldPassword) {
 		logrus.Info(errPasswordNotMatch)
 		return fmt.Errorf("password not match")
 	}
@@ -255,7 +257,7 @@ func (u *UserService) UpdatePassword(ctx context.Context, id string, oldPassword
 		logrus.Errorln(err)
 		return err
 	}
-	userModel.Password = password
+	userModel.PasswordHash = password
 	if err := u.repo.UpdateUser(ctx, userModel); err != nil {
 		logrus.Errorln(err)
 		return err
