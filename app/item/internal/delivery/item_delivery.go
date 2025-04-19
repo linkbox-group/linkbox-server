@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"context"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/linkbox-group/linkbox-server/model"
@@ -156,10 +157,75 @@ func (d *ItemDelivery) BatchDeleteItems(ctx context.Context, req *item.BatchDele
 	return
 }
 
-// GetItemsByTags implements the ItemDelivery interface.
+// GetItemsByTags implements the ContentDelivery interface.
 func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByTagsRequest) (resp *item.GetItemsByTagsResponse, err error) {
-	// TODO: Your code here...
-	return
+	userID := req.UserId
+	tagIDs := req.Tags
+	paginationReq := req.Pagination // 保存请求中的分页信息
+	// 注意：传递给 service 层的 paginationReq 类型应为 *commonPagination.PaginationRequest
+	items, total, err := d.s.GetItemsByTags(ctx, userID, tagIDs, paginationReq)
+	if err != nil {
+		return &item.GetItemsByTagsResponse{
+			Result: &item.GetItemsByTagsResponse_Error{
+				Error: &cError.Error{
+					Code:    40000,
+					Message: err.Error(),
+				},
+			},
+		}, err
+	}
+
+	// 转换结果为响应格式
+	respItems := make([]*item.Item, 0, len(items))
+	for _, dbItem := range items {
+		tagStrings := make([]string, 0, len(dbItem.Tags))
+		for _, tag := range dbItem.Tags {
+			tagStrings = append(tagStrings, tag.Name)
+		}
+
+		respItems = append(respItems, &item.Item{
+			Id:     dbItem.ID,
+			UserId: dbItem.UserID,
+			Title:  dbItem.Title,
+			//Description: dbItem.Description,
+			Url:       dbItem.URL,
+			Tags:      tagStrings,
+			CreatedAt: timestamppb.New(dbItem.CreatedAt),
+			UpdatedAt: timestamppb.New(dbItem.UpdatedAt),
+		})
+	}
+
+	// 构造分页响应信息
+	var currentPage, currentPageSize int64 = 1, 10 // 默认值 (int64)
+	if paginationReq != nil {                      // 先检查 nil
+		if paginationReq.Page > 0 {
+			currentPage = int64(paginationReq.Page) // 从 int32 转为 int64
+		}
+		if paginationReq.PageSize > 0 {
+			currentPageSize = int64(paginationReq.PageSize) // 从 int32 转为 int64
+			// 可选：添加最大页面大小限制
+			// const maxPageSize = 100
+			// if currentPageSize > maxPageSize {
+			// 	currentPageSize = maxPageSize
+			// }
+		}
+	}
+	// 使用正确的类型 commonPagination.PaginationResponse 和字段名
+	paginationResp := &pagination.PaginationMeta{
+		TotalPages: int32(total), // 从 int 转为 int64
+		Page:       int32(currentPage),
+		PageSize:   int32(currentPageSize),
+	}
+
+	// 构造成功响应，使用 ItemsPage 结构
+	return &item.GetItemsByTagsResponse{
+		Result: &item.GetItemsByTagsResponse_ItemsPage{
+			ItemsPage: &item.ItemsPage{
+				Items:      respItems,
+				Pagination: paginationResp,
+			},
+		},
+	}, nil
 }
 
 // ExtractMetadata implements the ItemDelivery interface.
