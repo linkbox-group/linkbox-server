@@ -242,14 +242,36 @@ func (s *OrganizationDelivery) MoveOrganization(ctx context.Context, req *organi
 
 // AddItemsToOrganization implements the OrganizationDelivery interface.
 func (s *OrganizationDelivery) AddItemsToOrganization(ctx context.Context, req *organization.AddItemsToOrganizationRequest) (resp *organization.AddItemsToOrganizationResponse, err error) {
-	// TODO: Your code here...
-	return
+	err = s.service.AddItemsToOrganizationService(ctx, req.OrganizationId, req.UserId, req.ItemIds)
+	if err != nil {
+		return &organization.AddItemsToOrganizationResponse{
+			Result: &organization.AddItemsToOrganizationResponse_Error{
+				Error: &cError.Error{
+					Message: err.Error(),
+				},
+			}}, err
+	}
+
+	return &organization.AddItemsToOrganizationResponse{
+		Result: &organization.AddItemsToOrganizationResponse_Success{
+			Success: true}}, nil
 }
 
 // RemoveItemsFromOrganization implements the OrganizationDelivery interface.
 func (s *OrganizationDelivery) RemoveItemsFromOrganization(ctx context.Context, req *organization.RemoveItemsFromOrganizationRequest) (resp *organization.RemoveItemsFromOrganizationResponse, err error) {
-	// TODO: Your code here...
-	return
+	err = s.service.RemoveItemsFromOrganizationService(ctx, req.OrganizationId, req.UserId, req.ItemIds)
+	if err != nil {
+		return &organization.RemoveItemsFromOrganizationResponse{
+			Result: &organization.RemoveItemsFromOrganizationResponse_Error{
+				Error: &cError.Error{
+					Message: err.Error(),
+				},
+			}}, err
+	}
+
+	return &organization.RemoveItemsFromOrganizationResponse{
+		Result: &organization.RemoveItemsFromOrganizationResponse_Success{
+			Success: true}}, nil
 }
 
 // GetOrganizationItems implements the OrganizationDelivery interface.
