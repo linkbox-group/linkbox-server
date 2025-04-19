@@ -72,30 +72,31 @@ func (d *ContentDelivery) GetItem(ctx context.Context, req *content.GetItemReque
 
 // UpdateItem implements the ContentDelivery interface.
 func (s *ContentDelivery) UpdateItem(ctx context.Context, req *content.UpdateItemRequest) (resp *content.UpdateItemResponse, err error) {
-	item := model.Item{
-		UserID: req.UserId,
-		Title:  req.Title,
-	}
-	err = s.s.UpdateItem(ctx, &item)
-	if err != nil {
-		return &content.UpdateItemResponse{
-			Result: &content.UpdateItemResponse_Error{
-				Error: &cError.Error{
-					Code:    40002,
-					Message: err.Error(),
-				},
-			},
-		}, err
-	}
-	return &content.UpdateItemResponse{
-		Result: &content.UpdateItemResponse_Item{
-			Item: &content.Item{
-				UserId: req.UserId,
-				Title:  item.Title,
-				Url:    item.URL,
-			},
-		},
-	}, nil
+	//item := model.Item{
+	//	UserID: req.UserId,
+	//	Title:  req.Title,
+	//}
+	//err = s.s.UpdateItem(ctx, &item)
+	//if err != nil {
+	//	return &content.UpdateItemResponse{
+	//		Result: &content.UpdateItemResponse_Error{
+	//			Error: &cError.Error{
+	//				Code:    40002,
+	//				Message: err.Error(),
+	//			},
+	//		},
+	//	}, err
+	//}
+	//return &content.UpdateItemResponse{
+	//	Result: &content.UpdateItemResponse_Item{
+	//		Item: &content.Item{
+	//			UserId: req.UserId,
+	//			Title:  item.Title,
+	//			Url:    item.URL,
+	//		},
+	//	},
+	//}, nil
+	return
 }
 
 // DeleteItem implements the ContentDelivery interface.
