@@ -7,12 +7,18 @@
 package main
 
 import (
+	"github.com/linkbox-group/linkbox-server/content/internal/core"
 	"github.com/linkbox-group/linkbox-server/content/internal/delivery"
+	"github.com/linkbox-group/linkbox-server/content/internal/repository"
+	"github.com/linkbox-group/linkbox-server/content/internal/service"
 )
 
 // Injectors from wire.go:
 
 func NewContentHandler() *delivery.ContentDelivery {
-	contentDelivery := delivery.NewContentDelivery()
+	db := core.NewDB()
+	repositoryRepository := repository.NewRepository(db)
+	serviceService := service.NewContentService(repositoryRepository)
+	contentDelivery := delivery.NewContentDelivery(serviceService)
 	return contentDelivery
 }

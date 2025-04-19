@@ -2,13 +2,38 @@ package delivery
 
 import (
 	"context"
+
+	"github.com/linkbox-group/linkbox-server/model"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/content"
 )
 
-// CreateItem implements the ContentDelivery interface.
-func (s *ContentDelivery) CreateItem(ctx context.Context, req *content.CreateItemRequest) (resp *content.CreateItemResponse, err error) {
-	// TODO: Your code here...
-	return
+func (d *ContentDelivery) CreateItem(ctx context.Context, req *content.CreateItemRequest) (resp *content.CreateItemResponse, err error) {
+	item := model.Item{
+		Title: req.Title,
+		URL:   req.Url,
+	}
+	err = d.s.CreateItem(ctx, &item)
+
+	if err != nil {
+		return &content.CreateItemResponse{
+			Result: &content.CreateItemResponse_Error{
+				Error: &cError.Error{
+					Code:    40000,
+					Message: err.Error(),
+				},
+			},
+		}, err
+	}
+	return &content.CreateItemResponse{
+		Result: &content.CreateItemResponse_Item{
+			Item: &content.Item{
+				Title: item.Title,
+				Url:   item.URL,
+			},
+		},
+	}, nil
+
 }
 
 // GetItem implements the ContentDelivery interface.
