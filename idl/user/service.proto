@@ -1,297 +1,108 @@
-// user/service.proto
 syntax = "proto3";
 
 package user;
 
-option go_package = "user";
+option go_package = "/user";
 
-import "google/protobuf/timestamp.proto";
-import "common/cError/error.proto";
-import "common/pagination/pagination.proto";
-import "common/types/types.proto";
-
-// 用户服务定义
-service UserService {
-  // 注册
-  rpc Register(RegisterRequest) returns (RegisterResponse);
-
-  // 登录
-  rpc Login(LoginRequest) returns (LoginResponse);
-
-  // 第三方登录
-  rpc OAuthLogin(OAuthLoginRequest) returns (LoginResponse);
-
-  // 获取用户资料
-  rpc GetUserProfile(UserIdRequest) returns (GetUserProfileResponse);
-
-  // 更新用户资料
-  rpc UpdateUserProfile(UpdateUserProfileRequest) returns (UpdateUserProfileResponse);
-
-  // 修改密码
-  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
-
-  // 忘记密码 - 发送重置链接
-  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
-
-  // 重置密码
-  rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse);
-
-  // 注销账号
-  rpc DeleteAccount(DeleteAccountRequest) returns (DeleteAccountResponse);
-
-  // 查询用户列表(管理员)
-  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
-
-  // 登出
-  rpc Logout(LogoutRequest) returns (LogoutResponse);
-
-  // 刷新令牌
-  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
-
-  // 查询用户订阅计划
-  rpc GetUserSubscription(UserIdRequest) returns (GetUserSubscriptionResponse);
-
-  // 更新用户订阅计划
-  rpc UpdateUserSubscription(UpdateUserSubscriptionRequest) returns (UpdateUserSubscriptionResponse);
-}
-
-// 用户ID请求
-message UserIdRequest {
-  string user_id = 1;
-}
-
-// 用户基本信息
-message UserProfile {
-  string id = 1;
-  string username = 2;
-  string email = 3;
-  string avatar_url = 4;
-  string display_name = 5;
-  string bio = 6;
-  google.protobuf.Timestamp created_at = 7;
-  google.protobuf.Timestamp updated_at = 8;
-}
-
-// 注册请求
-message RegisterRequest {
+message SendCodeReq {
   string email = 1;
-  string password = 2;
-  string username = 3;
-  string display_name = 4;
 }
 
-// 注册响应
-message RegisterResponse {
-  oneof result {
-    UserData user = 1;
-    common.cError.Error error = 2;
-  }
+message SendCodeResp {
+  bool success = 1;
+  string message = 2;
 }
 
-// 用户数据
-message UserData {
-  string id = 1;
-  string username = 2;
-  string email = 3;
-  string display_name = 4;
-  string avatar_url = 5;
-  repeated string roles = 6;
-  google.protobuf.Timestamp created_at = 7;
-}
-
-// 登录请求
-message LoginRequest {
+message RegisterReq {
   string email = 1;
-  string password = 2;
-  bool remember_me = 3;
-}
-
-// 登录响应
-message LoginResponse {
-  oneof result {
-    AuthData auth = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 认证数据
-message AuthData {
-  string access_token = 1;
-  string refresh_token = 2;
-  int64 expires_in = 3;
-  UserData user = 4;
-}
-
-// OAuth登录请求
-message OAuthLoginRequest {
-  string provider = 1;  // "google", "facebook", "twitter", etc.
   string code = 2;
-  string redirect_uri = 3;
+  string password = 3;
+  string confirm_password = 4;
 }
 
-// 获取用户资料响应
-message GetUserProfileResponse {
-  oneof result {
-    UserProfile profile = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 更新用户资料请求
-message UpdateUserProfileRequest {
+message RegisterResp {
   string user_id = 1;
-  optional string display_name = 2;
-  optional string bio = 3;
-  optional string avatar_url = 4;
+  string username = 2;
+  string email = 3;
+  string avatar = 4;
+  string bio = 5;
+  string register_date = 6;
+  string theme = 7;
+  string access_token = 8;
+  string refresh_token = 9;
 }
 
-// 更新用户资料响应
-message UpdateUserProfileResponse {
-  oneof result {
-    UserProfile profile = 1;
-    common.cError.Error error = 2;
-  }
+message LoginReq {
+  string email = 1;
+  string password = 2;
 }
 
-// 修改密码请求
-message ChangePasswordRequest {
+message LoginResp {
+  string user_id = 1;
+  string username = 2;
+  string email = 3;
+  string avatar = 4;
+  string bio = 5;
+  string register_date = 6;
+  string theme = 7;
+  string access_token = 8;
+  string refresh_token =9;
+}
+
+// 新增请求和响应消息
+message UpdateUserInfoReq {
+  string user_id = 1;
+  string username = 2;
+  string avatar = 3;
+  string theme = 4;
+  string bio = 5;
+}
+
+message ChangePasswordReq{
   string user_id = 1;
   string old_password = 2;
   string new_password = 3;
 }
 
-// 修改密码响应
-message ChangePasswordResponse {
-  oneof result {
-    bool success = 1;
-    common.cError.Error error = 2;
-  }
+message UpdateUserInfoResp {
+  bool success = 1;
+  string message = 2;
 }
 
-// 忘记密码请求
-message ForgotPasswordRequest {
-  string email = 1;
+message ChangePasswordResp{
+  bool success = 1;
+  string message = 2;
 }
 
-// 忘记密码响应
-message ForgotPasswordResponse {
-  oneof result {
-    bool success = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 重置密码请求
-message ResetPasswordRequest {
-  string token = 1;
-  string new_password = 2;
-}
-
-// 重置密码响应
-message ResetPasswordResponse {
-  oneof result {
-    bool success = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 注销账号请求
-message DeleteAccountRequest {
+message GetUserInfoReq {
   string user_id = 1;
-  string password = 2;
 }
 
-// 注销账号响应
-message DeleteAccountResponse {
-  oneof result {
-    bool success = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 用户列表请求
-message ListUsersRequest {
-  common.pagination.PaginationRequest pagination = 1;
-  string search_query = 2;
-  repeated string roles = 3;
-  common.types.TimeRange created_range = 4;
-  common.pagination.SortRequest sort = 5;
-}
-
-// 用户列表响应
-message ListUsersResponse {
-  oneof result {
-    UsersPage users_page = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 用户分页信息
-message UsersPage {
-  repeated UserData users = 1;
-  common.pagination.PaginationMeta pagination = 2;
-}
-
-// 登出请求
-message LogoutRequest {
+message GetUserInfoResp {
   string user_id = 1;
-  string refresh_token = 2;
+  string username = 2;
+  string email = 3;
+  string avatar = 4;
+  string bio = 5;
+  string register_date = 6;
+  string theme = 7;
 }
 
-// 登出响应
-message LogoutResponse {
-  oneof result {
-    bool success = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 刷新令牌请求
-message RefreshTokenRequest {
-  string refresh_token = 1;
-}
-
-// 刷新令牌响应
-message RefreshTokenResponse {
-  oneof result {
-    AuthData auth = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 订阅计划
-message Subscription {
-  string id = 1;
-  string plan_name = 2;
-  string plan_id = 3;
-  google.protobuf.Timestamp start_date = 4;
-  google.protobuf.Timestamp end_date = 5;
-  bool is_active = 6;
-  bool auto_renew = 7;
-  google.protobuf.Timestamp next_billing_date = 8;
-  string payment_method = 9;
-  repeated string features = 10;
-}
-
-// 获取用户订阅响应
-message GetUserSubscriptionResponse {
-  oneof result {
-    Subscription subscription = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 更新用户订阅请求
-message UpdateUserSubscriptionRequest {
+message DeleteUserReq {
   string user_id = 1;
-  string plan_id = 2;
-  bool auto_renew = 3;
 }
 
-// 更新用户订阅响应
-message UpdateUserSubscriptionResponse {
-  oneof result {
-    Subscription subscription = 1;
-    common.cError.Error error = 2;
-  }
+message DeleteUserResp {
+  bool success = 1;
+  string message = 2;
+}
+
+service UserService {
+  rpc SendCode (SendCodeReq) returns (SendCodeResp) {}
+  rpc Register (RegisterReq) returns (RegisterResp) {}
+  rpc Login (LoginReq) returns (LoginResp) {}
+  rpc ChangePassword (ChangePasswordReq)returns(ChangePasswordResp){}
+  rpc UpdateUserInfo (UpdateUserInfoReq) returns (UpdateUserInfoResp) {}
+  rpc GetUserInfo (GetUserInfoReq) returns (GetUserInfoResp) {}
+  rpc DeleteUser (DeleteUserReq) returns (DeleteUserResp) {}
 }
