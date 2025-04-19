@@ -15,6 +15,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/linkbox-group/linkbox-server/common v0.0.0-00010101000000-000000000000
 	github.com/linkbox-group/linkbox-server/rpc-gen v0.0.0-00010101000000-000000000000
+	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.20.0
 )
 

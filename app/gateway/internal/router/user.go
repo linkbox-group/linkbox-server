@@ -8,6 +8,7 @@ import (
 func (r *Group) SetUserRouter() {
 	group := r.Group("/user")
 	var userApi api.UserApi
+	group.POST("/send_code", userApi.SendCode)
 	group.POST("/login", userApi.Login)
 	group.POST("/register", userApi.Register)
 	group.POST("/refresh-token", userApi.RefreshToken)
