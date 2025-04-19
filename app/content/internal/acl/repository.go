@@ -3,6 +3,7 @@ package acl
 import (
 	"context"
 	"github.com/linkbox-group/linkbox-server/model"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 )
 
 type UserRepositoryItf interface {
@@ -10,4 +11,5 @@ type UserRepositoryItf interface {
 	GetItem(ctx context.Context, req *model.Item) (err error)
 	UpdateItem(ctx context.Context, req *model.Item) (err error)
 	DeleteItem(ctx context.Context, req *model.Item) (err error)
+	GetItemsByTags(context.Context, string, []string, *pagination.PaginationRequest) ([]model.Item, int, error)
 }
