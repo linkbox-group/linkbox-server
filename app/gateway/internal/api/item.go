@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
@@ -89,8 +90,20 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 		domain.Error(c, ErrTitleExists, err.Error())
 		return
 	}
-
-	domain.Success(c, resp)
+	vo := domain.UpdateContentResponse{
+		Content: &domain.Content{
+			ID:              resp.GetItem().Id,
+			UserID:          resp.GetItem().UserId,
+			URL:             resp.GetItem().Url,
+			Title:           resp.GetItem().Title,
+			ThumbnailURL:    resp.GetItem().ThumbnailUrl,
+			Tags:            resp.GetItem().Tags,
+			OrganizationIDs: resp.GetItem().CollectionIds,
+			CreatedAt:       resp.GetItem().CreatedAt.AsTime(),
+			UpdatedAt:       resp.GetItem().UpdatedAt.AsTime(),
+		},
+	}
+	domain.Success(c, vo)
 }
 
 // DeleteItem 删除内容
