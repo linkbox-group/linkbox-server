@@ -46,7 +46,7 @@ func (r *Group) RegisterTagRoutes() {
 		userTagGroup.GET("", tagAPI.GetUserTags)
 	}
 
-	itemTagGroup := r.Group("/items/:item_id/tags")
+	itemTagGroup := r.Group("/items/tags/:items_id")
 	{
 		itemTagGroup.GET("", tagAPI.GetItemTags)
 	}
@@ -55,7 +55,7 @@ func (r *Group) RegisterTagRoutes() {
 // RegisterItemRoutes registers content-related routes
 func (r *Group) RegisterItemRoutes() {
 	var contentAPI api.ItemAPI
-	contentGroup := r.Group("/contents")
+	contentGroup := r.Group("/items")
 	{
 		contentGroup.POST("", contentAPI.CreateItem)
 		contentGroup.GET("/:id", contentAPI.GetItem)
@@ -63,9 +63,13 @@ func (r *Group) RegisterItemRoutes() {
 		contentGroup.DELETE("/:id", contentAPI.DeleteItem)
 	}
 
-	contentTagGroup := r.Group("/contents/tags")
+	contentTagGroup := r.Group("/items/tags")
 	{
-		contentTagGroup.GET("", contentAPI.GetItemsByTags)
+		contentTagGroup.POST("", contentAPI.GetItemsByTags)
+	}
+	organizationGroup := r.Group("/items/organization")
+	{
+		organizationGroup.POST("", contentAPI.GetItemsByOrganization)
 	}
 }
 

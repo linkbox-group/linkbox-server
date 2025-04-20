@@ -39,6 +39,7 @@ func InitClient() {
 		initAuthClient()
 		initTagClient()
 		initOrganizationClient()
+		initItemClient()
 	})
 }
 

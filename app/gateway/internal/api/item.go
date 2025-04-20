@@ -2,14 +2,12 @@ package api
 
 import (
 	"context"
-	"strconv"
-	"strings"
-
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
+	"github.com/sirupsen/logrus"
 )
 
 type ItemAPI struct{}
@@ -27,6 +25,7 @@ const (
 func (a *ItemAPI) CreateItem(c *gin.Context) {
 	var req item.CreateItemRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		logrus.Infoln(err)
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
@@ -123,28 +122,44 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 		return
 	}
 
-	tagsStr := c.Query("tags")
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "20"))
+	req := item.GetItemsByTagsRequest{
+		Pagination: &pagination.PaginationRequest{},
+	}
+	req.UserId = userId
+	err = c.ShouldBind(&req)
+	if err != nil {
+		logrus.Infoln(err)
+		domain.ErrorMsg(c, ErrInvalidParamCode, err.Error())
 
-	if tagsStr == "" {
-		domain.Error(c, ErrInvalidReq, "请求参数错误")
+		return
+	}
+	logrus.Infoln(req.Pagination)
+	resp, err := rpc.ItemClient.GetItemsByTags(context.Background(), &req)
+	if err != nil {
+		domain.Error(c, ErrRpcFailedCode, "rpc调用失败")
 		return
 	}
 
-	tags := strings.Split(tagsStr, ",")
-	resp, err := rpc.ItemClient.GetItemsByTags(context.Background(), &item.GetItemsByTagsRequest{
+	domain.Success(c, resp)
+}
+func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.ErrorMsg(c, ErrAuthFailedCode, err.Error())
+		return
+	}
+	req := item.GetItemsByOrganizationRequest{
 		UserId: userId,
-		Tags:   tags,
-		Pagination: &pagination.PaginationRequest{
-			Page:     int32(page),
-			PageSize: int32(pageSize),
-		},
-	})
+	}
+	err = c.ShouldBind(&req)
+	if err != nil {
+		domain.Error(c, ErrInvalidReq, err.Error())
+	}
+	logrus.Infoln(req.OrganizationId)
+	resp, err := rpc.ItemClient.GetItemsByOrganization(context.Background(), &req)
 	if err != nil {
 		domain.Error(c, ErrNoPermission, "没有操作权限")
 		return
 	}
-
 	domain.Success(c, resp)
 }

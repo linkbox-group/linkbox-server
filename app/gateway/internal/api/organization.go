@@ -194,6 +194,12 @@ func (a *OrganizationAPI) AddItemsToOrganization(c *gin.Context) {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.Error(c, ErrAuthFailedCode, err.Error())
+		return
+	}
+	req.UserId = userId
 
 	resp, err := rpc.OrganizationClient.AddItemsToOrganization(context.Background(), &req)
 	if err != nil {
@@ -211,7 +217,12 @@ func (a *OrganizationAPI) RemoveItemsFromOrganization(c *gin.Context) {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
-
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.Error(c, ErrAuthFailedCode, err.Error())
+		return
+	}
+	req.UserId = userId
 	resp, err := rpc.OrganizationClient.RemoveItemsFromOrganization(context.Background(), &req)
 	if err != nil {
 		domain.Error(c, ErrItemNotFound, "内容项不存在")
