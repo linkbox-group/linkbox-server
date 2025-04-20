@@ -18,6 +18,7 @@ type Client interface {
 	GetItems(ctx context.Context, Req *item.GetItemsRequest, callOptions ...callopt.Option) (r *item.GetItemsResponse, err error)
 	BatchDeleteItems(ctx context.Context, Req *item.BatchDeleteItemsRequest, callOptions ...callopt.Option) (r *item.BatchDeleteItemsResponse, err error)
 	GetItemsByTags(ctx context.Context, Req *item.GetItemsByTagsRequest, callOptions ...callopt.Option) (r *item.GetItemsByTagsResponse, err error)
+	GetItemsByOrganization(ctx context.Context, Req *item.GetItemsByOrganizationRequest, callOptions ...callopt.Option) (r *item.GetItemsByOrganizationResponse, err error)
 	ExtractMetadata(ctx context.Context, Req *item.ExtractMetadataRequest, callOptions ...callopt.Option) (r *item.ExtractMetadataResponse, err error)
 	GetRecentItems(ctx context.Context, Req *item.GetRecentItemsRequest, callOptions ...callopt.Option) (r *item.GetRecentItemsResponse, err error)
 	BatchUpdateItems(ctx context.Context, Req *item.BatchUpdateItemsRequest, callOptions ...callopt.Option) (r *item.BatchUpdateItemsResponse, err error)
@@ -91,6 +92,11 @@ func (p *kItemServiceClient) BatchDeleteItems(ctx context.Context, Req *item.Bat
 func (p *kItemServiceClient) GetItemsByTags(ctx context.Context, Req *item.GetItemsByTagsRequest, callOptions ...callopt.Option) (r *item.GetItemsByTagsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetItemsByTags(ctx, Req)
+}
+
+func (p *kItemServiceClient) GetItemsByOrganization(ctx context.Context, Req *item.GetItemsByOrganizationRequest, callOptions ...callopt.Option) (r *item.GetItemsByOrganizationResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetItemsByOrganization(ctx, Req)
 }
 
 func (p *kItemServiceClient) ExtractMetadata(ctx context.Context, Req *item.ExtractMetadataRequest, callOptions ...callopt.Option) (r *item.ExtractMetadataResponse, err error) {

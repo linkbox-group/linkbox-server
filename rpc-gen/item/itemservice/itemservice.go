@@ -64,6 +64,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
+	"GetItemsByOrganization": kitex.NewMethodInfo(
+		getItemsByOrganizationHandler,
+		newGetItemsByOrganizationArgs,
+		newGetItemsByOrganizationResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
 	"ExtractMetadata": kitex.NewMethodInfo(
 		extractMetadataHandler,
 		newExtractMetadataArgs,
@@ -967,6 +974,117 @@ func (p *GetItemsByTagsResult) IsSetSuccess() bool {
 }
 
 func (p *GetItemsByTagsResult) GetResult() interface{} {
+	return p.Success
+}
+
+func getItemsByOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(item.GetItemsByOrganizationRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(item.ItemService).GetItemsByOrganization(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *GetItemsByOrganizationArgs:
+		success, err := handler.(item.ItemService).GetItemsByOrganization(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*GetItemsByOrganizationResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newGetItemsByOrganizationArgs() interface{} {
+	return &GetItemsByOrganizationArgs{}
+}
+
+func newGetItemsByOrganizationResult() interface{} {
+	return &GetItemsByOrganizationResult{}
+}
+
+type GetItemsByOrganizationArgs struct {
+	Req *item.GetItemsByOrganizationRequest
+}
+
+func (p *GetItemsByOrganizationArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *GetItemsByOrganizationArgs) Unmarshal(in []byte) error {
+	msg := new(item.GetItemsByOrganizationRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var GetItemsByOrganizationArgs_Req_DEFAULT *item.GetItemsByOrganizationRequest
+
+func (p *GetItemsByOrganizationArgs) GetReq() *item.GetItemsByOrganizationRequest {
+	if !p.IsSetReq() {
+		return GetItemsByOrganizationArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *GetItemsByOrganizationArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *GetItemsByOrganizationArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type GetItemsByOrganizationResult struct {
+	Success *item.GetItemsByOrganizationResponse
+}
+
+var GetItemsByOrganizationResult_Success_DEFAULT *item.GetItemsByOrganizationResponse
+
+func (p *GetItemsByOrganizationResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *GetItemsByOrganizationResult) Unmarshal(in []byte) error {
+	msg := new(item.GetItemsByOrganizationResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *GetItemsByOrganizationResult) GetSuccess() *item.GetItemsByOrganizationResponse {
+	if !p.IsSetSuccess() {
+		return GetItemsByOrganizationResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *GetItemsByOrganizationResult) SetSuccess(x interface{}) {
+	p.Success = x.(*item.GetItemsByOrganizationResponse)
+}
+
+func (p *GetItemsByOrganizationResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *GetItemsByOrganizationResult) GetResult() interface{} {
 	return p.Success
 }
 
@@ -2044,6 +2162,16 @@ func (p *kClient) GetItemsByTags(ctx context.Context, Req *item.GetItemsByTagsRe
 	_args.Req = Req
 	var _result GetItemsByTagsResult
 	if err = p.c.Call(ctx, "GetItemsByTags", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetItemsByOrganization(ctx context.Context, Req *item.GetItemsByOrganizationRequest) (r *item.GetItemsByOrganizationResponse, err error) {
+	var _args GetItemsByOrganizationArgs
+	_args.Req = Req
+	var _result GetItemsByOrganizationResult
+	if err = p.c.Call(ctx, "GetItemsByOrganization", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

@@ -32,6 +32,8 @@ service ItemService {
 
   // 按标签获取内容项
   rpc GetItemsByTags(GetItemsByTagsRequest) returns (GetItemsByTagsResponse);
+  // 获取组织中的内容项
+  rpc GetItemsByOrganization(GetItemsByOrganizationRequest) returns (GetItemsByOrganizationResponse);
 
   // 从URL解析内容元数据
   rpc ExtractMetadata(ExtractMetadataRequest) returns (ExtractMetadataResponse);
@@ -106,6 +108,20 @@ message Item {
   google.protobuf.Timestamp updated_at = 15;
   string note = 16;
   int32 read_count = 17;
+}
+// 获取组织内容项请求
+message GetItemsByOrganizationRequest {
+  string user_id = 1;
+  string organization_id = 2;
+  common.pagination.PaginationRequest pagination = 3;
+  common.pagination.SortRequest sort = 4;
+}
+// 获取组织内容项响应
+message GetItemsByOrganizationResponse {
+  oneof result {
+    ItemsPage items_page = 1;
+    common.cError.Error error = 2;
+  }
 }
 
 // 创建内容项请求

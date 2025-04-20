@@ -294,6 +294,111 @@ func (x *Item) GetReadCount() int32 {
 	return 0
 }
 
+// 获取组织内容项请求
+type GetItemsByOrganizationRequest struct {
+	UserId         string                        `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	OrganizationId string                        `protobuf:"bytes,2,opt,name=organization_id" json:"organization_id,omitempty"`
+	Pagination     *pagination.PaginationRequest `protobuf:"bytes,3,opt,name=pagination" json:"pagination,omitempty"`
+	Sort           *pagination.SortRequest       `protobuf:"bytes,4,opt,name=sort" json:"sort,omitempty"`
+}
+
+func (x *GetItemsByOrganizationRequest) Reset() { *x = GetItemsByOrganizationRequest{} }
+
+func (x *GetItemsByOrganizationRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *GetItemsByOrganizationRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetItemsByOrganizationRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetItemsByOrganizationRequest) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
+	}
+	return ""
+}
+
+func (x *GetItemsByOrganizationRequest) GetPagination() *pagination.PaginationRequest {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
+func (x *GetItemsByOrganizationRequest) GetSort() *pagination.SortRequest {
+	if x != nil {
+		return x.Sort
+	}
+	return nil
+}
+
+// 获取组织内容项响应
+type GetItemsByOrganizationResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*GetItemsByOrganizationResponse_ItemsPage
+	//	*GetItemsByOrganizationResponse_Error
+	Result isGetItemsByOrganizationResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *GetItemsByOrganizationResponse) Reset() { *x = GetItemsByOrganizationResponse{} }
+
+func (x *GetItemsByOrganizationResponse) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *GetItemsByOrganizationResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetItemsByOrganizationResponse) GetResult() isGetItemsByOrganizationResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *GetItemsByOrganizationResponse) GetItemsPage() *ItemsPage {
+	if p, ok := x.GetResult().(*GetItemsByOrganizationResponse_ItemsPage); ok {
+		return p.ItemsPage
+	}
+	return nil
+}
+
+func (x *GetItemsByOrganizationResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*GetItemsByOrganizationResponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*GetItemsByOrganizationResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*GetItemsByOrganizationResponse_ItemsPage)(nil),
+		(*GetItemsByOrganizationResponse_Error)(nil),
+	}
+}
+
+type isGetItemsByOrganizationResponse_Result interface {
+	isGetItemsByOrganizationResponse_Result()
+}
+
+type GetItemsByOrganizationResponse_ItemsPage struct {
+	ItemsPage *ItemsPage `protobuf:"bytes,1,opt,name=items_page" json:"items_page,omitempty"`
+}
+
+func (*GetItemsByOrganizationResponse_ItemsPage) isGetItemsByOrganizationResponse_Result() {}
+
+type GetItemsByOrganizationResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*GetItemsByOrganizationResponse_Error) isGetItemsByOrganizationResponse_Result() {}
+
 // 创建内容项请求
 type CreateItemRequest struct {
 	UserId        string        `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
@@ -2282,6 +2387,7 @@ type ItemService interface {
 	GetItems(ctx context.Context, req *GetItemsRequest) (res *GetItemsResponse, err error)
 	BatchDeleteItems(ctx context.Context, req *BatchDeleteItemsRequest) (res *BatchDeleteItemsResponse, err error)
 	GetItemsByTags(ctx context.Context, req *GetItemsByTagsRequest) (res *GetItemsByTagsResponse, err error)
+	GetItemsByOrganization(ctx context.Context, req *GetItemsByOrganizationRequest) (res *GetItemsByOrganizationResponse, err error)
 	ExtractMetadata(ctx context.Context, req *ExtractMetadataRequest) (res *ExtractMetadataResponse, err error)
 	GetRecentItems(ctx context.Context, req *GetRecentItemsRequest) (res *GetRecentItemsResponse, err error)
 	BatchUpdateItems(ctx context.Context, req *BatchUpdateItemsRequest) (res *BatchUpdateItemsResponse, err error)
