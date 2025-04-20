@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"context"
+
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -160,10 +161,10 @@ func (d *ItemDelivery) BatchDeleteItems(ctx context.Context, req *item.BatchDele
 // GetItemsByTags implements the ContentDelivery interface.
 func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByTagsRequest) (resp *item.GetItemsByTagsResponse, err error) {
 	userID := req.UserId
-	tagIDs := req.Tags
+	tagNames := req.Tags
 	paginationReq := req.Pagination // 保存请求中的分页信息
 	// 注意：传递给 service 层的 paginationReq 类型应为 *commonPagination.PaginationRequest
-	items, total, err := d.s.GetItemsByTags(ctx, userID, tagIDs, paginationReq)
+	items, total, err := d.s.GetItemsByTags(ctx, userID, tagNames, paginationReq)
 	if err != nil {
 		return &item.GetItemsByTagsResponse{
 			Result: &item.GetItemsByTagsResponse_Error{
@@ -220,6 +221,70 @@ func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByT
 	// 构造成功响应，使用 ItemsPage 结构
 	return &item.GetItemsByTagsResponse{
 		Result: &item.GetItemsByTagsResponse_ItemsPage{
+			ItemsPage: &item.ItemsPage{
+				Items:      respItems,
+				Pagination: paginationResp,
+			},
+		},
+	}, nil
+}
+
+// GetItemsByOrganization implements the ItemServiceImpl interface.
+func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.GetItemsByOrganizationRequest) (resp *item.GetItemsByOrganizationResponse, err error) {
+	userID := req.UserId
+	orgID := req.OrganizationId
+	paginationReq := req.Pagination
+	// 构造分页响应信息
+	var currentPage, currentPageSize int = 1, 10 // 默认值
+	if paginationReq != nil {
+		if paginationReq.Page > 0 {
+			currentPage = int(paginationReq.Page)
+		}
+		if paginationReq.PageSize > 0 {
+			currentPageSize = int(paginationReq.PageSize)
+		}
+	}
+
+	items, total, err := d.s.GetItemsByOrganization(ctx, userID, orgID, currentPage, currentPageSize)
+	if err != nil {
+		return &item.GetItemsByOrganizationResponse{
+			Result: &item.GetItemsByOrganizationResponse_Error{
+				Error: &cError.Error{
+					Code:    40000,
+					Message: err.Error(),
+				},
+			},
+		}, err
+	}
+
+	// 转换结果为响应格式
+	respItems := make([]*item.Item, 0, len(items))
+	for _, dbItem := range items {
+		tagStrings := make([]string, 0, len(dbItem.Tags))
+		for _, tag := range dbItem.Tags {
+			tagStrings = append(tagStrings, tag.Name)
+		}
+
+		respItems = append(respItems, &item.Item{
+			Id:          dbItem.ID,
+			UserId:      dbItem.UserID,
+			Title:       dbItem.Title,
+			Description: "",
+			Url:         dbItem.URL,
+			Tags:        tagStrings,
+			CreatedAt:   timestamppb.New(dbItem.CreatedAt),
+			UpdatedAt:   timestamppb.New(dbItem.UpdatedAt),
+		})
+	}
+
+	paginationResp := &pagination.PaginationMeta{
+		TotalPages: int32(total),
+		Page:       int32(currentPage),
+		PageSize:   int32(currentPageSize),
+	}
+
+	return &item.GetItemsByOrganizationResponse{
+		Result: &item.GetItemsByOrganizationResponse_ItemsPage{
 			ItemsPage: &item.ItemsPage{
 				Items:      respItems,
 				Pagination: paginationResp,

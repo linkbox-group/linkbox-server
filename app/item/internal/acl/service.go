@@ -12,4 +12,5 @@ type UserServiceItf interface {
 	UpdateItem(ctx context.Context, req *model.Item) (err error)
 	DeleteItem(ctx context.Context, req *model.Item) (err error)
 	GetItemsByTags(ctx context.Context, userID string, tagIDs []string, pagination *pagination.PaginationRequest) (items []model.Item, total int, err error)
+	GetItemsByOrganization(ctx context.Context, userID string, organizationID string, pageNum int, pageSize int) (items []model.Item, total int, err error)
 }
