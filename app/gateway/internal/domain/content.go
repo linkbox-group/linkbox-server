@@ -1,4 +1,4 @@
-package content
+package domain
 
 import (
 	"time"
@@ -13,23 +13,23 @@ const (
 
 // Content represents a content item in the system
 type Content struct {
-	ID           string                 `json:"id"`
-	UserID       string                 `json:"user_id"`
-	Type         ContentType            `json:"type"`
-	URL          string                 `json:"url"`
-	Title        string                 `json:"title"`
-	Description  string                 `json:"description"`
-	ThumbnailURL string                 `json:"thumbnail_url"`
-	Tags         []string               `json:"tags"`
-	CollectionIDs []string              `json:"collection_ids"`
-	IsFavorite   bool                   `json:"is_favorite"`
-	IsArchived   bool                   `json:"is_archived"`
-	IsPrivate    bool                   `json:"is_private"`
-	Metadata     ContentMetadata        `json:"metadata"`
-	CreatedAt    time.Time              `json:"created_at"`
-	UpdatedAt    time.Time              `json:"updated_at"`
-	Note         string                 `json:"note"`
-	ReadCount    int32                  `json:"read_count"`
+	ID            string          `json:"id"`
+	UserID        string          `json:"user_id"`
+	Type          ContentType     `json:"type"`
+	URL           string          `json:"url"`
+	Title         string          `json:"title"`
+	Description   string          `json:"description"`
+	ThumbnailURL  string          `json:"thumbnail_url"`
+	Tags          []string        `json:"tags"`
+	OrganizationIDs []string        `json:"organization_ids"`
+	IsFavorite    bool            `json:"is_favorite"`
+	IsArchived    bool            `json:"is_archived"`
+	IsPrivate     bool            `json:"is_private"`
+	Metadata      ContentMetadata `json:"metadata"`
+	CreatedAt     time.Time       `json:"created_at"`
+	UpdatedAt     time.Time       `json:"updated_at"`
+	Note          string          `json:"note"`
+	ReadCount     int32           `json:"read_count"`
 }
 
 // ContentMetadata represents metadata about the content
@@ -48,18 +48,18 @@ type ContentMetadata struct {
 
 // CreateContentRequest represents the request to create a content
 type CreateContentRequest struct {
-	UserID       string          `json:"user_id" binding:"required"`
-	Type         ContentType     `json:"type" binding:"required"`
-	URL          string          `json:"url" binding:"required"`
-	Title        string          `json:"title" binding:"required"`
-	Description  string          `json:"description"`
-	ThumbnailURL string          `json:"thumbnail_url"`
-	Metadata     ContentMetadata `json:"metadata"`
-	Tags         []string        `json:"tags"`
-	CollectionIDs []string       `json:"collection_ids"`
-	IsFavorite   bool            `json:"is_favorite"`
-	IsPrivate    bool            `json:"is_private"`
-	Note         string          `json:"note"`
+	UserID        string          `json:"user_id" binding:"required"`
+	Type          ContentType     `json:"type" binding:"required"`
+	URL           string          `json:"url" binding:"required"`
+	Title         string          `json:"title" binding:"required"`
+	Description   string          `json:"description"`
+	ThumbnailURL  string          `json:"thumbnail_url"`
+	Metadata      ContentMetadata `json:"metadata"`
+	Tags          []string        `json:"tags"`
+	CollectionIDs []string        `json:"collection_ids"`
+	IsFavorite    bool            `json:"is_favorite"`
+	IsPrivate     bool            `json:"is_private"`
+	Note          string          `json:"note"`
 }
 
 // CreateContentResponse represents the response for creating a content
@@ -80,17 +80,17 @@ type GetContentResponse struct {
 
 // UpdateContentRequest represents the request to update a content
 type UpdateContentRequest struct {
-	ContentID    string          `json:"content_id" binding:"required"`
-	UserID       string          `json:"user_id" binding:"required"`
-	Title        string          `json:"title"`
-	Description  string          `json:"description"`
-	ThumbnailURL string          `json:"thumbnail_url"`
-	Metadata     ContentMetadata `json:"metadata"`
-	Tags         []string        `json:"tags"`
-	CollectionIDs []string       `json:"collection_ids"`
-	IsFavorite   bool            `json:"is_favorite"`
-	IsArchived   bool            `json:"is_archived"`
-	IsPrivate    bool            `json:"is_private"`
+	ContentID     string          `json:"content_id" binding:"required"`
+	UserID        string          `json:"user_id" binding:"required"`
+	Title         string          `json:"title"`
+	Description   string          `json:"description"`
+	ThumbnailURL  string          `json:"thumbnail_url"`
+	Metadata      ContentMetadata `json:"metadata"`
+	Tags          []string        `json:"tags"`
+	CollectionIDs []string        `json:"collection_ids"`
+	IsFavorite    bool            `json:"is_favorite"`
+	IsArchived    bool            `json:"is_archived"`
+	IsPrivate     bool            `json:"is_private"`
 }
 
 // UpdateContentResponse represents the response for updating a content
@@ -126,4 +126,4 @@ type GetContentsByTagsResponse struct {
 		PageSize   int32 `json:"page_size"`
 		TotalPages int32 `json:"total_pages"`
 	} `json:"pagination"`
-} 
+}

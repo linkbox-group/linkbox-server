@@ -1,4 +1,4 @@
-package tag
+package domain
 
 import (
 	"time"
@@ -93,9 +93,9 @@ type AddTagsToItemsRequest struct {
 
 // AddTagsToItemsResponse represents the response for adding tags to items
 type AddTagsToItemsResponse struct {
-	SuccessCount   int32    `json:"success_count"`
-	FailureCount   int32    `json:"failure_count"`
-	FailedItemIDs  []string `json:"failed_item_ids"`
+	SuccessCount  int32    `json:"success_count"`
+	FailureCount  int32    `json:"failure_count"`
+	FailedItemIDs []string `json:"failed_item_ids"`
 }
 
 // RemoveTagsFromItemsRequest represents the request to remove tags from items
@@ -107,9 +107,9 @@ type RemoveTagsFromItemsRequest struct {
 
 // RemoveTagsFromItemsResponse represents the response for removing tags from items
 type RemoveTagsFromItemsResponse struct {
-	SuccessCount   int32    `json:"success_count"`
-	FailureCount   int32    `json:"failure_count"`
-	FailedItemIDs  []string `json:"failed_item_ids"`
+	SuccessCount  int32    `json:"success_count"`
+	FailureCount  int32    `json:"failure_count"`
+	FailedItemIDs []string `json:"failed_item_ids"`
 }
 
 // GetItemTagsRequest represents the request to get item tags
@@ -122,4 +122,4 @@ type GetItemTagsRequest struct {
 type GetItemTagsResponse struct {
 	ItemID string `json:"item_id"`
 	Tags   []*Tag `json:"tags"`
-} 
+}

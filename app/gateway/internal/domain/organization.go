@@ -1,4 +1,4 @@
-package organization
+package domain
 
 import (
 	"time"
@@ -30,8 +30,8 @@ type CreateOrganizationResponse struct {
 
 // GetOrganizationRequest represents the request to get an organization
 type GetOrganizationRequest struct {
-	ID      string `json:"id" binding:"required"`
-	UserID  string `json:"user_id" binding:"required"`
+	ID     string `json:"id" binding:"required"`
+	UserID string `json:"user_id" binding:"required"`
 }
 
 // GetOrganizationResponse represents the response for getting an organization
@@ -74,7 +74,7 @@ type GetUserOrganizationsRequest struct {
 // GetUserOrganizationsResponse represents the response for getting user organizations
 type GetUserOrganizationsResponse struct {
 	Organizations []*Organization `json:"organizations"`
-	Pagination struct {
+	Pagination    struct {
 		Page     int32 `json:"page"`
 		PageSize int32 `json:"page_size"`
 		Total    int32 `json:"total"`
@@ -91,8 +91,8 @@ type AddMembersToOrganizationRequest struct {
 
 // AddMembersToOrganizationResponse represents the response for adding members to an organization
 type AddMembersToOrganizationResponse struct {
-	SuccessCount   int32    `json:"success_count"`
-	FailureCount   int32    `json:"failure_count"`
+	SuccessCount    int32    `json:"success_count"`
+	FailureCount    int32    `json:"failure_count"`
 	FailedMemberIDs []string `json:"failed_member_ids"`
 }
 
@@ -105,8 +105,8 @@ type RemoveMembersFromOrganizationRequest struct {
 
 // RemoveMembersFromOrganizationResponse represents the response for removing members from an organization
 type RemoveMembersFromOrganizationResponse struct {
-	SuccessCount   int32    `json:"success_count"`
-	FailureCount   int32    `json:"failure_count"`
+	SuccessCount    int32    `json:"success_count"`
+	FailureCount    int32    `json:"failure_count"`
 	FailedMemberIDs []string `json:"failed_member_ids"`
 }
 
@@ -120,4 +120,4 @@ type GetOrganizationMembersRequest struct {
 type GetOrganizationMembersResponse struct {
 	OrganizationID string   `json:"organization_id"`
 	Members        []string `json:"members"`
-} 
+}
