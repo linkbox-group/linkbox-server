@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
@@ -24,29 +23,7 @@ const (
 )
 
 // 响应结构体定义
-type ItemResponse struct {
-	ID              string    `json:"id"`
-	UserID          string    `json:"user_id"`
-	URL             string    `json:"url"`
-	Title           string    `json:"title"`
-	ThumbnailURL    string    `json:"thumbnail_url"`
-	Tags            []string  `json:"tags"`
-	OrganizationIDs []string  `json:"organization_ids"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
-}
-
-type ItemListResponse struct {
-	Items      []ItemResponse `json:"items"`
-	Total      int32          `json:"total"`
-	Page       int32          `json:"page"`
-	PageSize   int32          `json:"page_size"`
-	TotalPages int32          `json:"total_pages"`
-}
-
-type ItemSuccessResponse struct {
-	Success bool `json:"success"`
-}
+// 已移动到domain/item.go中
 
 // CreateItem 创建内容
 func (a *ItemAPI) CreateItem(c *gin.Context) {
@@ -70,17 +47,17 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 		return
 	}
 
-	item := resp.GetItem()
-	itemResp := ItemResponse{
-		ID:              item.Id,
-		UserID:          item.UserId,
-		URL:             item.Url,
-		Title:           item.Title,
-		ThumbnailURL:    item.ThumbnailUrl,
-		Tags:            item.Tags,
-		OrganizationIDs: item.CollectionIds,
-		CreatedAt:       item.CreatedAt.AsTime(),
-		UpdatedAt:       item.UpdatedAt.AsTime(),
+	itemData := resp.GetItem()
+	itemResp := domain.Item{
+		ID:              itemData.Id,
+		UserID:          itemData.UserId,
+		URL:             itemData.Url,
+		Title:           itemData.Title,
+		ThumbnailURL:    itemData.ThumbnailUrl,
+		Tags:            itemData.Tags,
+		OrganizationIDs: itemData.OrganizationIds,
+		CreatedAt:       itemData.CreatedAt.AsTime(),
+		UpdatedAt:       itemData.UpdatedAt.AsTime(),
 	}
 	domain.Success(c, itemResp)
 }
@@ -103,17 +80,17 @@ func (a *ItemAPI) GetItem(c *gin.Context) {
 		return
 	}
 
-	item := resp.GetItem()
-	itemResp := ItemResponse{
-		ID:              item.Id,
-		UserID:          item.UserId,
-		URL:             item.Url,
-		Title:           item.Title,
-		ThumbnailURL:    item.ThumbnailUrl,
-		Tags:            item.Tags,
-		OrganizationIDs: item.CollectionIds,
-		CreatedAt:       item.CreatedAt.AsTime(),
-		UpdatedAt:       item.UpdatedAt.AsTime(),
+	itemData := resp.GetItem()
+	itemResp := domain.Item{
+		ID:              itemData.Id,
+		UserID:          itemData.UserId,
+		URL:             itemData.Url,
+		Title:           itemData.Title,
+		ThumbnailURL:    itemData.ThumbnailUrl,
+		Tags:            itemData.Tags,
+		OrganizationIDs: itemData.OrganizationIds,
+		CreatedAt:       itemData.CreatedAt.AsTime(),
+		UpdatedAt:       itemData.UpdatedAt.AsTime(),
 	}
 	domain.Success(c, itemResp)
 }
@@ -141,17 +118,17 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 		return
 	}
 
-	item := resp.GetItem()
-	itemResp := ItemResponse{
-		ID:              item.Id,
-		UserID:          item.UserId,
-		URL:             item.Url,
-		Title:           item.Title,
-		ThumbnailURL:    item.ThumbnailUrl,
-		Tags:            item.Tags,
-		OrganizationIDs: item.CollectionIds,
-		CreatedAt:       item.CreatedAt.AsTime(),
-		UpdatedAt:       item.UpdatedAt.AsTime(),
+	itemData := resp.GetItem()
+	itemResp := domain.Item{
+		ID:              itemData.Id,
+		UserID:          itemData.UserId,
+		URL:             itemData.Url,
+		Title:           itemData.Title,
+		ThumbnailURL:    itemData.ThumbnailUrl,
+		Tags:            itemData.Tags,
+		OrganizationIDs: itemData.OrganizationIds,	
+		CreatedAt:       itemData.CreatedAt.AsTime(),
+		UpdatedAt:       itemData.UpdatedAt.AsTime(),
 	}
 	domain.Success(c, itemResp)
 }
@@ -173,10 +150,8 @@ func (a *ItemAPI) DeleteItem(c *gin.Context) {
 		domain.Error(c, ErrItemNotFound, "内容不存在")
 		return
 	}
-
-	success := resp.GetSuccess()
-	itemResp := ItemSuccessResponse{
-		Success: success,
+	itemResp := domain.ItemSuccessResponse{
+		Success: resp.GetSuccess(),
 	}
 	domain.Success(c, itemResp)
 }
@@ -206,27 +181,29 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 		return
 	}
 
-	var items []ItemResponse
+	var items []*domain.Item
 	for _, ite := range resp.GetItemsPage().Items {
-		items = append(items, ItemResponse{
+		items = append(items, &domain.Item{
 			ID:              ite.Id,
 			UserID:          ite.UserId,
 			URL:             ite.Url,
 			Title:           ite.Title,
-			ThumbnailURL:    ite.ThumbnailUrl,
+			ThumbnailURL:    ite.ThumbnailUrl,		
 			Tags:            ite.Tags,
-			OrganizationIDs: ite.CollectionIds,
+			OrganizationIDs: ite.OrganizationIds,
 			CreatedAt:       ite.CreatedAt.AsTime(),
 			UpdatedAt:       ite.UpdatedAt.AsTime(),
 		})
 	}
 
-	itemListResp := ItemListResponse{
-		Items:      items,
-		Total:      resp.GetItemsPage().Pagination.TotalItems,
-		Page:       resp.GetItemsPage().Pagination.Page,
-		PageSize:   resp.GetItemsPage().Pagination.PageSize,
-		TotalPages: resp.GetItemsPage().Pagination.TotalPages,
+	itemListResp := domain.ItemListResponse{
+		Items:     	 items,
+		Pagination: domain.Pagination{
+			Total:      resp.GetItemsPage().Pagination.TotalItems,
+			Page:       resp.GetItemsPage().Pagination.Page,
+			PageSize:   resp.GetItemsPage().Pagination.PageSize,
+			TotalPages: resp.GetItemsPage().Pagination.TotalPages,
+		},
 	}
 	domain.Success(c, itemListResp)
 }
@@ -252,33 +229,35 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 		return
 	}
 
-	var items []ItemResponse
+	var items []*domain.Item
 	for _, ite := range resp.GetItemsPage().Items {
-		items = append(items, ItemResponse{
+		items = append(items, &domain.Item{
 			ID:              ite.Id,
 			UserID:          ite.UserId,
 			URL:             ite.Url,
 			Title:           ite.Title,
 			ThumbnailURL:    ite.ThumbnailUrl,
 			Tags:            ite.Tags,
-			OrganizationIDs: ite.CollectionIds,
+			OrganizationIDs: ite.OrganizationIds,
 			CreatedAt:       ite.CreatedAt.AsTime(),
 			UpdatedAt:       ite.UpdatedAt.AsTime(),
 		})
 	}
-
-	itemListResp := ItemListResponse{
+	
+	itemListResp := domain.ItemListResponse{
 		Items:      items,
-		Total:      resp.GetItemsPage().Pagination.TotalItems,
-		Page:       resp.GetItemsPage().Pagination.Page,
-		PageSize:   resp.GetItemsPage().Pagination.PageSize,
-		TotalPages: resp.GetItemsPage().Pagination.TotalPages,
+		Pagination: domain.Pagination{
+			Total:      resp.GetItemsPage().Pagination.TotalItems,
+			Page:       resp.GetItemsPage().Pagination.Page,
+			PageSize:   resp.GetItemsPage().Pagination.PageSize,
+			TotalPages: resp.GetItemsPage().Pagination.TotalPages,
+		},
 	}
 	domain.Success(c, itemListResp)
 }
 func (a *ItemAPI) SearchItems(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
-	if err!= nil {
+	if err != nil {
 		domain.ErrorMsg(c, ErrAuthFailedCode, err.Error())
 		return
 	}
@@ -287,34 +266,39 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 	}
 	req.UserId = userId
 	err = c.ShouldBind(&req)
-	if err!= nil {
+	if err != nil {
 		domain.Error(c, ErrInvalidReq, err.Error())
 	}
 	resp, err := rpc.ItemClient.SearchItems(context.Background(), &req)
-	if err!= nil {
+	if err != nil {
 		domain.Error(c, ErrRpcFailedCode, "rpc调用失败")
 		return
 	}
-	var items []ItemResponse
-	for _, ite := range resp.GetData().GetItems() {
-		items = append(items, ItemResponse{
+	var items []*domain.Item
+	for _, ite := range resp.GetData().Items {
+		items = append(items, &domain.Item{
 			ID:              ite.Id,
 			UserID:          ite.UserId,
 			URL:             ite.Url,
 			Title:           ite.Title,
 			ThumbnailURL:    ite.ThumbnailUrl,
 			Tags:            ite.Tags,
-			OrganizationIDs: ite.CollectionIds,
+			OrganizationIDs: ite.OrganizationIds,
 			CreatedAt:       ite.CreatedAt.AsTime(),
-			UpdatedAt:       ite.UpdatedAt.AsTime(),	
+			UpdatedAt:       ite.UpdatedAt.AsTime(),
 		})
 	}
-	itemListResp := ItemListResponse{
+	
+	
+	itemListResp := domain.ItemListResponse{
+
 		Items:      items,
-		Total:      resp.GetData().GetPagination().TotalItems,
-		Page:       resp.GetData().GetPagination().Page,
-		PageSize:   resp.GetData().GetPagination().PageSize,
-		TotalPages: resp.GetData().GetPagination().TotalPages,	
+		Pagination: domain.Pagination{
+			Total:      resp.GetData().GetPagination().TotalItems,
+			Page:       resp.GetData().GetPagination().Page,
+			PageSize:   resp.GetData().GetPagination().PageSize,
+			TotalPages: resp.GetData().GetPagination().TotalPages,
+		},
 	}
 	domain.Success(c, itemListResp)
 }
