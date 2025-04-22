@@ -7,31 +7,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var EmptyData = struct{}{}
+
 // 定义通用的分页请求结构
 type PageRequest struct {
 	Page     int `form:"page" json:"page" binding:"required,min=1"`
 	PageSize int `form:"page_size" json:"page_size" binding:"required,min=1,max=100"`
 }
 
-// 定义通用的分页响应结构
-type PageResponse struct {
-	Total    int64 `json:"total"`
-	Page     int   `json:"page"`
-	PageSize int   `json:"page_size"`
-	Items    any   `json:"items"`
+type Pagination struct {
+	Total      int32 `json:"total"`
+	Page       int32 `json:"page"`
+	PageSize   int32 `json:"page_size"`
+	TotalPages int32 `json:"total_pages"`
 }
-
-// 创建分页响应
-func NewPageResponse(total int64, page, pageSize int, items any) *PageResponse {
-	return &PageResponse{
-		Total:    total,
-		Page:     page,
-		PageSize: pageSize,
-		Items:    items,
-	}
-}
-
-var EmptyData = struct{}{}
 
 type Resp struct {
 	Msg  string `json:"msg"`
