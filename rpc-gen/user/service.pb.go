@@ -51,10 +51,9 @@ func (x *SendCodeResp) GetMessage() string {
 }
 
 type RegisterReq struct {
-	Email           string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
-	Code            string `protobuf:"bytes,2,opt,name=code" json:"code,omitempty"`
-	Password        string `protobuf:"bytes,3,opt,name=password" json:"password,omitempty"`
-	ConfirmPassword string `protobuf:"bytes,4,opt,name=confirm_password" json:"confirm_password,omitempty"`
+	Email    string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
+	Code     string `protobuf:"bytes,2,opt,name=code" json:"code,omitempty"`
+	Password string `protobuf:"bytes,3,opt,name=password" json:"password,omitempty"`
 }
 
 func (x *RegisterReq) Reset() { *x = RegisterReq{} }
@@ -80,13 +79,6 @@ func (x *RegisterReq) GetCode() string {
 func (x *RegisterReq) GetPassword() string {
 	if x != nil {
 		return x.Password
-	}
-	return ""
-}
-
-func (x *RegisterReq) GetConfirmPassword() string {
-	if x != nil {
-		return x.ConfirmPassword
 	}
 	return ""
 }

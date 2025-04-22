@@ -35,8 +35,6 @@ service OrganizationService {
   // 从组织移除内容项
   rpc RemoveItemsFromOrganization(RemoveItemsFromOrganizationRequest) returns (RemoveItemsFromOrganizationResponse);
 
-  // 获取组织中的内容项
-  rpc GetOrganizationItems(GetOrganizationItemsRequest) returns (GetOrganizationItemsResponse);
 
   // 排序组织中的内容项
   rpc ReorderOrganizationItems(ReorderOrganizationItemsRequest) returns (ReorderOrganizationItemsResponse);
@@ -47,17 +45,12 @@ service OrganizationService {
   // 获取组织最近活动
   rpc GetOrganizationActivity(GetOrganizationActivityRequest) returns (GetOrganizationActivityResponse);
 
-  // 根据代码获取组织
-  rpc GetOrganizationByCode(GetOrganizationByCodeRequest) returns (GetOrganizationByCodeResponse);
-
   // 获取组织树
   rpc GetOrganizationTree(GetOrganizationTreeRequest) returns (GetOrganizationTreeResponse);
 
   // 获取组织子节点
   rpc GetOrganizationChildren(GetOrganizationChildrenRequest) returns (GetOrganizationChildrenResponse);
 
-  // 批量保存组织
-  rpc BatchSaveOrganization(BatchSaveOrganizationRequest) returns (BatchSaveOrganizationResponse);
 }
 
 // 组织
@@ -67,15 +60,11 @@ message Organization {
   string parent_code = 3;
   string parent_codes = 4;
   string tree_leaf = 5;
-  int32 tree_level = 6;
+  int32  tree_level = 6;
   string tree_names = 7;
   string name = 8;
   string user_id = 9;
   string description = 10;
-  bool is_default = 11;
-  bool is_shared = 12;
-  string share_code = 13;
-  google.protobuf.Timestamp share_expire_at = 14;
   int32 sort_order = 15;
   uint32 items_count = 16;
   google.protobuf.Timestamp created_at = 17;
@@ -89,10 +78,6 @@ message CreateOrganizationRequest {
   string code = 3;
   optional string parent_code = 4;
   optional string description = 5;
-  optional bool is_default = 6;
-  optional bool is_shared = 7;
-  optional string share_code = 8;
-  optional google.protobuf.Timestamp share_expire_at = 9;
   optional int32 sort_order = 10;
 }
 
@@ -118,19 +103,6 @@ message GetOrganizationResponse {
   }
 }
 
-// 根据代码获取组织请求
-message GetOrganizationByCodeRequest {
-  string code = 1;
-  string user_id = 2;
-}
-
-// 根据代码获取组织响应
-message GetOrganizationByCodeResponse {
-  oneof result {
-    Organization organization = 1;
-    common.cError.Error error = 2;
-  }
-}
 
 // 更新组织请求
 message UpdateOrganizationRequest {
@@ -138,10 +110,6 @@ message UpdateOrganizationRequest {
   string user_id = 2;
   optional string name = 3;
   optional string description = 4;
-  optional bool is_default = 5;
-  optional bool is_shared = 6;
-  optional string share_code = 7;
-  optional google.protobuf.Timestamp share_expire_at = 8;
   optional int32 sort_order = 9;
 }
 
@@ -280,21 +248,7 @@ message RemoveItemsFromOrganizationResponse {
   }
 }
 
-// 获取组织内容项请求
-message GetOrganizationItemsRequest {
-  string organization_id = 1;
-  string user_id = 2;
-  common.pagination.PaginationRequest pagination = 3;
-  common.pagination.SortRequest sort = 4;
-}
 
-// 获取组织内容项响应
-message GetOrganizationItemsResponse {
-  oneof result {
-    OrganizationItemsPage items_page = 1;
-    common.cError.Error error = 2;
-  }
-}
 
 // 组织内容项分页数据
 message OrganizationItemsPage {

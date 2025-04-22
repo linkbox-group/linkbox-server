@@ -4,7 +4,7 @@ package ai
 
 import (
 	"context"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/error"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cloudwego/prutal"
@@ -104,7 +104,7 @@ func (x *SuggestTagsResponse) GetSuggestions() *TagSuggestions {
 	return nil
 }
 
-func (x *SuggestTagsResponse) GetError() *error.Error {
+func (x *SuggestTagsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*SuggestTagsResponse_Error); ok {
 		return p.Error
 	}
@@ -130,7 +130,7 @@ type SuggestTagsResponse_Suggestions struct {
 func (*SuggestTagsResponse_Suggestions) isSuggestTagsResponse_Result() {}
 
 type SuggestTagsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*SuggestTagsResponse_Error) isSuggestTagsResponse_Result() {}
@@ -277,7 +277,7 @@ func (x *ClassifyContentResponse) GetClassification() *ContentClassification {
 	return nil
 }
 
-func (x *ClassifyContentResponse) GetError() *error.Error {
+func (x *ClassifyContentResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*ClassifyContentResponse_Error); ok {
 		return p.Error
 	}
@@ -303,7 +303,7 @@ type ClassifyContentResponse_Classification struct {
 func (*ClassifyContentResponse_Classification) isClassifyContentResponse_Result() {}
 
 type ClassifyContentResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*ClassifyContentResponse_Error) isClassifyContentResponse_Result() {}
@@ -486,7 +486,7 @@ func (x *GenerateSummaryResponse) GetSummary() *ContentSummary {
 	return nil
 }
 
-func (x *GenerateSummaryResponse) GetError() *error.Error {
+func (x *GenerateSummaryResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GenerateSummaryResponse_Error); ok {
 		return p.Error
 	}
@@ -512,7 +512,7 @@ type GenerateSummaryResponse_Summary struct {
 func (*GenerateSummaryResponse_Summary) isGenerateSummaryResponse_Result() {}
 
 type GenerateSummaryResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GenerateSummaryResponse_Error) isGenerateSummaryResponse_Result() {}
@@ -649,7 +649,7 @@ func (x *FindSimilarContentResponse) GetResults() *SimilarContentResults {
 	return nil
 }
 
-func (x *FindSimilarContentResponse) GetError() *error.Error {
+func (x *FindSimilarContentResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*FindSimilarContentResponse_Error); ok {
 		return p.Error
 	}
@@ -675,7 +675,7 @@ type FindSimilarContentResponse_Results struct {
 func (*FindSimilarContentResponse_Results) isFindSimilarContentResponse_Result() {}
 
 type FindSimilarContentResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*FindSimilarContentResponse_Error) isFindSimilarContentResponse_Result() {}
@@ -848,7 +848,7 @@ func (x *EnhanceSearchQueryResponse) GetEnhancedQuery() *EnhancedQuery {
 	return nil
 }
 
-func (x *EnhanceSearchQueryResponse) GetError() *error.Error {
+func (x *EnhanceSearchQueryResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*EnhanceSearchQueryResponse_Error); ok {
 		return p.Error
 	}
@@ -874,7 +874,7 @@ type EnhanceSearchQueryResponse_EnhancedQuery struct {
 func (*EnhanceSearchQueryResponse_EnhancedQuery) isEnhanceSearchQueryResponse_Result() {}
 
 type EnhanceSearchQueryResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*EnhanceSearchQueryResponse_Error) isEnhanceSearchQueryResponse_Result() {}
@@ -1021,7 +1021,7 @@ func (x *ExtractArticleContentResponse) GetContent() *ArticleContent {
 	return nil
 }
 
-func (x *ExtractArticleContentResponse) GetError() *error.Error {
+func (x *ExtractArticleContentResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*ExtractArticleContentResponse_Error); ok {
 		return p.Error
 	}
@@ -1047,7 +1047,7 @@ type ExtractArticleContentResponse_Content struct {
 func (*ExtractArticleContentResponse_Content) isExtractArticleContentResponse_Result() {}
 
 type ExtractArticleContentResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*ExtractArticleContentResponse_Error) isExtractArticleContentResponse_Result() {}
@@ -1192,7 +1192,7 @@ func (x *AnalyzeSentimentResponse) GetSentiment() *SentimentAnalysis {
 	return nil
 }
 
-func (x *AnalyzeSentimentResponse) GetError() *error.Error {
+func (x *AnalyzeSentimentResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*AnalyzeSentimentResponse_Error); ok {
 		return p.Error
 	}
@@ -1218,7 +1218,7 @@ type AnalyzeSentimentResponse_Sentiment struct {
 func (*AnalyzeSentimentResponse_Sentiment) isAnalyzeSentimentResponse_Result() {}
 
 type AnalyzeSentimentResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*AnalyzeSentimentResponse_Error) isAnalyzeSentimentResponse_Result() {}
@@ -1389,7 +1389,7 @@ func (x *RecognizeEntitiesResponse) GetEntities() *EntitiesRecognition {
 	return nil
 }
 
-func (x *RecognizeEntitiesResponse) GetError() *error.Error {
+func (x *RecognizeEntitiesResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*RecognizeEntitiesResponse_Error); ok {
 		return p.Error
 	}
@@ -1415,7 +1415,7 @@ type RecognizeEntitiesResponse_Entities struct {
 func (*RecognizeEntitiesResponse_Entities) isRecognizeEntitiesResponse_Result() {}
 
 type RecognizeEntitiesResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*RecognizeEntitiesResponse_Error) isRecognizeEntitiesResponse_Result() {}
@@ -1546,7 +1546,7 @@ func (x *GenerateCollectionNameResponse) GetSuggestions() *CollectionNameSuggest
 	return nil
 }
 
-func (x *GenerateCollectionNameResponse) GetError() *error.Error {
+func (x *GenerateCollectionNameResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GenerateCollectionNameResponse_Error); ok {
 		return p.Error
 	}
@@ -1572,7 +1572,7 @@ type GenerateCollectionNameResponse_Suggestions struct {
 func (*GenerateCollectionNameResponse_Suggestions) isGenerateCollectionNameResponse_Result() {}
 
 type GenerateCollectionNameResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GenerateCollectionNameResponse_Error) isGenerateCollectionNameResponse_Result() {}
@@ -1675,7 +1675,7 @@ func (x *GroupContentIntoCollectionsResponse) GetGroups() *ContentGroups {
 	return nil
 }
 
-func (x *GroupContentIntoCollectionsResponse) GetError() *error.Error {
+func (x *GroupContentIntoCollectionsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GroupContentIntoCollectionsResponse_Error); ok {
 		return p.Error
 	}
@@ -1701,7 +1701,7 @@ type GroupContentIntoCollectionsResponse_Groups struct {
 func (*GroupContentIntoCollectionsResponse_Groups) isGroupContentIntoCollectionsResponse_Result() {}
 
 type GroupContentIntoCollectionsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GroupContentIntoCollectionsResponse_Error) isGroupContentIntoCollectionsResponse_Result() {}

@@ -1,0 +1,28 @@
+syntax ="proto3";
+package model;
+option go_package="model";
+
+import "google/protobuf/timestamp.proto";
+
+
+// 内容类型枚举
+enum ItemType {
+  UNKNOWN_TYPE = 0;
+  LINK = 1;
+  NOTE = 2;
+}
+message Item {
+  string id = 1;
+  string user_id = 2;
+  ItemType type = 3;
+  string url = 4;
+  string title = 5;
+  string description = 6;
+  string thumbnail_url = 7;
+  repeated string tags = 8;
+  repeated string collection_ids = 9;
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp updated_at = 14;
+  string note = 15;
+  int32 read_count = 16;
+}

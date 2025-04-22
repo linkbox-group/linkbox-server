@@ -35,7 +35,7 @@ func InitClient() {
 }
 
 func initAuthClient() {
-	AuthClient, err = authservice.NewClient("user", commonSuite)
+	AuthClient, err = authservice.NewClient("auth", commonSuite)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}

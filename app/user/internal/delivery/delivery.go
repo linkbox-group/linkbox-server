@@ -45,10 +45,6 @@ func (d *UserDelivery) SendCode(ctx context.Context, req *user.SendCodeReq) (res
 // Register implements the UserServiceImpl interface.
 func (d *UserDelivery) Register(ctx context.Context, req *user.RegisterReq) (resp *user.RegisterResp, err error) {
 	// 重复校验密码
-	if req.Password != req.ConfirmPassword {
-		logrus.Errorln(errPasswordNotMatch)
-		return nil, fmt.Errorf("password does not match")
-	}
 
 	// 执行注册用户逻辑
 	registerUser, err := d.service.RegisterUser(ctx, req.Email, req.Code, req.Password)

@@ -40,7 +40,7 @@ func (r *MysqlUserRepo) FindUserByID(ctx context.Context, id string) (user *doma
 	if err = r.db.
 		WithContext(ctx).
 		Model(&domain.User{}).
-		Find(user, "user_id = ?", id).
+		Find(user, "id = ?", id).
 		Error; err != nil {
 		return nil, err
 	}

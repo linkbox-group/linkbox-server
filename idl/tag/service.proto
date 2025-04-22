@@ -35,17 +35,9 @@ service TagService {
   // 获取内容项的标签
   rpc GetItemTags(GetItemTagsRequest) returns (GetItemTagsResponse);
 
-  // 合并标签
-  rpc MergeTags(MergeTagsRequest) returns (MergeTagsResponse);
-
-  // 获取标签使用统计
-  rpc GetTagStats(GetTagStatsRequest) returns (GetTagStatsResponse);
-
   // 获取相关标签
   rpc GetRelatedTags(GetRelatedTagsRequest) returns (GetRelatedTagsResponse);
 
-  // 自动建议标签
-  rpc SuggestTags(SuggestTagsRequest) returns (SuggestTagsResponse);
 }
 
 // 标签
@@ -221,41 +213,6 @@ message MergeTagsResult {
   Tag target_tag = 2;
 }
 
-// 获取标签统计请求
-message GetTagStatsRequest {
-  string user_id = 1;
-  optional int32 top_count = 2;
-  optional bool include_unused = 3;
-}
-
-// 获取标签统计响应
-message GetTagStatsResponse {
-  oneof result {
-    TagStatsData stats = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 标签统计数据
-message TagStatsData {
-  repeated TagStats tag_stats = 1;
-  int32 total_tags = 2;
-  int32 unused_tags = 3;
-}
-
-// 标签统计
-message TagStats {
-  Tag tag = 1;
-  int32 item_count = 2;
-  repeated CollectionUsage collection_usage = 3;
-}
-
-// 收藏夹使用情况
-message CollectionUsage {
-  string collection_id = 1;
-  string collection_name = 2;
-  int32 count = 3;
-}
 
 // 获取相关标签请求
 message GetRelatedTagsRequest {
@@ -285,31 +242,5 @@ message TagRelation {
   int32 co_occurrence = 3;
 }
 
-// 自动建议标签请求
-message SuggestTagsRequest {
-  string user_id = 1;
-  string url = 2;
-  optional string title = 3;
-  optional string content = 4;
-  optional int32 limit = 5;
-}
 
-// 自动建议标签响应
-message SuggestTagsResponse {
-  oneof result {
-    SuggestedTagsData suggested_tags = 1;
-    common.cError.Error error = 2;
-  }
-}
 
-// 建议标签数据
-message SuggestedTagsData {
-  repeated TagSuggestion tag_suggestions = 1;
-}
-
-// 标签建议
-message TagSuggestion {
-  string tag = 1;
-  float confidence = 2;
-  string source = 3;  // "content", "history", "popular"
-}

@@ -6,7 +6,7 @@ package analytics;
 option go_package = "analytics";
 
 import "google/protobuf/timestamp.proto";
-import "common/error/error.proto";
+import "common/cError/error.proto";
 import "common/pagination/pagination.proto";
 import "common/types/types.proto";
 
@@ -53,7 +53,7 @@ message GetUserActivityStatsRequest {
 message GetUserActivityStatsResponse {
   oneof result {
     UserActivityStats stats = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -103,7 +103,7 @@ message GetItemStatsRequest {
 message GetItemStatsResponse {
   oneof result {
     ItemStats stats = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -151,7 +151,7 @@ message GetCollectionStatsRequest {
 message GetCollectionStatsResponse {
   oneof result {
     CollectionStats stats = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -188,7 +188,7 @@ message GetTagStatsRequest {
 message GetTagStatsResponse {
   oneof result {
     TagStats stats = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -230,7 +230,7 @@ message GetDomainStatsRequest {
 message GetDomainStatsResponse {
   oneof result {
     DomainStats stats = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -268,7 +268,7 @@ message GetUsageTrendsRequest {
 message GetUsageTrendsResponse {
   oneof result {
     UsageTrends trends = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -298,7 +298,7 @@ message GetItemAccessHistoryRequest {
 message GetItemAccessHistoryResponse {
   oneof result {
     ItemAccessHistoryPage history_page = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -332,7 +332,7 @@ message RecordItemAccessRequest {
 message RecordItemAccessResponse {
   oneof result {
     bool success = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -347,7 +347,7 @@ message GetRecommendedItemsRequest {
 message GetRecommendedItemsResponse {
   oneof result {
     RecommendedItems items = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -379,7 +379,7 @@ message GetRelatedItemsRequest {
 message GetRelatedItemsResponse {
   oneof result {
     RelatedItems items = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 

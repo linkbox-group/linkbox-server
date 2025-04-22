@@ -13,12 +13,8 @@ import (
 type Client interface {
 	Search(ctx context.Context, Req *search.SearchRequest, callOptions ...callopt.Option) (r *search.SearchResponse, err error)
 	AdvancedSearch(ctx context.Context, Req *search.AdvancedSearchRequest, callOptions ...callopt.Option) (r *search.SearchResponse, err error)
-	GetSearchSuggestions(ctx context.Context, Req *search.SearchSuggestionRequest, callOptions ...callopt.Option) (r *search.SearchSuggestionResponse, err error)
 	GetSearchHistory(ctx context.Context, Req *search.SearchHistoryRequest, callOptions ...callopt.Option) (r *search.SearchHistoryResponse, err error)
 	ClearSearchHistory(ctx context.Context, Req *search.ClearSearchHistoryRequest, callOptions ...callopt.Option) (r *search.ClearSearchHistoryResponse, err error)
-	SaveSearch(ctx context.Context, Req *search.SaveSearchRequest, callOptions ...callopt.Option) (r *search.SaveSearchResponse, err error)
-	GetSavedSearches(ctx context.Context, Req *search.GetSavedSearchesRequest, callOptions ...callopt.Option) (r *search.GetSavedSearchesResponse, err error)
-	DeleteSavedSearch(ctx context.Context, Req *search.DeleteSavedSearchRequest, callOptions ...callopt.Option) (r *search.DeleteSavedSearchResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -60,11 +56,6 @@ func (p *kSearchServiceClient) AdvancedSearch(ctx context.Context, Req *search.A
 	return p.kClient.AdvancedSearch(ctx, Req)
 }
 
-func (p *kSearchServiceClient) GetSearchSuggestions(ctx context.Context, Req *search.SearchSuggestionRequest, callOptions ...callopt.Option) (r *search.SearchSuggestionResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetSearchSuggestions(ctx, Req)
-}
-
 func (p *kSearchServiceClient) GetSearchHistory(ctx context.Context, Req *search.SearchHistoryRequest, callOptions ...callopt.Option) (r *search.SearchHistoryResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetSearchHistory(ctx, Req)
@@ -73,19 +64,4 @@ func (p *kSearchServiceClient) GetSearchHistory(ctx context.Context, Req *search
 func (p *kSearchServiceClient) ClearSearchHistory(ctx context.Context, Req *search.ClearSearchHistoryRequest, callOptions ...callopt.Option) (r *search.ClearSearchHistoryResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.ClearSearchHistory(ctx, Req)
-}
-
-func (p *kSearchServiceClient) SaveSearch(ctx context.Context, Req *search.SaveSearchRequest, callOptions ...callopt.Option) (r *search.SaveSearchResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.SaveSearch(ctx, Req)
-}
-
-func (p *kSearchServiceClient) GetSavedSearches(ctx context.Context, Req *search.GetSavedSearchesRequest, callOptions ...callopt.Option) (r *search.GetSavedSearchesResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetSavedSearches(ctx, Req)
-}
-
-func (p *kSearchServiceClient) DeleteSavedSearch(ctx context.Context, Req *search.DeleteSavedSearchRequest, callOptions ...callopt.Option) (r *search.DeleteSavedSearchResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.DeleteSavedSearch(ctx, Req)
 }

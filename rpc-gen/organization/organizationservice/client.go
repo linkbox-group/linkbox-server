@@ -19,14 +19,11 @@ type Client interface {
 	MoveOrganization(ctx context.Context, Req *organization.MoveOrganizationRequest, callOptions ...callopt.Option) (r *organization.MoveOrganizationResponse, err error)
 	AddItemsToOrganization(ctx context.Context, Req *organization.AddItemsToOrganizationRequest, callOptions ...callopt.Option) (r *organization.AddItemsToOrganizationResponse, err error)
 	RemoveItemsFromOrganization(ctx context.Context, Req *organization.RemoveItemsFromOrganizationRequest, callOptions ...callopt.Option) (r *organization.RemoveItemsFromOrganizationResponse, err error)
-	GetOrganizationItems(ctx context.Context, Req *organization.GetOrganizationItemsRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationItemsResponse, err error)
 	ReorderOrganizationItems(ctx context.Context, Req *organization.ReorderOrganizationItemsRequest, callOptions ...callopt.Option) (r *organization.ReorderOrganizationItemsResponse, err error)
 	ReorderOrganizations(ctx context.Context, Req *organization.ReorderOrganizationsRequest, callOptions ...callopt.Option) (r *organization.ReorderOrganizationsResponse, err error)
 	GetOrganizationActivity(ctx context.Context, Req *organization.GetOrganizationActivityRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationActivityResponse, err error)
-	GetOrganizationByCode(ctx context.Context, Req *organization.GetOrganizationByCodeRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationByCodeResponse, err error)
 	GetOrganizationTree(ctx context.Context, Req *organization.GetOrganizationTreeRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationTreeResponse, err error)
 	GetOrganizationChildren(ctx context.Context, Req *organization.GetOrganizationChildrenRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationChildrenResponse, err error)
-	BatchSaveOrganization(ctx context.Context, Req *organization.BatchSaveOrganizationRequest, callOptions ...callopt.Option) (r *organization.BatchSaveOrganizationResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -98,11 +95,6 @@ func (p *kOrganizationServiceClient) RemoveItemsFromOrganization(ctx context.Con
 	return p.kClient.RemoveItemsFromOrganization(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) GetOrganizationItems(ctx context.Context, Req *organization.GetOrganizationItemsRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationItemsResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetOrganizationItems(ctx, Req)
-}
-
 func (p *kOrganizationServiceClient) ReorderOrganizationItems(ctx context.Context, Req *organization.ReorderOrganizationItemsRequest, callOptions ...callopt.Option) (r *organization.ReorderOrganizationItemsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.ReorderOrganizationItems(ctx, Req)
@@ -118,11 +110,6 @@ func (p *kOrganizationServiceClient) GetOrganizationActivity(ctx context.Context
 	return p.kClient.GetOrganizationActivity(ctx, Req)
 }
 
-func (p *kOrganizationServiceClient) GetOrganizationByCode(ctx context.Context, Req *organization.GetOrganizationByCodeRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationByCodeResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetOrganizationByCode(ctx, Req)
-}
-
 func (p *kOrganizationServiceClient) GetOrganizationTree(ctx context.Context, Req *organization.GetOrganizationTreeRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationTreeResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetOrganizationTree(ctx, Req)
@@ -131,9 +118,4 @@ func (p *kOrganizationServiceClient) GetOrganizationTree(ctx context.Context, Re
 func (p *kOrganizationServiceClient) GetOrganizationChildren(ctx context.Context, Req *organization.GetOrganizationChildrenRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationChildrenResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetOrganizationChildren(ctx, Req)
-}
-
-func (p *kOrganizationServiceClient) BatchSaveOrganization(ctx context.Context, Req *organization.BatchSaveOrganizationRequest, callOptions ...callopt.Option) (r *organization.BatchSaveOrganizationResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.BatchSaveOrganization(ctx, Req)
 }

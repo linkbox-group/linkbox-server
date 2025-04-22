@@ -71,13 +71,6 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"GetOrganizationItems": kitex.NewMethodInfo(
-		getOrganizationItemsHandler,
-		newGetOrganizationItemsArgs,
-		newGetOrganizationItemsResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
 	"ReorderOrganizationItems": kitex.NewMethodInfo(
 		reorderOrganizationItemsHandler,
 		newReorderOrganizationItemsArgs,
@@ -99,13 +92,6 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"GetOrganizationByCode": kitex.NewMethodInfo(
-		getOrganizationByCodeHandler,
-		newGetOrganizationByCodeArgs,
-		newGetOrganizationByCodeResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
 	"GetOrganizationTree": kitex.NewMethodInfo(
 		getOrganizationTreeHandler,
 		newGetOrganizationTreeArgs,
@@ -117,13 +103,6 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		getOrganizationChildrenHandler,
 		newGetOrganizationChildrenArgs,
 		newGetOrganizationChildrenResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
-	"BatchSaveOrganization": kitex.NewMethodInfo(
-		batchSaveOrganizationHandler,
-		newBatchSaveOrganizationArgs,
-		newBatchSaveOrganizationResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
@@ -1081,117 +1060,6 @@ func (p *RemoveItemsFromOrganizationResult) GetResult() interface{} {
 	return p.Success
 }
 
-func getOrganizationItemsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(organization.GetOrganizationItemsRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(organization.OrganizationService).GetOrganizationItems(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *GetOrganizationItemsArgs:
-		success, err := handler.(organization.OrganizationService).GetOrganizationItems(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*GetOrganizationItemsResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newGetOrganizationItemsArgs() interface{} {
-	return &GetOrganizationItemsArgs{}
-}
-
-func newGetOrganizationItemsResult() interface{} {
-	return &GetOrganizationItemsResult{}
-}
-
-type GetOrganizationItemsArgs struct {
-	Req *organization.GetOrganizationItemsRequest
-}
-
-func (p *GetOrganizationItemsArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *GetOrganizationItemsArgs) Unmarshal(in []byte) error {
-	msg := new(organization.GetOrganizationItemsRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var GetOrganizationItemsArgs_Req_DEFAULT *organization.GetOrganizationItemsRequest
-
-func (p *GetOrganizationItemsArgs) GetReq() *organization.GetOrganizationItemsRequest {
-	if !p.IsSetReq() {
-		return GetOrganizationItemsArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *GetOrganizationItemsArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *GetOrganizationItemsArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type GetOrganizationItemsResult struct {
-	Success *organization.GetOrganizationItemsResponse
-}
-
-var GetOrganizationItemsResult_Success_DEFAULT *organization.GetOrganizationItemsResponse
-
-func (p *GetOrganizationItemsResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *GetOrganizationItemsResult) Unmarshal(in []byte) error {
-	msg := new(organization.GetOrganizationItemsResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *GetOrganizationItemsResult) GetSuccess() *organization.GetOrganizationItemsResponse {
-	if !p.IsSetSuccess() {
-		return GetOrganizationItemsResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *GetOrganizationItemsResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.GetOrganizationItemsResponse)
-}
-
-func (p *GetOrganizationItemsResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *GetOrganizationItemsResult) GetResult() interface{} {
-	return p.Success
-}
-
 func reorderOrganizationItemsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
@@ -1525,117 +1393,6 @@ func (p *GetOrganizationActivityResult) GetResult() interface{} {
 	return p.Success
 }
 
-func getOrganizationByCodeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(organization.GetOrganizationByCodeRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(organization.OrganizationService).GetOrganizationByCode(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *GetOrganizationByCodeArgs:
-		success, err := handler.(organization.OrganizationService).GetOrganizationByCode(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*GetOrganizationByCodeResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newGetOrganizationByCodeArgs() interface{} {
-	return &GetOrganizationByCodeArgs{}
-}
-
-func newGetOrganizationByCodeResult() interface{} {
-	return &GetOrganizationByCodeResult{}
-}
-
-type GetOrganizationByCodeArgs struct {
-	Req *organization.GetOrganizationByCodeRequest
-}
-
-func (p *GetOrganizationByCodeArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *GetOrganizationByCodeArgs) Unmarshal(in []byte) error {
-	msg := new(organization.GetOrganizationByCodeRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var GetOrganizationByCodeArgs_Req_DEFAULT *organization.GetOrganizationByCodeRequest
-
-func (p *GetOrganizationByCodeArgs) GetReq() *organization.GetOrganizationByCodeRequest {
-	if !p.IsSetReq() {
-		return GetOrganizationByCodeArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *GetOrganizationByCodeArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *GetOrganizationByCodeArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type GetOrganizationByCodeResult struct {
-	Success *organization.GetOrganizationByCodeResponse
-}
-
-var GetOrganizationByCodeResult_Success_DEFAULT *organization.GetOrganizationByCodeResponse
-
-func (p *GetOrganizationByCodeResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *GetOrganizationByCodeResult) Unmarshal(in []byte) error {
-	msg := new(organization.GetOrganizationByCodeResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *GetOrganizationByCodeResult) GetSuccess() *organization.GetOrganizationByCodeResponse {
-	if !p.IsSetSuccess() {
-		return GetOrganizationByCodeResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *GetOrganizationByCodeResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.GetOrganizationByCodeResponse)
-}
-
-func (p *GetOrganizationByCodeResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *GetOrganizationByCodeResult) GetResult() interface{} {
-	return p.Success
-}
-
 func getOrganizationTreeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
@@ -1858,117 +1615,6 @@ func (p *GetOrganizationChildrenResult) GetResult() interface{} {
 	return p.Success
 }
 
-func batchSaveOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(organization.BatchSaveOrganizationRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(organization.OrganizationService).BatchSaveOrganization(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *BatchSaveOrganizationArgs:
-		success, err := handler.(organization.OrganizationService).BatchSaveOrganization(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*BatchSaveOrganizationResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newBatchSaveOrganizationArgs() interface{} {
-	return &BatchSaveOrganizationArgs{}
-}
-
-func newBatchSaveOrganizationResult() interface{} {
-	return &BatchSaveOrganizationResult{}
-}
-
-type BatchSaveOrganizationArgs struct {
-	Req *organization.BatchSaveOrganizationRequest
-}
-
-func (p *BatchSaveOrganizationArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *BatchSaveOrganizationArgs) Unmarshal(in []byte) error {
-	msg := new(organization.BatchSaveOrganizationRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var BatchSaveOrganizationArgs_Req_DEFAULT *organization.BatchSaveOrganizationRequest
-
-func (p *BatchSaveOrganizationArgs) GetReq() *organization.BatchSaveOrganizationRequest {
-	if !p.IsSetReq() {
-		return BatchSaveOrganizationArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *BatchSaveOrganizationArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *BatchSaveOrganizationArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type BatchSaveOrganizationResult struct {
-	Success *organization.BatchSaveOrganizationResponse
-}
-
-var BatchSaveOrganizationResult_Success_DEFAULT *organization.BatchSaveOrganizationResponse
-
-func (p *BatchSaveOrganizationResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *BatchSaveOrganizationResult) Unmarshal(in []byte) error {
-	msg := new(organization.BatchSaveOrganizationResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *BatchSaveOrganizationResult) GetSuccess() *organization.BatchSaveOrganizationResponse {
-	if !p.IsSetSuccess() {
-		return BatchSaveOrganizationResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *BatchSaveOrganizationResult) SetSuccess(x interface{}) {
-	p.Success = x.(*organization.BatchSaveOrganizationResponse)
-}
-
-func (p *BatchSaveOrganizationResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *BatchSaveOrganizationResult) GetResult() interface{} {
-	return p.Success
-}
-
 type kClient struct {
 	c client.Client
 }
@@ -2059,16 +1705,6 @@ func (p *kClient) RemoveItemsFromOrganization(ctx context.Context, Req *organiza
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) GetOrganizationItems(ctx context.Context, Req *organization.GetOrganizationItemsRequest) (r *organization.GetOrganizationItemsResponse, err error) {
-	var _args GetOrganizationItemsArgs
-	_args.Req = Req
-	var _result GetOrganizationItemsResult
-	if err = p.c.Call(ctx, "GetOrganizationItems", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
 func (p *kClient) ReorderOrganizationItems(ctx context.Context, Req *organization.ReorderOrganizationItemsRequest) (r *organization.ReorderOrganizationItemsResponse, err error) {
 	var _args ReorderOrganizationItemsArgs
 	_args.Req = Req
@@ -2099,16 +1735,6 @@ func (p *kClient) GetOrganizationActivity(ctx context.Context, Req *organization
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) GetOrganizationByCode(ctx context.Context, Req *organization.GetOrganizationByCodeRequest) (r *organization.GetOrganizationByCodeResponse, err error) {
-	var _args GetOrganizationByCodeArgs
-	_args.Req = Req
-	var _result GetOrganizationByCodeResult
-	if err = p.c.Call(ctx, "GetOrganizationByCode", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
 func (p *kClient) GetOrganizationTree(ctx context.Context, Req *organization.GetOrganizationTreeRequest) (r *organization.GetOrganizationTreeResponse, err error) {
 	var _args GetOrganizationTreeArgs
 	_args.Req = Req
@@ -2124,16 +1750,6 @@ func (p *kClient) GetOrganizationChildren(ctx context.Context, Req *organization
 	_args.Req = Req
 	var _result GetOrganizationChildrenResult
 	if err = p.c.Call(ctx, "GetOrganizationChildren", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) BatchSaveOrganization(ctx context.Context, Req *organization.BatchSaveOrganizationRequest) (r *organization.BatchSaveOrganizationResponse, err error) {
-	var _args BatchSaveOrganizationArgs
-	_args.Req = Req
-	var _result BatchSaveOrganizationResult
-	if err = p.c.Call(ctx, "BatchSaveOrganization", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
