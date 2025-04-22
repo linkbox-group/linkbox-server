@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
@@ -23,38 +22,11 @@ const (
 	ErrOrganizationNameExists = 40001 // 组织名已存在
 )
 
-// 响应结构体定义
-type OrganizationResponse struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Code        string    `json:"code"`
-	Description string    `json:"description"`
-	ParentID    string    `json:"parent_id"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-}
-
-type OrganizationListResponse struct {
-	Organizations []OrganizationResponse `json:"organizations"`
-}
-
-type OrganizationTreeResponse struct {
-	ID          string                     `json:"id"`
-	Name        string                     `json:"name"`
-	Code        string                     `json:"code"`
-	Description string                     `json:"description"`
-	ParentID    string                     `json:"parent_id"`
-	Children    []OrganizationTreeResponse `json:"children"`
-}
-type OrganizationSuccessResponse struct {
-	Success bool `json:"success"`
-}
-
 // CreateOrganization 创建组织
 func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
 	var req organization.CreateOrganizationRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		logrus.Infoln(err)
+		logrus.Error(err)
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
@@ -68,17 +40,18 @@ func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
 	if err != nil {
 		domain.Error(c, ErrOrganizationNameExists, err.Error())
 		return
-	}
-
+	} 
 	org := resp.GetOrganization()
-	orgResp := OrganizationResponse{
+	orgResp := domain.Organization{
 		ID:          org.Id,
-		Name:        org.Name,
 		Code:        org.Code,
+		ParentCode:    org.ParentCode,
+		Name:        org.Name,
+		UserID:      org.UserId,
 		Description: org.Description,
-		ParentID:    org.ParentCode,
+		SortOrder:   int(org.SortOrder),
 		CreatedAt:   org.CreatedAt.AsTime(),
-		UpdatedAt:   org.UpdatedAt.AsTime(),
+		UpdatedAt:   org.UpdatedAt.AsTime(),	
 	}
 	domain.Success(c, orgResp)
 }
@@ -102,13 +75,15 @@ func (a *OrganizationAPI) GetOrganization(c *gin.Context) {
 	}
 
 	org := resp.GetOrganization()
-	orgResp := OrganizationResponse{
+	orgResp := domain.Organization{
 		ID:          org.Id,
-		Name:        org.Name,
 		Code:        org.Code,
+		ParentCode:    org.ParentCode,
+		Name:        org.Name,
+		UserID:      org.UserId,
 		Description: org.Description,
-		ParentID:    org.ParentCode,
-		CreatedAt:   org.CreatedAt.AsTime(),
+		SortOrder:   int(org.SortOrder),
+		CreatedAt:   org.CreatedAt.AsTime(),	
 		UpdatedAt:   org.UpdatedAt.AsTime(),
 	}
 	domain.Success(c, orgResp)
@@ -129,12 +104,14 @@ func (a *OrganizationAPI) UpdateOrganization(c *gin.Context) {
 	}
 
 	org := resp.GetOrganization()
-	orgResp := OrganizationResponse{
+	orgResp := domain.Organization{
 		ID:          org.Id,
-		Name:        org.Name,
 		Code:        org.Code,
+		ParentCode:    org.ParentCode,
+		Name:        org.Name,
+		UserID:      org.UserId,
 		Description: org.Description,
-		ParentID:    org.ParentCode,
+		SortOrder:   int(org.SortOrder),
 		CreatedAt:   org.CreatedAt.AsTime(),
 		UpdatedAt:   org.UpdatedAt.AsTime(),
 	}
@@ -161,8 +138,11 @@ func (a *OrganizationAPI) DeleteOrganization(c *gin.Context) {
 		domain.Error(c, ErrOrganizationNotFound, "组织不存在")
 		return
 	}
+	orgResp := domain.OrganizationSuccessResponse{
+		Success: resp.GetSuccess(),
+	}
 
-	domain.Success(c, resp)
+	domain.Success(c, orgResp)
 }
 
 // GetUserOrganizations 获取用户组织列表
@@ -181,19 +161,25 @@ func (a *OrganizationAPI) GetUserOrganizations(c *gin.Context) {
 		return
 	}
 
-	var orgs []OrganizationResponse
+	var orgs []*domain.Organization
 	for _, org := range resp.GetOrganizations().Organizations {
-		orgs = append(orgs, OrganizationResponse{
+		orgs = append(orgs, &domain.Organization{
 			ID:          org.Id,
-			Name:        org.Name,
 			Code:        org.Code,
+			ParentCode:    org.ParentCode,
+			Name:        org.Name,
+			UserID:      org.UserId,
 			Description: org.Description,
-			ParentID:    org.ParentCode,
+			SortOrder:   int(org.SortOrder),
 			CreatedAt:   org.CreatedAt.AsTime(),
 			UpdatedAt:   org.UpdatedAt.AsTime(),
 		})
 	}
-	domain.Success(c, OrganizationListResponse{Organizations: orgs})
+	orgsResp := domain.ListOrganizationsResponse{
+		Organizations: orgs,
+	}
+	domain.Success(c, orgsResp)
+
 }
 
 // GetOrganizationTree 获取组织树
@@ -242,19 +228,24 @@ func (a *OrganizationAPI) GetOrganizationChildren(c *gin.Context) {
 		return
 	}
 
-	var orgs []OrganizationResponse
+	var orgs []*domain.Organization
 	for _, org := range resp.GetChildren().Organizations {
-		orgs = append(orgs, OrganizationResponse{
+		orgs = append(orgs, &domain.Organization{
 			ID:          org.Id,
-			Name:        org.Name,
 			Code:        org.Code,
+			ParentCode:    org.ParentCode,
+			Name:        org.Name,
+			UserID:      org.UserId,
 			Description: org.Description,
-			ParentID:    org.ParentCode,
+			SortOrder:   int(org.SortOrder),
 			CreatedAt:   org.CreatedAt.AsTime(),
 			UpdatedAt:   org.UpdatedAt.AsTime(),
 		})
 	}
-	domain.Success(c, OrganizationListResponse{Organizations: orgs})
+	orgsResp := domain.ListOrganizationsResponse{
+		Organizations: orgs,}
+	domain.Success(c, orgsResp)
+	
 }
 
 // MoveOrganization 移动组织
@@ -272,7 +263,7 @@ func (a *OrganizationAPI) MoveOrganization(c *gin.Context) {
 	}
 
 	org := resp.GetSuccess()
-	orgResp := OrganizationSuccessResponse{
+	orgResp := domain.OrganizationSuccessResponse{
 		Success: org,
 	}
 	domain.Success(c, orgResp)
@@ -299,7 +290,7 @@ func (a *OrganizationAPI) AddItemsToOrganization(c *gin.Context) {
 	}
 
 	success := resp.GetSuccess()
-	orgResp := OrganizationSuccessResponse{
+	orgResp := domain.OrganizationSuccessResponse{
 		Success: success,
 	}
 	domain.Success(c, orgResp)
@@ -325,7 +316,7 @@ func (a *OrganizationAPI) RemoveItemsFromOrganization(c *gin.Context) {
 	}
 
 	success := resp.GetSuccess()
-	orgResp := OrganizationSuccessResponse{
+	orgResp := domain.OrganizationSuccessResponse{
 		Success: success,
 	}
 	domain.Success(c, orgResp)
