@@ -7,292 +7,10 @@ import (
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/types"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"strconv"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/model"
 
 	"github.com/cloudwego/prutal"
 )
-
-// 内容类型枚举
-type ItemType int32
-
-const (
-	ItemType_UNKNOWN_TYPE ItemType = 0
-	ItemType_LINK         ItemType = 1
-	ItemType_NOTE         ItemType = 2
-	ItemType_IMAGE        ItemType = 3
-	ItemType_DOCUMENT     ItemType = 4
-	ItemType_VIDEO        ItemType = 5
-	ItemType_AUDIO        ItemType = 6
-	ItemType_CODE         ItemType = 7
-)
-
-// Enum value maps for ItemType.
-var ItemType_name = map[int32]string{
-	0: "UNKNOWN_TYPE",
-	1: "LINK",
-	2: "NOTE",
-	3: "IMAGE",
-	4: "DOCUMENT",
-	5: "VIDEO",
-	6: "AUDIO",
-	7: "CODE",
-}
-
-var ItemType_value = map[string]int32{
-	"UNKNOWN_TYPE": 0,
-	"LINK":         1,
-	"NOTE":         2,
-	"IMAGE":        3,
-	"DOCUMENT":     4,
-	"VIDEO":        5,
-	"AUDIO":        6,
-	"CODE":         7,
-}
-
-func (x ItemType) String() string {
-	s, ok := ItemType_name[int32(x)]
-	if ok {
-		return s
-	}
-	return strconv.Itoa(int(x))
-}
-
-// 内容元数据
-type ItemMetadata struct {
-	Title        string   `protobuf:"bytes,1,opt,name=title" json:"title,omitempty"`
-	Description  string   `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	ThumbnailUrl string   `protobuf:"bytes,3,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
-	Author       string   `protobuf:"bytes,4,opt,name=author" json:"author,omitempty"`
-	SiteName     string   `protobuf:"bytes,5,opt,name=site_name" json:"site_name,omitempty"`
-	FaviconUrl   string   `protobuf:"bytes,6,opt,name=favicon_url" json:"favicon_url,omitempty"`
-	ContentType  string   `protobuf:"bytes,7,opt,name=content_type" json:"content_type,omitempty"`
-	Keywords     []string `protobuf:"bytes,8,rep,name=keywords" json:"keywords,omitempty"`
-	Language     string   `protobuf:"bytes,9,opt,name=language" json:"language,omitempty"`
-	IsArticle    bool     `protobuf:"varint,10,opt,name=is_article" json:"is_article,omitempty"`
-}
-
-func (x *ItemMetadata) Reset() { *x = ItemMetadata{} }
-
-func (x *ItemMetadata) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *ItemMetadata) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ItemMetadata) GetTitle() string {
-	if x != nil {
-		return x.Title
-	}
-	return ""
-}
-
-func (x *ItemMetadata) GetDescription() string {
-	if x != nil {
-		return x.Description
-	}
-	return ""
-}
-
-func (x *ItemMetadata) GetThumbnailUrl() string {
-	if x != nil {
-		return x.ThumbnailUrl
-	}
-	return ""
-}
-
-func (x *ItemMetadata) GetAuthor() string {
-	if x != nil {
-		return x.Author
-	}
-	return ""
-}
-
-func (x *ItemMetadata) GetSiteName() string {
-	if x != nil {
-		return x.SiteName
-	}
-	return ""
-}
-
-func (x *ItemMetadata) GetFaviconUrl() string {
-	if x != nil {
-		return x.FaviconUrl
-	}
-	return ""
-}
-
-func (x *ItemMetadata) GetContentType() string {
-	if x != nil {
-		return x.ContentType
-	}
-	return ""
-}
-
-func (x *ItemMetadata) GetKeywords() []string {
-	if x != nil {
-		return x.Keywords
-	}
-	return nil
-}
-
-func (x *ItemMetadata) GetLanguage() string {
-	if x != nil {
-		return x.Language
-	}
-	return ""
-}
-
-func (x *ItemMetadata) GetIsArticle() bool {
-	if x != nil {
-		return x.IsArticle
-	}
-	return false
-}
-
-// 内容项
-type Item struct {
-	Id            string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Type          ItemType               `protobuf:"varint,3,opt,name=type" json:"type,omitempty"`
-	Url           string                 `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
-	Title         string                 `protobuf:"bytes,5,opt,name=title" json:"title,omitempty"`
-	Description   string                 `protobuf:"bytes,6,opt,name=description" json:"description,omitempty"`
-	ThumbnailUrl  string                 `protobuf:"bytes,7,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
-	Tags          []string               `protobuf:"bytes,8,rep,name=tags" json:"tags,omitempty"`
-	CollectionIds []string               `protobuf:"bytes,9,rep,name=collection_ids" json:"collection_ids,omitempty"`
-	IsFavorite    bool                   `protobuf:"varint,10,opt,name=is_favorite" json:"is_favorite,omitempty"`
-	IsArchived    bool                   `protobuf:"varint,11,opt,name=is_archived" json:"is_archived,omitempty"`
-	IsPrivate     bool                   `protobuf:"varint,12,opt,name=is_private" json:"is_private,omitempty"`
-	Metadata      *ItemMetadata          `protobuf:"bytes,13,opt,name=metadata" json:"metadata,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=created_at" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=updated_at" json:"updated_at,omitempty"`
-	Note          string                 `protobuf:"bytes,16,opt,name=note" json:"note,omitempty"`
-	ReadCount     int32                  `protobuf:"varint,17,opt,name=read_count" json:"read_count,omitempty"`
-}
-
-func (x *Item) Reset() { *x = Item{} }
-
-func (x *Item) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *Item) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *Item) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *Item) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *Item) GetType() ItemType {
-	if x != nil {
-		return x.Type
-	}
-	return ItemType_UNKNOWN_TYPE
-}
-
-func (x *Item) GetUrl() string {
-	if x != nil {
-		return x.Url
-	}
-	return ""
-}
-
-func (x *Item) GetTitle() string {
-	if x != nil {
-		return x.Title
-	}
-	return ""
-}
-
-func (x *Item) GetDescription() string {
-	if x != nil {
-		return x.Description
-	}
-	return ""
-}
-
-func (x *Item) GetThumbnailUrl() string {
-	if x != nil {
-		return x.ThumbnailUrl
-	}
-	return ""
-}
-
-func (x *Item) GetTags() []string {
-	if x != nil {
-		return x.Tags
-	}
-	return nil
-}
-
-func (x *Item) GetCollectionIds() []string {
-	if x != nil {
-		return x.CollectionIds
-	}
-	return nil
-}
-
-func (x *Item) GetIsFavorite() bool {
-	if x != nil {
-		return x.IsFavorite
-	}
-	return false
-}
-
-func (x *Item) GetIsArchived() bool {
-	if x != nil {
-		return x.IsArchived
-	}
-	return false
-}
-
-func (x *Item) GetIsPrivate() bool {
-	if x != nil {
-		return x.IsPrivate
-	}
-	return false
-}
-
-func (x *Item) GetMetadata() *ItemMetadata {
-	if x != nil {
-		return x.Metadata
-	}
-	return nil
-}
-
-func (x *Item) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *Item) GetUpdatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return nil
-}
-
-func (x *Item) GetNote() string {
-	if x != nil {
-		return x.Note
-	}
-	return ""
-}
-
-func (x *Item) GetReadCount() int32 {
-	if x != nil {
-		return x.ReadCount
-	}
-	return 0
-}
 
 // 获取组织内容项请求
 type GetItemsByOrganizationRequest struct {
@@ -401,18 +119,15 @@ func (*GetItemsByOrganizationResponse_Error) isGetItemsByOrganizationResponse_Re
 
 // 创建内容项请求
 type CreateItemRequest struct {
-	UserId        string        `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	Type          ItemType      `protobuf:"varint,2,opt,name=type" json:"type,omitempty"`
-	Url           string        `protobuf:"bytes,3,opt,name=url" json:"url,omitempty"`
-	Title         string        `protobuf:"bytes,4,opt,name=title" json:"title,omitempty"`
-	Description   string        `protobuf:"bytes,5,opt,name=description" json:"description,omitempty"`
-	ThumbnailUrl  string        `protobuf:"bytes,6,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
-	Metadata      *ItemMetadata `protobuf:"bytes,7,opt,name=metadata" json:"metadata,omitempty"`
-	Tags          []string      `protobuf:"bytes,8,rep,name=tags" json:"tags,omitempty"`
-	CollectionIds []string      `protobuf:"bytes,9,rep,name=collection_ids" json:"collection_ids,omitempty"`
-	IsFavorite    bool          `protobuf:"varint,10,opt,name=is_favorite" json:"is_favorite,omitempty"`
-	IsPrivate     bool          `protobuf:"varint,11,opt,name=is_private" json:"is_private,omitempty"`
-	Note          string        `protobuf:"bytes,12,opt,name=note" json:"note,omitempty"`
+	UserId          string         `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Type            model.ItemType `protobuf:"varint,2,opt,name=type" json:"type,omitempty"`
+	Url             string         `protobuf:"bytes,3,opt,name=url" json:"url,omitempty"`
+	Title           string         `protobuf:"bytes,4,opt,name=title" json:"title,omitempty"`
+	Description     string         `protobuf:"bytes,5,opt,name=description" json:"description,omitempty"`
+	ThumbnailUrl    string         `protobuf:"bytes,6,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
+	Tags            []string       `protobuf:"bytes,8,rep,name=tags" json:"tags,omitempty"`
+	OrganizationIds []string       `protobuf:"bytes,9,rep,name=organization_ids" json:"organization_ids,omitempty"`
+	Note            string         `protobuf:"bytes,12,opt,name=note" json:"note,omitempty"`
 }
 
 func (x *CreateItemRequest) Reset() { *x = CreateItemRequest{} }
@@ -428,11 +143,11 @@ func (x *CreateItemRequest) GetUserId() string {
 	return ""
 }
 
-func (x *CreateItemRequest) GetType() ItemType {
+func (x *CreateItemRequest) GetType() model.ItemType {
 	if x != nil {
 		return x.Type
 	}
-	return ItemType_UNKNOWN_TYPE
+	return model.ItemType_UNKNOWN_TYPE
 }
 
 func (x *CreateItemRequest) GetUrl() string {
@@ -463,13 +178,6 @@ func (x *CreateItemRequest) GetThumbnailUrl() string {
 	return ""
 }
 
-func (x *CreateItemRequest) GetMetadata() *ItemMetadata {
-	if x != nil {
-		return x.Metadata
-	}
-	return nil
-}
-
 func (x *CreateItemRequest) GetTags() []string {
 	if x != nil {
 		return x.Tags
@@ -477,25 +185,11 @@ func (x *CreateItemRequest) GetTags() []string {
 	return nil
 }
 
-func (x *CreateItemRequest) GetCollectionIds() []string {
+func (x *CreateItemRequest) GetOrganizationIds() []string {
 	if x != nil {
-		return x.CollectionIds
+		return x.OrganizationIds
 	}
 	return nil
-}
-
-func (x *CreateItemRequest) GetIsFavorite() bool {
-	if x != nil {
-		return x.IsFavorite
-	}
-	return false
-}
-
-func (x *CreateItemRequest) GetIsPrivate() bool {
-	if x != nil {
-		return x.IsPrivate
-	}
-	return false
 }
 
 func (x *CreateItemRequest) GetNote() string {
@@ -526,7 +220,7 @@ func (x *CreateItemResponse) GetResult() isCreateItemResponse_Result {
 	}
 	return nil
 }
-func (x *CreateItemResponse) GetItem() *Item {
+func (x *CreateItemResponse) GetItem() *model.Item {
 	if p, ok := x.GetResult().(*CreateItemResponse_Item); ok {
 		return p.Item
 	}
@@ -553,7 +247,7 @@ type isCreateItemResponse_Result interface {
 }
 
 type CreateItemResponse_Item struct {
-	Item *Item `protobuf:"bytes,1,opt,name=item" json:"item,omitempty"`
+	Item *model.Item `protobuf:"bytes,1,opt,name=item" json:"item,omitempty"`
 }
 
 func (*CreateItemResponse_Item) isCreateItemResponse_Result() {}
@@ -611,7 +305,7 @@ func (x *GetItemResponse) GetResult() isGetItemResponse_Result {
 	}
 	return nil
 }
-func (x *GetItemResponse) GetItem() *Item {
+func (x *GetItemResponse) GetItem() *model.Item {
 	if p, ok := x.GetResult().(*GetItemResponse_Item); ok {
 		return p.Item
 	}
@@ -638,7 +332,7 @@ type isGetItemResponse_Result interface {
 }
 
 type GetItemResponse_Item struct {
-	Item *Item `protobuf:"bytes,1,opt,name=item" json:"item,omitempty"`
+	Item *model.Item `protobuf:"bytes,1,opt,name=item" json:"item,omitempty"`
 }
 
 func (*GetItemResponse_Item) isGetItemResponse_Result() {}
@@ -651,17 +345,13 @@ func (*GetItemResponse_Error) isGetItemResponse_Result() {}
 
 // 更新内容项请求
 type UpdateItemRequest struct {
-	Id            string        `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	UserId        string        `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Title         string        `protobuf:"bytes,3,opt,name=title" json:"title,omitempty"`
-	Description   string        `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
-	ThumbnailUrl  string        `protobuf:"bytes,5,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
-	Metadata      *ItemMetadata `protobuf:"bytes,6,opt,name=metadata" json:"metadata,omitempty"`
-	Tags          []string      `protobuf:"bytes,7,rep,name=tags" json:"tags,omitempty"`
-	CollectionIds []string      `protobuf:"bytes,8,rep,name=collection_ids" json:"collection_ids,omitempty"`
-	IsFavorite    bool          `protobuf:"varint,9,opt,name=is_favorite" json:"is_favorite,omitempty"`
-	IsArchived    bool          `protobuf:"varint,10,opt,name=is_archived" json:"is_archived,omitempty"`
-	IsPrivate     bool          `protobuf:"varint,11,opt,name=is_private" json:"is_private,omitempty"`
+	Id              string   `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	UserId          string   `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	Title           string   `protobuf:"bytes,3,opt,name=title" json:"title,omitempty"`
+	Description     string   `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
+	ThumbnailUrl    string   `protobuf:"bytes,5,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
+	Tags            []string `protobuf:"bytes,7,rep,name=tags" json:"tags,omitempty"`
+	OrganizationIds []string `protobuf:"bytes,8,rep,name=organization_ids" json:"organization_ids,omitempty"`
 }
 
 func (x *UpdateItemRequest) Reset() { *x = UpdateItemRequest{} }
@@ -705,13 +395,6 @@ func (x *UpdateItemRequest) GetThumbnailUrl() string {
 	return ""
 }
 
-func (x *UpdateItemRequest) GetMetadata() *ItemMetadata {
-	if x != nil {
-		return x.Metadata
-	}
-	return nil
-}
-
 func (x *UpdateItemRequest) GetTags() []string {
 	if x != nil {
 		return x.Tags
@@ -719,32 +402,11 @@ func (x *UpdateItemRequest) GetTags() []string {
 	return nil
 }
 
-func (x *UpdateItemRequest) GetCollectionIds() []string {
+func (x *UpdateItemRequest) GetOrganizationIds() []string {
 	if x != nil {
-		return x.CollectionIds
+		return x.OrganizationIds
 	}
 	return nil
-}
-
-func (x *UpdateItemRequest) GetIsFavorite() bool {
-	if x != nil {
-		return x.IsFavorite
-	}
-	return false
-}
-
-func (x *UpdateItemRequest) GetIsArchived() bool {
-	if x != nil {
-		return x.IsArchived
-	}
-	return false
-}
-
-func (x *UpdateItemRequest) GetIsPrivate() bool {
-	if x != nil {
-		return x.IsPrivate
-	}
-	return false
 }
 
 // 更新内容项响应
@@ -768,7 +430,7 @@ func (x *UpdateItemResponse) GetResult() isUpdateItemResponse_Result {
 	}
 	return nil
 }
-func (x *UpdateItemResponse) GetItem() *Item {
+func (x *UpdateItemResponse) GetItem() *model.Item {
 	if p, ok := x.GetResult().(*UpdateItemResponse_Item); ok {
 		return p.Item
 	}
@@ -795,7 +457,7 @@ type isUpdateItemResponse_Result interface {
 }
 
 type UpdateItemResponse_Item struct {
-	Item *Item `protobuf:"bytes,1,opt,name=item" json:"item,omitempty"`
+	Item *model.Item `protobuf:"bytes,1,opt,name=item" json:"item,omitempty"`
 }
 
 func (*UpdateItemResponse_Item) isUpdateItemResponse_Result() {}
@@ -978,7 +640,7 @@ func (*GetItemsResponse_Error) isGetItemsResponse_Result() {}
 
 // 内容项列表数据
 type ItemsData struct {
-	Items []*Item `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
+	Items []*model.Item `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
 }
 
 func (x *ItemsData) Reset() { *x = ItemsData{} }
@@ -987,132 +649,9 @@ func (x *ItemsData) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAp
 
 func (x *ItemsData) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *ItemsData) GetItems() []*Item {
+func (x *ItemsData) GetItems() []*model.Item {
 	if x != nil {
 		return x.Items
-	}
-	return nil
-}
-
-// 批量删除内容项请求
-type BatchDeleteItemsRequest struct {
-	UserId string   `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	Ids    []string `protobuf:"bytes,2,rep,name=ids" json:"ids,omitempty"`
-}
-
-func (x *BatchDeleteItemsRequest) Reset() { *x = BatchDeleteItemsRequest{} }
-
-func (x *BatchDeleteItemsRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *BatchDeleteItemsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *BatchDeleteItemsRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *BatchDeleteItemsRequest) GetIds() []string {
-	if x != nil {
-		return x.Ids
-	}
-	return nil
-}
-
-// 批量删除内容项响应
-type BatchDeleteItemsResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*BatchDeleteItemsResponse_Data
-	//	*BatchDeleteItemsResponse_Error
-	Result isBatchDeleteItemsResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *BatchDeleteItemsResponse) Reset() { *x = BatchDeleteItemsResponse{} }
-
-func (x *BatchDeleteItemsResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *BatchDeleteItemsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *BatchDeleteItemsResponse) GetResult() isBatchDeleteItemsResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *BatchDeleteItemsResponse) GetData() *BatchOperationResult {
-	if p, ok := x.GetResult().(*BatchDeleteItemsResponse_Data); ok {
-		return p.Data
-	}
-	return nil
-}
-
-func (x *BatchDeleteItemsResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*BatchDeleteItemsResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*BatchDeleteItemsResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*BatchDeleteItemsResponse_Data)(nil),
-		(*BatchDeleteItemsResponse_Error)(nil),
-	}
-}
-
-type isBatchDeleteItemsResponse_Result interface {
-	isBatchDeleteItemsResponse_Result()
-}
-
-type BatchDeleteItemsResponse_Data struct {
-	Data *BatchOperationResult `protobuf:"bytes,1,opt,name=data" json:"data,omitempty"`
-}
-
-func (*BatchDeleteItemsResponse_Data) isBatchDeleteItemsResponse_Result() {}
-
-type BatchDeleteItemsResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*BatchDeleteItemsResponse_Error) isBatchDeleteItemsResponse_Result() {}
-
-// 批量操作结果
-type BatchOperationResult struct {
-	SuccessCount int32    `protobuf:"varint,1,opt,name=success_count" json:"success_count,omitempty"`
-	FailureCount int32    `protobuf:"varint,2,opt,name=failure_count" json:"failure_count,omitempty"`
-	FailedIds    []string `protobuf:"bytes,3,rep,name=failed_ids" json:"failed_ids,omitempty"`
-}
-
-func (x *BatchOperationResult) Reset() { *x = BatchOperationResult{} }
-
-func (x *BatchOperationResult) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *BatchOperationResult) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *BatchOperationResult) GetSuccessCount() int32 {
-	if x != nil {
-		return x.SuccessCount
-	}
-	return 0
-}
-
-func (x *BatchOperationResult) GetFailureCount() int32 {
-	if x != nil {
-		return x.FailureCount
-	}
-	return 0
-}
-
-func (x *BatchOperationResult) GetFailedIds() []string {
-	if x != nil {
-		return x.FailedIds
 	}
 	return nil
 }
@@ -1216,7 +755,7 @@ func (*GetItemsByTagsResponse_Error) isGetItemsByTagsResponse_Result() {}
 
 // 内容项分页数据
 type ItemsPage struct {
-	Items      []*Item                    `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
+	Items      []*model.Item              `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
 	Pagination *pagination.PaginationMeta `protobuf:"bytes,2,opt,name=pagination" json:"pagination,omitempty"`
 }
 
@@ -1226,7 +765,7 @@ func (x *ItemsPage) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAp
 
 func (x *ItemsPage) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *ItemsPage) GetItems() []*Item {
+func (x *ItemsPage) GetItems() []*model.Item {
 	if x != nil {
 		return x.Items
 	}
@@ -1240,93 +779,12 @@ func (x *ItemsPage) GetPagination() *pagination.PaginationMeta {
 	return nil
 }
 
-// 从URL提取元数据请求
-type ExtractMetadataRequest struct {
-	Url string `protobuf:"bytes,1,opt,name=url" json:"url,omitempty"`
-}
-
-func (x *ExtractMetadataRequest) Reset() { *x = ExtractMetadataRequest{} }
-
-func (x *ExtractMetadataRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ExtractMetadataRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ExtractMetadataRequest) GetUrl() string {
-	if x != nil {
-		return x.Url
-	}
-	return ""
-}
-
-// 从URL提取元数据响应
-type ExtractMetadataResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*ExtractMetadataResponse_Metadata
-	//	*ExtractMetadataResponse_Error
-	Result isExtractMetadataResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *ExtractMetadataResponse) Reset() { *x = ExtractMetadataResponse{} }
-
-func (x *ExtractMetadataResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ExtractMetadataResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ExtractMetadataResponse) GetResult() isExtractMetadataResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *ExtractMetadataResponse) GetMetadata() *ItemMetadata {
-	if p, ok := x.GetResult().(*ExtractMetadataResponse_Metadata); ok {
-		return p.Metadata
-	}
-	return nil
-}
-
-func (x *ExtractMetadataResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*ExtractMetadataResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*ExtractMetadataResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*ExtractMetadataResponse_Metadata)(nil),
-		(*ExtractMetadataResponse_Error)(nil),
-	}
-}
-
-type isExtractMetadataResponse_Result interface {
-	isExtractMetadataResponse_Result()
-}
-
-type ExtractMetadataResponse_Metadata struct {
-	Metadata *ItemMetadata `protobuf:"bytes,1,opt,name=metadata" json:"metadata,omitempty"`
-}
-
-func (*ExtractMetadataResponse_Metadata) isExtractMetadataResponse_Result() {}
-
-type ExtractMetadataResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*ExtractMetadataResponse_Error) isExtractMetadataResponse_Result() {}
-
 // 获取最近内容项请求
 type GetRecentItemsRequest struct {
-	UserId          string   `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	Limit           int32    `protobuf:"varint,2,opt,name=limit" json:"limit,omitempty"`
-	Type            ItemType `protobuf:"varint,3,opt,name=type" json:"type,omitempty"`
-	ExcludeArchived bool     `protobuf:"varint,4,opt,name=exclude_archived" json:"exclude_archived,omitempty"`
+	UserId          string         `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Limit           int32          `protobuf:"varint,2,opt,name=limit" json:"limit,omitempty"`
+	Type            model.ItemType `protobuf:"varint,3,opt,name=type" json:"type,omitempty"`
+	ExcludeArchived bool           `protobuf:"varint,4,opt,name=exclude_archived" json:"exclude_archived,omitempty"`
 }
 
 func (x *GetRecentItemsRequest) Reset() { *x = GetRecentItemsRequest{} }
@@ -1351,11 +809,11 @@ func (x *GetRecentItemsRequest) GetLimit() int32 {
 	return 0
 }
 
-func (x *GetRecentItemsRequest) GetType() ItemType {
+func (x *GetRecentItemsRequest) GetType() model.ItemType {
 	if x != nil {
 		return x.Type
 	}
-	return ItemType_UNKNOWN_TYPE
+	return model.ItemType_UNKNOWN_TYPE
 }
 
 func (x *GetRecentItemsRequest) GetExcludeArchived() bool {
@@ -1425,151 +883,6 @@ type GetRecentItemsResponse_Error struct {
 }
 
 func (*GetRecentItemsResponse_Error) isGetRecentItemsResponse_Result() {}
-
-// 批量更新内容项请求
-type BatchUpdateItemsRequest struct {
-	UserId                string   `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	Ids                   []string `protobuf:"bytes,2,rep,name=ids" json:"ids,omitempty"`
-	IsArchived            bool     `protobuf:"varint,3,opt,name=is_archived" json:"is_archived,omitempty"` // 使用 BoolValue 封装类型
-	IsFavorite            bool     `protobuf:"varint,4,opt,name=is_favorite" json:"is_favorite,omitempty"`
-	IsPrivate             bool     `protobuf:"varint,5,opt,name=is_private" json:"is_private,omitempty"`
-	AddTags               []string `protobuf:"bytes,6,rep,name=add_tags" json:"add_tags,omitempty"`
-	RemoveTags            []string `protobuf:"bytes,7,rep,name=remove_tags" json:"remove_tags,omitempty"`
-	AddToCollections      []string `protobuf:"bytes,8,rep,name=add_to_collections" json:"add_to_collections,omitempty"`
-	RemoveFromCollections []string `protobuf:"bytes,9,rep,name=remove_from_collections" json:"remove_from_collections,omitempty"`
-}
-
-func (x *BatchUpdateItemsRequest) Reset() { *x = BatchUpdateItemsRequest{} }
-
-func (x *BatchUpdateItemsRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *BatchUpdateItemsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *BatchUpdateItemsRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *BatchUpdateItemsRequest) GetIds() []string {
-	if x != nil {
-		return x.Ids
-	}
-	return nil
-}
-
-func (x *BatchUpdateItemsRequest) GetIsArchived() bool {
-	if x != nil {
-		return x.IsArchived
-	}
-	return false
-}
-
-func (x *BatchUpdateItemsRequest) GetIsFavorite() bool {
-	if x != nil {
-		return x.IsFavorite
-	}
-	return false
-}
-
-func (x *BatchUpdateItemsRequest) GetIsPrivate() bool {
-	if x != nil {
-		return x.IsPrivate
-	}
-	return false
-}
-
-func (x *BatchUpdateItemsRequest) GetAddTags() []string {
-	if x != nil {
-		return x.AddTags
-	}
-	return nil
-}
-
-func (x *BatchUpdateItemsRequest) GetRemoveTags() []string {
-	if x != nil {
-		return x.RemoveTags
-	}
-	return nil
-}
-
-func (x *BatchUpdateItemsRequest) GetAddToCollections() []string {
-	if x != nil {
-		return x.AddToCollections
-	}
-	return nil
-}
-
-func (x *BatchUpdateItemsRequest) GetRemoveFromCollections() []string {
-	if x != nil {
-		return x.RemoveFromCollections
-	}
-	return nil
-}
-
-// 批量更新内容项响应
-type BatchUpdateItemsResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*BatchUpdateItemsResponse_Data
-	//	*BatchUpdateItemsResponse_Error
-	Result isBatchUpdateItemsResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *BatchUpdateItemsResponse) Reset() { *x = BatchUpdateItemsResponse{} }
-
-func (x *BatchUpdateItemsResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *BatchUpdateItemsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *BatchUpdateItemsResponse) GetResult() isBatchUpdateItemsResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *BatchUpdateItemsResponse) GetData() *BatchOperationResult {
-	if p, ok := x.GetResult().(*BatchUpdateItemsResponse_Data); ok {
-		return p.Data
-	}
-	return nil
-}
-
-func (x *BatchUpdateItemsResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*BatchUpdateItemsResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*BatchUpdateItemsResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*BatchUpdateItemsResponse_Data)(nil),
-		(*BatchUpdateItemsResponse_Error)(nil),
-	}
-}
-
-type isBatchUpdateItemsResponse_Result interface {
-	isBatchUpdateItemsResponse_Result()
-}
-
-type BatchUpdateItemsResponse_Data struct {
-	Data *BatchOperationResult `protobuf:"bytes,1,opt,name=data" json:"data,omitempty"`
-}
-
-func (*BatchUpdateItemsResponse_Data) isBatchUpdateItemsResponse_Result() {}
-
-type BatchUpdateItemsResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*BatchUpdateItemsResponse_Error) isBatchUpdateItemsResponse_Result() {}
 
 // 从文件导入内容请求
 type ImportFromFileRequest struct {
@@ -1713,7 +1026,7 @@ func (x *ImportResult) GetFailedUrls() []string {
 // 导出内容到文件请求
 type ExportToFileRequest struct {
 	UserId          string   `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	CollectionId    string   `protobuf:"bytes,2,opt,name=collection_id" json:"collection_id,omitempty"`
+	OrganizationId  string   `protobuf:"bytes,2,opt,name=organization_id" json:"organization_id,omitempty"`
 	Tags            []string `protobuf:"bytes,3,rep,name=tags" json:"tags,omitempty"`
 	FileFormat      string   `protobuf:"bytes,4,opt,name=file_format" json:"file_format,omitempty"` // "html", "json", "csv"
 	IncludeArchived bool     `protobuf:"varint,5,opt,name=include_archived" json:"include_archived,omitempty"`
@@ -1732,9 +1045,9 @@ func (x *ExportToFileRequest) GetUserId() string {
 	return ""
 }
 
-func (x *ExportToFileRequest) GetCollectionId() string {
+func (x *ExportToFileRequest) GetOrganizationId() string {
 	if x != nil {
-		return x.CollectionId
+		return x.OrganizationId
 	}
 	return ""
 }
@@ -1866,8 +1179,8 @@ type SearchItemsRequest struct {
 	UserId          string                        `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
 	Query           string                        `protobuf:"bytes,2,opt,name=query" json:"query,omitempty"`
 	Pagination      *pagination.PaginationRequest `protobuf:"bytes,3,opt,name=pagination" json:"pagination,omitempty"`
-	Types           []ItemType                    `protobuf:"varint,4,rep,packed,name=types" json:"types,omitempty"`
-	Collections     []string                      `protobuf:"bytes,5,rep,name=collections" json:"collections,omitempty"`
+	Types           []model.ItemType              `protobuf:"varint,4,rep,packed,name=types" json:"types,omitempty"`
+	Organizations   []string                      `protobuf:"bytes,5,rep,name=organizations" json:"organizations,omitempty"`
 	Tags            []string                      `protobuf:"bytes,6,rep,name=tags" json:"tags,omitempty"`
 	IncludeArchived bool                          `protobuf:"varint,7,opt,name=include_archived" json:"include_archived,omitempty"`
 	DateRange       *types.TimeRange              `protobuf:"bytes,8,opt,name=date_range" json:"date_range,omitempty"`
@@ -1901,16 +1214,16 @@ func (x *SearchItemsRequest) GetPagination() *pagination.PaginationRequest {
 	return nil
 }
 
-func (x *SearchItemsRequest) GetTypes() []ItemType {
+func (x *SearchItemsRequest) GetTypes() []model.ItemType {
 	if x != nil {
 		return x.Types
 	}
 	return nil
 }
 
-func (x *SearchItemsRequest) GetCollections() []string {
+func (x *SearchItemsRequest) GetOrganizations() []string {
 	if x != nil {
-		return x.Collections
+		return x.Organizations
 	}
 	return nil
 }
@@ -2004,7 +1317,7 @@ func (*SearchItemsResponse_Error) isSearchItemsResponse_Result() {}
 
 // 搜索结果
 type SearchResult struct {
-	Items          []*Item                    `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
+	Items          []*model.Item              `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
 	Pagination     *pagination.PaginationMeta `protobuf:"bytes,2,opt,name=pagination" json:"pagination,omitempty"`
 	SuggestedTerms []string                   `protobuf:"bytes,3,rep,name=suggested_terms" json:"suggested_terms,omitempty"`
 	TopTags        []*TagCount                `protobuf:"bytes,4,rep,name=top_tags" json:"top_tags,omitempty"`
@@ -2016,7 +1329,7 @@ func (x *SearchResult) Marshal(in []byte) ([]byte, error) { return prutal.Marsha
 
 func (x *SearchResult) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *SearchResult) GetItems() []*Item {
+func (x *SearchResult) GetItems() []*model.Item {
 	if x != nil {
 		return x.Items
 	}
@@ -2070,331 +1383,16 @@ func (x *TagCount) GetCount() int32 {
 	return 0
 }
 
-// 添加内容备注请求
-type AddItemNoteRequest struct {
-	ItemId string `protobuf:"bytes,1,opt,name=item_id" json:"item_id,omitempty"`
-	UserId string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Note   string `protobuf:"bytes,3,opt,name=note" json:"note,omitempty"`
-}
-
-func (x *AddItemNoteRequest) Reset() { *x = AddItemNoteRequest{} }
-
-func (x *AddItemNoteRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *AddItemNoteRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *AddItemNoteRequest) GetItemId() string {
-	if x != nil {
-		return x.ItemId
-	}
-	return ""
-}
-
-func (x *AddItemNoteRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *AddItemNoteRequest) GetNote() string {
-	if x != nil {
-		return x.Note
-	}
-	return ""
-}
-
-// 添加内容备注响应
-type AddItemNoteResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*AddItemNoteResponse_Item
-	//	*AddItemNoteResponse_Error
-	Result isAddItemNoteResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *AddItemNoteResponse) Reset() { *x = AddItemNoteResponse{} }
-
-func (x *AddItemNoteResponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *AddItemNoteResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *AddItemNoteResponse) GetResult() isAddItemNoteResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *AddItemNoteResponse) GetItem() *Item {
-	if p, ok := x.GetResult().(*AddItemNoteResponse_Item); ok {
-		return p.Item
-	}
-	return nil
-}
-
-func (x *AddItemNoteResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*AddItemNoteResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*AddItemNoteResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*AddItemNoteResponse_Item)(nil),
-		(*AddItemNoteResponse_Error)(nil),
-	}
-}
-
-type isAddItemNoteResponse_Result interface {
-	isAddItemNoteResponse_Result()
-}
-
-type AddItemNoteResponse_Item struct {
-	Item *Item `protobuf:"bytes,1,opt,name=item" json:"item,omitempty"`
-}
-
-func (*AddItemNoteResponse_Item) isAddItemNoteResponse_Result() {}
-
-type AddItemNoteResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*AddItemNoteResponse_Error) isAddItemNoteResponse_Result() {}
-
-// 更新内容备注请求
-type UpdateItemNoteRequest struct {
-	ItemId string `protobuf:"bytes,1,opt,name=item_id" json:"item_id,omitempty"`
-	UserId string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Note   string `protobuf:"bytes,3,opt,name=note" json:"note,omitempty"`
-}
-
-func (x *UpdateItemNoteRequest) Reset() { *x = UpdateItemNoteRequest{} }
-
-func (x *UpdateItemNoteRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *UpdateItemNoteRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *UpdateItemNoteRequest) GetItemId() string {
-	if x != nil {
-		return x.ItemId
-	}
-	return ""
-}
-
-func (x *UpdateItemNoteRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *UpdateItemNoteRequest) GetNote() string {
-	if x != nil {
-		return x.Note
-	}
-	return ""
-}
-
-// 更新内容备注响应
-type UpdateItemNoteResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*UpdateItemNoteResponse_Item
-	//	*UpdateItemNoteResponse_Error
-	Result isUpdateItemNoteResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *UpdateItemNoteResponse) Reset() { *x = UpdateItemNoteResponse{} }
-
-func (x *UpdateItemNoteResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *UpdateItemNoteResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *UpdateItemNoteResponse) GetResult() isUpdateItemNoteResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *UpdateItemNoteResponse) GetItem() *Item {
-	if p, ok := x.GetResult().(*UpdateItemNoteResponse_Item); ok {
-		return p.Item
-	}
-	return nil
-}
-
-func (x *UpdateItemNoteResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*UpdateItemNoteResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*UpdateItemNoteResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*UpdateItemNoteResponse_Item)(nil),
-		(*UpdateItemNoteResponse_Error)(nil),
-	}
-}
-
-type isUpdateItemNoteResponse_Result interface {
-	isUpdateItemNoteResponse_Result()
-}
-
-type UpdateItemNoteResponse_Item struct {
-	Item *Item `protobuf:"bytes,1,opt,name=item" json:"item,omitempty"`
-}
-
-func (*UpdateItemNoteResponse_Item) isUpdateItemNoteResponse_Result() {}
-
-type UpdateItemNoteResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*UpdateItemNoteResponse_Error) isUpdateItemNoteResponse_Result() {}
-
-// 获取内容备注请求
-type GetItemNoteRequest struct {
-	ItemId string `protobuf:"bytes,1,opt,name=item_id" json:"item_id,omitempty"`
-	UserId string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-}
-
-func (x *GetItemNoteRequest) Reset() { *x = GetItemNoteRequest{} }
-
-func (x *GetItemNoteRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *GetItemNoteRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetItemNoteRequest) GetItemId() string {
-	if x != nil {
-		return x.ItemId
-	}
-	return ""
-}
-
-func (x *GetItemNoteRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-// 获取内容备注响应
-type GetItemNoteResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*GetItemNoteResponse_Note
-	//	*GetItemNoteResponse_Error
-	Result isGetItemNoteResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *GetItemNoteResponse) Reset() { *x = GetItemNoteResponse{} }
-
-func (x *GetItemNoteResponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *GetItemNoteResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetItemNoteResponse) GetResult() isGetItemNoteResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *GetItemNoteResponse) GetNote() *NoteData {
-	if p, ok := x.GetResult().(*GetItemNoteResponse_Note); ok {
-		return p.Note
-	}
-	return nil
-}
-
-func (x *GetItemNoteResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*GetItemNoteResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GetItemNoteResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*GetItemNoteResponse_Note)(nil),
-		(*GetItemNoteResponse_Error)(nil),
-	}
-}
-
-type isGetItemNoteResponse_Result interface {
-	isGetItemNoteResponse_Result()
-}
-
-type GetItemNoteResponse_Note struct {
-	Note *NoteData `protobuf:"bytes,1,opt,name=note" json:"note,omitempty"`
-}
-
-func (*GetItemNoteResponse_Note) isGetItemNoteResponse_Result() {}
-
-type GetItemNoteResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*GetItemNoteResponse_Error) isGetItemNoteResponse_Result() {}
-
-// 备注数据
-type NoteData struct {
-	ItemId    string                 `protobuf:"bytes,1,opt,name=item_id" json:"item_id,omitempty"`
-	Note      string                 `protobuf:"bytes,2,opt,name=note" json:"note,omitempty"`
-	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at" json:"updated_at,omitempty"`
-}
-
-func (x *NoteData) Reset() { *x = NoteData{} }
-
-func (x *NoteData) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *NoteData) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *NoteData) GetItemId() string {
-	if x != nil {
-		return x.ItemId
-	}
-	return ""
-}
-
-func (x *NoteData) GetNote() string {
-	if x != nil {
-		return x.Note
-	}
-	return ""
-}
-
-func (x *NoteData) GetUpdatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return nil
-}
-
 type ItemService interface {
 	CreateItem(ctx context.Context, req *CreateItemRequest) (res *CreateItemResponse, err error)
 	GetItem(ctx context.Context, req *GetItemRequest) (res *GetItemResponse, err error)
 	UpdateItem(ctx context.Context, req *UpdateItemRequest) (res *UpdateItemResponse, err error)
 	DeleteItem(ctx context.Context, req *DeleteItemRequest) (res *DeleteItemResponse, err error)
 	GetItems(ctx context.Context, req *GetItemsRequest) (res *GetItemsResponse, err error)
-	BatchDeleteItems(ctx context.Context, req *BatchDeleteItemsRequest) (res *BatchDeleteItemsResponse, err error)
 	GetItemsByTags(ctx context.Context, req *GetItemsByTagsRequest) (res *GetItemsByTagsResponse, err error)
 	GetItemsByOrganization(ctx context.Context, req *GetItemsByOrganizationRequest) (res *GetItemsByOrganizationResponse, err error)
-	ExtractMetadata(ctx context.Context, req *ExtractMetadataRequest) (res *ExtractMetadataResponse, err error)
 	GetRecentItems(ctx context.Context, req *GetRecentItemsRequest) (res *GetRecentItemsResponse, err error)
-	BatchUpdateItems(ctx context.Context, req *BatchUpdateItemsRequest) (res *BatchUpdateItemsResponse, err error)
 	ImportFromFile(ctx context.Context, req *ImportFromFileRequest) (res *ImportFromFileResponse, err error)
 	ExportToFile(ctx context.Context, req *ExportToFileRequest) (res *ExportToFileResponse, err error)
 	SearchItems(ctx context.Context, req *SearchItemsRequest) (res *SearchItemsResponse, err error)
-	AddItemNote(ctx context.Context, req *AddItemNoteRequest) (res *AddItemNoteResponse, err error)
-	UpdateItemNote(ctx context.Context, req *UpdateItemNoteRequest) (res *UpdateItemNoteResponse, err error)
-	GetItemNote(ctx context.Context, req *GetItemNoteRequest) (res *GetItemNoteResponse, err error)
 }

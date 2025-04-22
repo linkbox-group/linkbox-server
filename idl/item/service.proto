@@ -75,7 +75,7 @@ message CreateItemRequest {
   string description = 5;
   string thumbnail_url = 6;
   repeated string tags = 8;
-  repeated string collection_ids = 9;
+  repeated string organization_ids = 9;
   string note = 12;
 }
 
@@ -109,7 +109,7 @@ message UpdateItemRequest {
   string description = 4;
   string thumbnail_url = 5;
   repeated string tags = 7;
-  repeated string collection_ids = 8;
+  repeated string organization_ids = 8;
 }
 
 // 更新内容项响应
@@ -220,7 +220,7 @@ message ImportResult {
 // 导出内容到文件请求
 message ExportToFileRequest {
   string user_id = 1;
-  string collection_id = 2;
+  string organization_id = 2;
   repeated string tags = 3;
   string file_format = 4;  // "html", "json", "csv"
   bool include_archived = 5;
@@ -248,7 +248,7 @@ message SearchItemsRequest {
   string query = 2;
   common.pagination.PaginationRequest pagination = 3;
   repeated model.ItemType types = 4;
-  repeated string collections = 5;
+  repeated string organizations = 5;
   repeated string tags = 6;
   bool include_archived = 7;
   common.types.TimeRange date_range = 8;

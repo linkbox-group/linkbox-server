@@ -16,18 +16,12 @@ type Client interface {
 	UpdateItem(ctx context.Context, Req *item.UpdateItemRequest, callOptions ...callopt.Option) (r *item.UpdateItemResponse, err error)
 	DeleteItem(ctx context.Context, Req *item.DeleteItemRequest, callOptions ...callopt.Option) (r *item.DeleteItemResponse, err error)
 	GetItems(ctx context.Context, Req *item.GetItemsRequest, callOptions ...callopt.Option) (r *item.GetItemsResponse, err error)
-	BatchDeleteItems(ctx context.Context, Req *item.BatchDeleteItemsRequest, callOptions ...callopt.Option) (r *item.BatchDeleteItemsResponse, err error)
 	GetItemsByTags(ctx context.Context, Req *item.GetItemsByTagsRequest, callOptions ...callopt.Option) (r *item.GetItemsByTagsResponse, err error)
 	GetItemsByOrganization(ctx context.Context, Req *item.GetItemsByOrganizationRequest, callOptions ...callopt.Option) (r *item.GetItemsByOrganizationResponse, err error)
-	ExtractMetadata(ctx context.Context, Req *item.ExtractMetadataRequest, callOptions ...callopt.Option) (r *item.ExtractMetadataResponse, err error)
 	GetRecentItems(ctx context.Context, Req *item.GetRecentItemsRequest, callOptions ...callopt.Option) (r *item.GetRecentItemsResponse, err error)
-	BatchUpdateItems(ctx context.Context, Req *item.BatchUpdateItemsRequest, callOptions ...callopt.Option) (r *item.BatchUpdateItemsResponse, err error)
 	ImportFromFile(ctx context.Context, Req *item.ImportFromFileRequest, callOptions ...callopt.Option) (r *item.ImportFromFileResponse, err error)
 	ExportToFile(ctx context.Context, Req *item.ExportToFileRequest, callOptions ...callopt.Option) (r *item.ExportToFileResponse, err error)
 	SearchItems(ctx context.Context, Req *item.SearchItemsRequest, callOptions ...callopt.Option) (r *item.SearchItemsResponse, err error)
-	AddItemNote(ctx context.Context, Req *item.AddItemNoteRequest, callOptions ...callopt.Option) (r *item.AddItemNoteResponse, err error)
-	UpdateItemNote(ctx context.Context, Req *item.UpdateItemNoteRequest, callOptions ...callopt.Option) (r *item.UpdateItemNoteResponse, err error)
-	GetItemNote(ctx context.Context, Req *item.GetItemNoteRequest, callOptions ...callopt.Option) (r *item.GetItemNoteResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -84,11 +78,6 @@ func (p *kItemServiceClient) GetItems(ctx context.Context, Req *item.GetItemsReq
 	return p.kClient.GetItems(ctx, Req)
 }
 
-func (p *kItemServiceClient) BatchDeleteItems(ctx context.Context, Req *item.BatchDeleteItemsRequest, callOptions ...callopt.Option) (r *item.BatchDeleteItemsResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.BatchDeleteItems(ctx, Req)
-}
-
 func (p *kItemServiceClient) GetItemsByTags(ctx context.Context, Req *item.GetItemsByTagsRequest, callOptions ...callopt.Option) (r *item.GetItemsByTagsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetItemsByTags(ctx, Req)
@@ -99,19 +88,9 @@ func (p *kItemServiceClient) GetItemsByOrganization(ctx context.Context, Req *it
 	return p.kClient.GetItemsByOrganization(ctx, Req)
 }
 
-func (p *kItemServiceClient) ExtractMetadata(ctx context.Context, Req *item.ExtractMetadataRequest, callOptions ...callopt.Option) (r *item.ExtractMetadataResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.ExtractMetadata(ctx, Req)
-}
-
 func (p *kItemServiceClient) GetRecentItems(ctx context.Context, Req *item.GetRecentItemsRequest, callOptions ...callopt.Option) (r *item.GetRecentItemsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetRecentItems(ctx, Req)
-}
-
-func (p *kItemServiceClient) BatchUpdateItems(ctx context.Context, Req *item.BatchUpdateItemsRequest, callOptions ...callopt.Option) (r *item.BatchUpdateItemsResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.BatchUpdateItems(ctx, Req)
 }
 
 func (p *kItemServiceClient) ImportFromFile(ctx context.Context, Req *item.ImportFromFileRequest, callOptions ...callopt.Option) (r *item.ImportFromFileResponse, err error) {
@@ -127,19 +106,4 @@ func (p *kItemServiceClient) ExportToFile(ctx context.Context, Req *item.ExportT
 func (p *kItemServiceClient) SearchItems(ctx context.Context, Req *item.SearchItemsRequest, callOptions ...callopt.Option) (r *item.SearchItemsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.SearchItems(ctx, Req)
-}
-
-func (p *kItemServiceClient) AddItemNote(ctx context.Context, Req *item.AddItemNoteRequest, callOptions ...callopt.Option) (r *item.AddItemNoteResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.AddItemNote(ctx, Req)
-}
-
-func (p *kItemServiceClient) UpdateItemNote(ctx context.Context, Req *item.UpdateItemNoteRequest, callOptions ...callopt.Option) (r *item.UpdateItemNoteResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.UpdateItemNote(ctx, Req)
-}
-
-func (p *kItemServiceClient) GetItemNote(ctx context.Context, Req *item.GetItemNoteRequest, callOptions ...callopt.Option) (r *item.GetItemNoteResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetItemNote(ctx, Req)
 }

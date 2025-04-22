@@ -40,19 +40,19 @@ func (x ItemType) String() string {
 }
 
 type Item struct {
-	Id            string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Type          ItemType               `protobuf:"varint,3,opt,name=type" json:"type,omitempty"`
-	Url           string                 `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
-	Title         string                 `protobuf:"bytes,5,opt,name=title" json:"title,omitempty"`
-	Description   string                 `protobuf:"bytes,6,opt,name=description" json:"description,omitempty"`
-	ThumbnailUrl  string                 `protobuf:"bytes,7,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
-	Tags          []string               `protobuf:"bytes,8,rep,name=tags" json:"tags,omitempty"`
-	CollectionIds []string               `protobuf:"bytes,9,rep,name=collection_ids" json:"collection_ids,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=created_at" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=updated_at" json:"updated_at,omitempty"`
-	Note          string                 `protobuf:"bytes,15,opt,name=note" json:"note,omitempty"`
-	ReadCount     int32                  `protobuf:"varint,16,opt,name=read_count" json:"read_count,omitempty"`
+	Id              string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	UserId          string                 `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	Type            ItemType               `protobuf:"varint,3,opt,name=type" json:"type,omitempty"`
+	Url             string                 `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
+	Title           string                 `protobuf:"bytes,5,opt,name=title" json:"title,omitempty"`
+	Description     string                 `protobuf:"bytes,6,opt,name=description" json:"description,omitempty"`
+	ThumbnailUrl    string                 `protobuf:"bytes,7,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
+	Tags            []string               `protobuf:"bytes,8,rep,name=tags" json:"tags,omitempty"`
+	OrganizationIds []string               `protobuf:"bytes,9,rep,name=organization_ids" json:"organization_ids,omitempty"`
+	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=created_at" json:"created_at,omitempty"`
+	UpdatedAt       *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=updated_at" json:"updated_at,omitempty"`
+	Note            string                 `protobuf:"bytes,15,opt,name=note" json:"note,omitempty"`
+	ReadCount       int32                  `protobuf:"varint,16,opt,name=read_count" json:"read_count,omitempty"`
 }
 
 func (x *Item) Reset() { *x = Item{} }
@@ -117,9 +117,9 @@ func (x *Item) GetTags() []string {
 	return nil
 }
 
-func (x *Item) GetCollectionIds() []string {
+func (x *Item) GetOrganizationIds() []string {
 	if x != nil {
-		return x.CollectionIds
+		return x.OrganizationIds
 	}
 	return nil
 }
