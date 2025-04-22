@@ -53,24 +53,20 @@ func (x OrganizationActivityType) String() string {
 
 // 组织
 type Organization struct {
-	Id            string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	Code          string                 `protobuf:"bytes,2,opt,name=code" json:"code,omitempty"`
-	ParentCode    string                 `protobuf:"bytes,3,opt,name=parent_code" json:"parent_code,omitempty"`
-	ParentCodes   string                 `protobuf:"bytes,4,opt,name=parent_codes" json:"parent_codes,omitempty"`
-	TreeLeaf      string                 `protobuf:"bytes,5,opt,name=tree_leaf" json:"tree_leaf,omitempty"`
-	TreeLevel     int32                  `protobuf:"varint,6,opt,name=tree_level" json:"tree_level,omitempty"`
-	TreeNames     string                 `protobuf:"bytes,7,opt,name=tree_names" json:"tree_names,omitempty"`
-	Name          string                 `protobuf:"bytes,8,opt,name=name" json:"name,omitempty"`
-	UserId        string                 `protobuf:"bytes,9,opt,name=user_id" json:"user_id,omitempty"`
-	Description   string                 `protobuf:"bytes,10,opt,name=description" json:"description,omitempty"`
-	IsDefault     bool                   `protobuf:"varint,11,opt,name=is_default" json:"is_default,omitempty"`
-	IsShared      bool                   `protobuf:"varint,12,opt,name=is_shared" json:"is_shared,omitempty"`
-	ShareCode     string                 `protobuf:"bytes,13,opt,name=share_code" json:"share_code,omitempty"`
-	ShareExpireAt *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=share_expire_at" json:"share_expire_at,omitempty"`
-	SortOrder     int32                  `protobuf:"varint,15,opt,name=sort_order" json:"sort_order,omitempty"`
-	ItemsCount    uint32                 `protobuf:"varint,16,opt,name=items_count" json:"items_count,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=created_at" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,18,opt,name=updated_at" json:"updated_at,omitempty"`
+	Id          string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	Code        string                 `protobuf:"bytes,2,opt,name=code" json:"code,omitempty"`
+	ParentCode  string                 `protobuf:"bytes,3,opt,name=parent_code" json:"parent_code,omitempty"`
+	ParentCodes string                 `protobuf:"bytes,4,opt,name=parent_codes" json:"parent_codes,omitempty"`
+	TreeLeaf    string                 `protobuf:"bytes,5,opt,name=tree_leaf" json:"tree_leaf,omitempty"`
+	TreeLevel   int32                  `protobuf:"varint,6,opt,name=tree_level" json:"tree_level,omitempty"`
+	TreeNames   string                 `protobuf:"bytes,7,opt,name=tree_names" json:"tree_names,omitempty"`
+	Name        string                 `protobuf:"bytes,8,opt,name=name" json:"name,omitempty"`
+	UserId      string                 `protobuf:"bytes,9,opt,name=user_id" json:"user_id,omitempty"`
+	Description string                 `protobuf:"bytes,10,opt,name=description" json:"description,omitempty"`
+	SortOrder   int32                  `protobuf:"varint,15,opt,name=sort_order" json:"sort_order,omitempty"`
+	ItemsCount  uint32                 `protobuf:"varint,16,opt,name=items_count" json:"items_count,omitempty"`
+	CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=created_at" json:"created_at,omitempty"`
+	UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,18,opt,name=updated_at" json:"updated_at,omitempty"`
 }
 
 func (x *Organization) Reset() { *x = Organization{} }
@@ -149,34 +145,6 @@ func (x *Organization) GetDescription() string {
 	return ""
 }
 
-func (x *Organization) GetIsDefault() bool {
-	if x != nil {
-		return x.IsDefault
-	}
-	return false
-}
-
-func (x *Organization) GetIsShared() bool {
-	if x != nil {
-		return x.IsShared
-	}
-	return false
-}
-
-func (x *Organization) GetShareCode() string {
-	if x != nil {
-		return x.ShareCode
-	}
-	return ""
-}
-
-func (x *Organization) GetShareExpireAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.ShareExpireAt
-	}
-	return nil
-}
-
 func (x *Organization) GetSortOrder() int32 {
 	if x != nil {
 		return x.SortOrder
@@ -207,16 +175,12 @@ func (x *Organization) GetUpdatedAt() *timestamppb.Timestamp {
 
 // 创建组织请求
 type CreateOrganizationRequest struct {
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
-	Code          string                 `protobuf:"bytes,3,opt,name=code" json:"code,omitempty"`
-	ParentCode    *string                `protobuf:"bytes,4,opt,name=parent_code" json:"parent_code,omitempty"`
-	Description   *string                `protobuf:"bytes,5,opt,name=description" json:"description,omitempty"`
-	IsDefault     *bool                  `protobuf:"varint,6,opt,name=is_default" json:"is_default,omitempty"`
-	IsShared      *bool                  `protobuf:"varint,7,opt,name=is_shared" json:"is_shared,omitempty"`
-	ShareCode     *string                `protobuf:"bytes,8,opt,name=share_code" json:"share_code,omitempty"`
-	ShareExpireAt *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=share_expire_at" json:"share_expire_at,omitempty"`
-	SortOrder     *int32                 `protobuf:"varint,10,opt,name=sort_order" json:"sort_order,omitempty"`
+	UserId      string  `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Name        string  `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
+	Code        string  `protobuf:"bytes,3,opt,name=code" json:"code,omitempty"`
+	ParentCode  *string `protobuf:"bytes,4,opt,name=parent_code" json:"parent_code,omitempty"`
+	Description *string `protobuf:"bytes,5,opt,name=description" json:"description,omitempty"`
+	SortOrder   *int32  `protobuf:"varint,10,opt,name=sort_order" json:"sort_order,omitempty"`
 }
 
 func (x *CreateOrganizationRequest) Reset() { *x = CreateOrganizationRequest{} }
@@ -260,34 +224,6 @@ func (x *CreateOrganizationRequest) GetDescription() string {
 		return *x.Description
 	}
 	return ""
-}
-
-func (x *CreateOrganizationRequest) GetIsDefault() bool {
-	if x != nil && x.IsDefault != nil {
-		return *x.IsDefault
-	}
-	return false
-}
-
-func (x *CreateOrganizationRequest) GetIsShared() bool {
-	if x != nil && x.IsShared != nil {
-		return *x.IsShared
-	}
-	return false
-}
-
-func (x *CreateOrganizationRequest) GetShareCode() string {
-	if x != nil && x.ShareCode != nil {
-		return *x.ShareCode
-	}
-	return ""
-}
-
-func (x *CreateOrganizationRequest) GetShareExpireAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.ShareExpireAt
-	}
-	return nil
 }
 
 func (x *CreateOrganizationRequest) GetSortOrder() int32 {
@@ -447,106 +383,13 @@ type GetOrganizationResponse_Error struct {
 
 func (*GetOrganizationResponse_Error) isGetOrganizationResponse_Result() {}
 
-// 根据代码获取组织请求
-type GetOrganizationByCodeRequest struct {
-	Code   string `protobuf:"bytes,1,opt,name=code" json:"code,omitempty"`
-	UserId string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-}
-
-func (x *GetOrganizationByCodeRequest) Reset() { *x = GetOrganizationByCodeRequest{} }
-
-func (x *GetOrganizationByCodeRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GetOrganizationByCodeRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetOrganizationByCodeRequest) GetCode() string {
-	if x != nil {
-		return x.Code
-	}
-	return ""
-}
-
-func (x *GetOrganizationByCodeRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-// 根据代码获取组织响应
-type GetOrganizationByCodeResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*GetOrganizationByCodeResponse_Organization
-	//	*GetOrganizationByCodeResponse_Error
-	Result isGetOrganizationByCodeResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *GetOrganizationByCodeResponse) Reset() { *x = GetOrganizationByCodeResponse{} }
-
-func (x *GetOrganizationByCodeResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GetOrganizationByCodeResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetOrganizationByCodeResponse) GetResult() isGetOrganizationByCodeResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *GetOrganizationByCodeResponse) GetOrganization() *Organization {
-	if p, ok := x.GetResult().(*GetOrganizationByCodeResponse_Organization); ok {
-		return p.Organization
-	}
-	return nil
-}
-
-func (x *GetOrganizationByCodeResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*GetOrganizationByCodeResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GetOrganizationByCodeResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*GetOrganizationByCodeResponse_Organization)(nil),
-		(*GetOrganizationByCodeResponse_Error)(nil),
-	}
-}
-
-type isGetOrganizationByCodeResponse_Result interface {
-	isGetOrganizationByCodeResponse_Result()
-}
-
-type GetOrganizationByCodeResponse_Organization struct {
-	Organization *Organization `protobuf:"bytes,1,opt,name=organization" json:"organization,omitempty"`
-}
-
-func (*GetOrganizationByCodeResponse_Organization) isGetOrganizationByCodeResponse_Result() {}
-
-type GetOrganizationByCodeResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*GetOrganizationByCodeResponse_Error) isGetOrganizationByCodeResponse_Result() {}
-
 // 更新组织请求
 type UpdateOrganizationRequest struct {
-	Id            string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Name          *string                `protobuf:"bytes,3,opt,name=name" json:"name,omitempty"`
-	Description   *string                `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
-	IsDefault     *bool                  `protobuf:"varint,5,opt,name=is_default" json:"is_default,omitempty"`
-	IsShared      *bool                  `protobuf:"varint,6,opt,name=is_shared" json:"is_shared,omitempty"`
-	ShareCode     *string                `protobuf:"bytes,7,opt,name=share_code" json:"share_code,omitempty"`
-	ShareExpireAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=share_expire_at" json:"share_expire_at,omitempty"`
-	SortOrder     *int32                 `protobuf:"varint,9,opt,name=sort_order" json:"sort_order,omitempty"`
+	Id          string  `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	UserId      string  `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	Name        *string `protobuf:"bytes,3,opt,name=name" json:"name,omitempty"`
+	Description *string `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
+	SortOrder   *int32  `protobuf:"varint,9,opt,name=sort_order" json:"sort_order,omitempty"`
 }
 
 func (x *UpdateOrganizationRequest) Reset() { *x = UpdateOrganizationRequest{} }
@@ -583,34 +426,6 @@ func (x *UpdateOrganizationRequest) GetDescription() string {
 		return *x.Description
 	}
 	return ""
-}
-
-func (x *UpdateOrganizationRequest) GetIsDefault() bool {
-	if x != nil && x.IsDefault != nil {
-		return *x.IsDefault
-	}
-	return false
-}
-
-func (x *UpdateOrganizationRequest) GetIsShared() bool {
-	if x != nil && x.IsShared != nil {
-		return *x.IsShared
-	}
-	return false
-}
-
-func (x *UpdateOrganizationRequest) GetShareCode() string {
-	if x != nil && x.ShareCode != nil {
-		return *x.ShareCode
-	}
-	return ""
-}
-
-func (x *UpdateOrganizationRequest) GetShareExpireAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.ShareExpireAt
-	}
-	return nil
 }
 
 func (x *UpdateOrganizationRequest) GetSortOrder() int32 {
@@ -1473,111 +1288,6 @@ type RemoveItemsFromOrganizationResponse_Error struct {
 
 func (*RemoveItemsFromOrganizationResponse_Error) isRemoveItemsFromOrganizationResponse_Result() {}
 
-// 获取组织内容项请求
-type GetOrganizationItemsRequest struct {
-	OrganizationId string                        `protobuf:"bytes,1,opt,name=organization_id" json:"organization_id,omitempty"`
-	UserId         string                        `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Pagination     *pagination.PaginationRequest `protobuf:"bytes,3,opt,name=pagination" json:"pagination,omitempty"`
-	Sort           *pagination.SortRequest       `protobuf:"bytes,4,opt,name=sort" json:"sort,omitempty"`
-}
-
-func (x *GetOrganizationItemsRequest) Reset() { *x = GetOrganizationItemsRequest{} }
-
-func (x *GetOrganizationItemsRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GetOrganizationItemsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetOrganizationItemsRequest) GetOrganizationId() string {
-	if x != nil {
-		return x.OrganizationId
-	}
-	return ""
-}
-
-func (x *GetOrganizationItemsRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *GetOrganizationItemsRequest) GetPagination() *pagination.PaginationRequest {
-	if x != nil {
-		return x.Pagination
-	}
-	return nil
-}
-
-func (x *GetOrganizationItemsRequest) GetSort() *pagination.SortRequest {
-	if x != nil {
-		return x.Sort
-	}
-	return nil
-}
-
-// 获取组织内容项响应
-type GetOrganizationItemsResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*GetOrganizationItemsResponse_ItemsPage
-	//	*GetOrganizationItemsResponse_Error
-	Result isGetOrganizationItemsResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *GetOrganizationItemsResponse) Reset() { *x = GetOrganizationItemsResponse{} }
-
-func (x *GetOrganizationItemsResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GetOrganizationItemsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetOrganizationItemsResponse) GetResult() isGetOrganizationItemsResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *GetOrganizationItemsResponse) GetItemsPage() *OrganizationItemsPage {
-	if p, ok := x.GetResult().(*GetOrganizationItemsResponse_ItemsPage); ok {
-		return p.ItemsPage
-	}
-	return nil
-}
-
-func (x *GetOrganizationItemsResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*GetOrganizationItemsResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GetOrganizationItemsResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*GetOrganizationItemsResponse_ItemsPage)(nil),
-		(*GetOrganizationItemsResponse_Error)(nil),
-	}
-}
-
-type isGetOrganizationItemsResponse_Result interface {
-	isGetOrganizationItemsResponse_Result()
-}
-
-type GetOrganizationItemsResponse_ItemsPage struct {
-	ItemsPage *OrganizationItemsPage `protobuf:"bytes,1,opt,name=items_page" json:"items_page,omitempty"`
-}
-
-func (*GetOrganizationItemsResponse_ItemsPage) isGetOrganizationItemsResponse_Result() {}
-
-type GetOrganizationItemsResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*GetOrganizationItemsResponse_Error) isGetOrganizationItemsResponse_Result() {}
-
 // 组织内容项分页数据
 type OrganizationItemsPage struct {
 	Items      []*OrganizationItem        `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
@@ -2094,12 +1804,9 @@ type OrganizationService interface {
 	MoveOrganization(ctx context.Context, req *MoveOrganizationRequest) (res *MoveOrganizationResponse, err error)
 	AddItemsToOrganization(ctx context.Context, req *AddItemsToOrganizationRequest) (res *AddItemsToOrganizationResponse, err error)
 	RemoveItemsFromOrganization(ctx context.Context, req *RemoveItemsFromOrganizationRequest) (res *RemoveItemsFromOrganizationResponse, err error)
-	GetOrganizationItems(ctx context.Context, req *GetOrganizationItemsRequest) (res *GetOrganizationItemsResponse, err error)
 	ReorderOrganizationItems(ctx context.Context, req *ReorderOrganizationItemsRequest) (res *ReorderOrganizationItemsResponse, err error)
 	ReorderOrganizations(ctx context.Context, req *ReorderOrganizationsRequest) (res *ReorderOrganizationsResponse, err error)
 	GetOrganizationActivity(ctx context.Context, req *GetOrganizationActivityRequest) (res *GetOrganizationActivityResponse, err error)
-	GetOrganizationByCode(ctx context.Context, req *GetOrganizationByCodeRequest) (res *GetOrganizationByCodeResponse, err error)
 	GetOrganizationTree(ctx context.Context, req *GetOrganizationTreeRequest) (res *GetOrganizationTreeResponse, err error)
 	GetOrganizationChildren(ctx context.Context, req *GetOrganizationChildrenRequest) (res *GetOrganizationChildrenResponse, err error)
-	BatchSaveOrganization(ctx context.Context, req *BatchSaveOrganizationRequest) (res *BatchSaveOrganizationResponse, err error)
 }

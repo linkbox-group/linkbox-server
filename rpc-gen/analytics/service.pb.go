@@ -4,7 +4,7 @@ package analytics
 
 import (
 	"context"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/error"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -70,7 +70,7 @@ func (x *GetUserActivityStatsResponse) GetStats() *UserActivityStats {
 	return nil
 }
 
-func (x *GetUserActivityStatsResponse) GetError() *error.Error {
+func (x *GetUserActivityStatsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetUserActivityStatsResponse_Error); ok {
 		return p.Error
 	}
@@ -96,7 +96,7 @@ type GetUserActivityStatsResponse_Stats struct {
 func (*GetUserActivityStatsResponse_Stats) isGetUserActivityStatsResponse_Result() {}
 
 type GetUserActivityStatsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetUserActivityStatsResponse_Error) isGetUserActivityStatsResponse_Result() {}
@@ -355,7 +355,7 @@ func (x *GetItemStatsResponse) GetStats() *ItemStats {
 	return nil
 }
 
-func (x *GetItemStatsResponse) GetError() *error.Error {
+func (x *GetItemStatsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetItemStatsResponse_Error); ok {
 		return p.Error
 	}
@@ -381,7 +381,7 @@ type GetItemStatsResponse_Stats struct {
 func (*GetItemStatsResponse_Stats) isGetItemStatsResponse_Result() {}
 
 type GetItemStatsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetItemStatsResponse_Error) isGetItemStatsResponse_Result() {}
@@ -628,7 +628,7 @@ func (x *GetCollectionStatsResponse) GetStats() *CollectionStats {
 	return nil
 }
 
-func (x *GetCollectionStatsResponse) GetError() *error.Error {
+func (x *GetCollectionStatsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetCollectionStatsResponse_Error); ok {
 		return p.Error
 	}
@@ -654,7 +654,7 @@ type GetCollectionStatsResponse_Stats struct {
 func (*GetCollectionStatsResponse_Stats) isGetCollectionStatsResponse_Result() {}
 
 type GetCollectionStatsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetCollectionStatsResponse_Error) isGetCollectionStatsResponse_Result() {}
@@ -831,7 +831,7 @@ func (x *GetTagStatsResponse) GetStats() *TagStats {
 	return nil
 }
 
-func (x *GetTagStatsResponse) GetError() *error.Error {
+func (x *GetTagStatsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetTagStatsResponse_Error); ok {
 		return p.Error
 	}
@@ -857,7 +857,7 @@ type GetTagStatsResponse_Stats struct {
 func (*GetTagStatsResponse_Stats) isGetTagStatsResponse_Result() {}
 
 type GetTagStatsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetTagStatsResponse_Error) isGetTagStatsResponse_Result() {}
@@ -1056,7 +1056,7 @@ func (x *GetDomainStatsResponse) GetStats() *DomainStats {
 	return nil
 }
 
-func (x *GetDomainStatsResponse) GetError() *error.Error {
+func (x *GetDomainStatsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetDomainStatsResponse_Error); ok {
 		return p.Error
 	}
@@ -1082,7 +1082,7 @@ type GetDomainStatsResponse_Stats struct {
 func (*GetDomainStatsResponse_Stats) isGetDomainStatsResponse_Result() {}
 
 type GetDomainStatsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetDomainStatsResponse_Error) isGetDomainStatsResponse_Result() {}
@@ -1271,7 +1271,7 @@ func (x *GetUsageTrendsResponse) GetTrends() *UsageTrends {
 	return nil
 }
 
-func (x *GetUsageTrendsResponse) GetError() *error.Error {
+func (x *GetUsageTrendsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetUsageTrendsResponse_Error); ok {
 		return p.Error
 	}
@@ -1297,7 +1297,7 @@ type GetUsageTrendsResponse_Trends struct {
 func (*GetUsageTrendsResponse_Trends) isGetUsageTrendsResponse_Result() {}
 
 type GetUsageTrendsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetUsageTrendsResponse_Error) isGetUsageTrendsResponse_Result() {}
@@ -1444,7 +1444,7 @@ func (x *GetItemAccessHistoryResponse) GetHistoryPage() *ItemAccessHistoryPage {
 	return nil
 }
 
-func (x *GetItemAccessHistoryResponse) GetError() *error.Error {
+func (x *GetItemAccessHistoryResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetItemAccessHistoryResponse_Error); ok {
 		return p.Error
 	}
@@ -1470,7 +1470,7 @@ type GetItemAccessHistoryResponse_HistoryPage struct {
 func (*GetItemAccessHistoryResponse_HistoryPage) isGetItemAccessHistoryResponse_Result() {}
 
 type GetItemAccessHistoryResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetItemAccessHistoryResponse_Error) isGetItemAccessHistoryResponse_Result() {}
@@ -1651,7 +1651,7 @@ func (x *RecordItemAccessResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *RecordItemAccessResponse) GetError() *error.Error {
+func (x *RecordItemAccessResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*RecordItemAccessResponse_Error); ok {
 		return p.Error
 	}
@@ -1677,7 +1677,7 @@ type RecordItemAccessResponse_Success struct {
 func (*RecordItemAccessResponse_Success) isRecordItemAccessResponse_Result() {}
 
 type RecordItemAccessResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*RecordItemAccessResponse_Error) isRecordItemAccessResponse_Result() {}
@@ -1748,7 +1748,7 @@ func (x *GetRecommendedItemsResponse) GetItems() *RecommendedItems {
 	return nil
 }
 
-func (x *GetRecommendedItemsResponse) GetError() *error.Error {
+func (x *GetRecommendedItemsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetRecommendedItemsResponse_Error); ok {
 		return p.Error
 	}
@@ -1774,7 +1774,7 @@ type GetRecommendedItemsResponse_Items struct {
 func (*GetRecommendedItemsResponse_Items) isGetRecommendedItemsResponse_Result() {}
 
 type GetRecommendedItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetRecommendedItemsResponse_Error) isGetRecommendedItemsResponse_Result() {}
@@ -1937,7 +1937,7 @@ func (x *GetRelatedItemsResponse) GetItems() *RelatedItems {
 	return nil
 }
 
-func (x *GetRelatedItemsResponse) GetError() *error.Error {
+func (x *GetRelatedItemsResponse) GetError() *cError.Error {
 	if p, ok := x.GetResult().(*GetRelatedItemsResponse_Error); ok {
 		return p.Error
 	}
@@ -1963,7 +1963,7 @@ type GetRelatedItemsResponse_Items struct {
 func (*GetRelatedItemsResponse_Items) isGetRelatedItemsResponse_Result() {}
 
 type GetRelatedItemsResponse_Error struct {
-	Error *error.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
 }
 
 func (*GetRelatedItemsResponse_Error) isGetRelatedItemsResponse_Result() {}
