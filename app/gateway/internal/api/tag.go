@@ -183,12 +183,7 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 
 	tagListResp := domain.TagListResponse{
 		Tags: tags,
-		Pagination: struct {
-			Total      int32 `json:"total"`
-			Page       int32 `json:"page"`
-			PageSize   int32 `json:"page_size"`
-			TotalPages int32 `json:"total_pages"`
-		}{
+		Pagination: domain.Pagination{
 			Total:      resp.GetTags().Pagination.TotalItems,
 			Page:       resp.GetTags().Pagination.Page,
 			PageSize:   resp.GetTags().Pagination.PageSize,
