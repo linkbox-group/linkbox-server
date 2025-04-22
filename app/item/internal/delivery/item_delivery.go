@@ -200,16 +200,16 @@ func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByT
 	var currentPage, currentPageSize int64 = 1, 10 // 默认值 (int64)
 	if paginationReq != nil {                      // 先检查 nil
 		if paginationReq.Page > 0 {
-			currentPage = int64(paginationReq.Page) // 从 int32 转为 int64
+			currentPage = int64(paginationReq.Page) // 从 int32 转为 int6
+		} else {
+			paginationReq.Page = 1
 		}
 		if paginationReq.PageSize > 0 {
 			currentPageSize = int64(paginationReq.PageSize) // 从 int32 转为 int64
-			// 可选：添加最大页面大小限制
-			// const maxPageSize = 100
-			// if currentPageSize > maxPageSize {
-			// 	currentPageSize = maxPageSize
-			// }
+		} else {
+			paginationReq.PageSize = 10
 		}
+
 	}
 	// 使用正确的类型 commonPagination.PaginationResponse 和字段名
 	paginationResp := &pagination.PaginationMeta{
@@ -325,8 +325,60 @@ func (d *ItemDelivery) ExportToFile(ctx context.Context, req *item.ExportToFileR
 
 // SearchItems implements the ItemDelivery interface.
 func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsRequest) (resp *item.SearchItemsResponse, err error) {
-	// TODO: Your code here...
-	return
+	userID := req.UserId
+	paginationReq := req.Pagination
+	// 构造分页响应信息
+	var currentPage, currentPageSize int = 1, 10 // 默认值
+	if paginationReq != nil {
+		if paginationReq.Page > 0 {
+			currentPage = int(paginationReq.Page)
+		}
+		if paginationReq.PageSize > 0 {
+			currentPageSize = int(paginationReq.PageSize)
+		}
+	}
+	items, total, err := d.s.SearchItems(ctx, userID, req.Query, currentPage, currentPageSize)
+	if err != nil {
+		return &item.SearchItemsResponse{
+			Result: &item.SearchItemsResponse_Error{
+				Error: &cError.Error{
+					Code:    40000,
+					Message: err.Error(),
+				},
+			},
+		}, err
+	}
+	// 转换结果为响应格式
+	respItems := make([]*item.Item, 0, len(items))
+	for _, dbItem := range items {
+		tagStrings := make([]string, 0, len(dbItem.Tags))
+		for _, tag := range dbItem.Tags {
+			tagStrings = append(tagStrings, tag.Name)
+		}
+		respItems = append(respItems, &item.Item{
+			Id:          dbItem.ID,
+			UserId:      dbItem.UserID,
+			Title:       dbItem.Title,
+			Description: "",
+			Url:         dbItem.URL,
+			Tags:        tagStrings,
+			CreatedAt:   timestamppb.New(dbItem.CreatedAt),
+			UpdatedAt:   timestamppb.New(dbItem.UpdatedAt),
+		})
+	}
+
+	return &item.SearchItemsResponse{
+		Result: &item.SearchItemsResponse_Data{
+			Data: &item.SearchResult{
+				Items: respItems,
+				Pagination: &pagination.PaginationMeta{
+					TotalPages: int32(total),
+					Page:       int32(currentPage),
+					PageSize:   int32(currentPageSize),
+				},
+			},
+		},
+	}, nil
 }
 
 // AddItemNote implements the ItemDelivery interface.

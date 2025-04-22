@@ -46,3 +46,6 @@ func (s *Service) GetItemsByOrganization(ctx context.Context, userID string, org
 	return s.Repo.GetItemsByOrganization(ctx, userID, organizationID, pageNum, pageSize)
 
 }
+func (s *Service) SearchItems(ctx context.Context, userID string, query string, pageNum int, pageSize int) ([]model.Item, int, error) {
+	return s.Repo.SearchItemsByTitle(ctx, userID, query, pageNum, pageSize)
+}

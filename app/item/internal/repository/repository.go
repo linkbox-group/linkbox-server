@@ -123,11 +123,11 @@ func (r *Repository) GetItemsByTags(ctx context.Context, userID string, tagNames
 	// 现在使用原始的 baseQuery（只过滤 user_id 和 is_deleted）
 	// 并限制 ID 在我们找到的 ids 列表中，然后应用分页和 Preload
 	if err = r.db.WithContext(ctx).Model(&model.Item{}).
-		Where("id IN ?", ids).    // 使用上面找到的 ID 列表
+		Where("id IN ?", ids). // 使用上面找到的 ID 列表
 		Order("created_at DESC"). // 保持排序一致性
-		Offset(offset).           // 应用分页
-		Limit(limit).             // 应用分页
-		Preload("Tags").          // 预加载关联的 Tags
+		Offset(offset). // 应用分页
+		Limit(limit). // 应用分页
+		Preload("Tags"). // 预加载关联的 Tags
 		Find(&items).Error; err != nil {
 		return nil, 0, fmt.Errorf("fetching items by tags failed: %w", err)
 	}
@@ -169,4 +169,35 @@ func (r *Repository) GetItemsByOrganization(ctx context.Context, userID string, 
 	}
 
 	return items, total, nil
+}
+
+func (r *Repository) SearchItemsByTitle(ctx context.Context, userID string, query string, pageNum int, pageSize int) (items []model.Item, total int, err error) {
+	// 计算分页参数
+	limit, offset := pageSize, (pageNum-1)*pageSize
+	// 基础查询构建器，使用连接表查询
+	baseQuery := r.db.WithContext(ctx).
+		Table("item").
+		Where("item.user_id =? AND item.is_deleted =?", userID, false)
+	// 添加组织ID过滤
+	if query != "" {
+		baseQuery = baseQuery.Where("item.title LIKE ?", "%"+query+"%")
+	}
+
+	// 计算总数
+	var totalCount int64
+	if err = baseQuery.Count(&totalCount).Error; err != nil {
+		return nil, 0, fmt.Errorf("counting user item failed: %w", err)
+	}
+	total = int(totalCount)
+	// 获取分页数据
+	if err = baseQuery.
+		Order("item.created_at DESC").
+		Offset(offset).
+		Limit(limit).
+		Preload("Tags").
+		Find(&items).Error; err != nil {
+		return nil, 0, fmt.Errorf("fetching user items failed: %w", err)
+	}
+	return items, total, nil
+
 }

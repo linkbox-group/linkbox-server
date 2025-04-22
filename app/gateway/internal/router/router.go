@@ -61,6 +61,7 @@ func (r *Group) RegisterItemRoutes() {
 		contentGroup.GET("/:id", contentAPI.GetItem)
 		contentGroup.PUT("/:id", contentAPI.UpdateItem)
 		contentGroup.DELETE("/:id", contentAPI.DeleteItem)
+		contentGroup.POST("/search", contentAPI.SearchItems)
 	}
 
 	contentTagGroup := r.Group("/items/tags")
@@ -92,6 +93,7 @@ func (r *Group) RegisterOrganizationRoutes() {
 		// 组织内容项操作
 		orgGroup.POST("/items", orgAPI.AddItemsToOrganization)
 		orgGroup.DELETE("/items", orgAPI.RemoveItemsFromOrganization)
+
 	}
 
 	// 获取用户组织列表
