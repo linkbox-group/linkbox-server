@@ -130,11 +130,6 @@ func (u *UserService) RegisterUser(ctx context.Context, email, code, password st
 	}
 
 	// 创建用户
-	err = u.repo.CreateUser(ctx, userModel)
-	if err != nil {
-		logrus.Errorln(err)
-		return nil, errors.New("internal error: " + err.Error())
-	}
 
 	accessToken, err := rpc.AuthClient.GenerateAccessToken(ctx, &auth.GenerateTokenReq{
 		Uid: userModel.ID,
@@ -146,6 +141,11 @@ func (u *UserService) RegisterUser(ctx context.Context, email, code, password st
 	refreshToken, err := rpc.AuthClient.GenerateRefreshToken(ctx, &auth.GenerateTokenReq{
 		Uid: userModel.ID,
 	})
+	if err != nil {
+		logrus.Errorln(err)
+		return nil, errors.New("internal error: " + err.Error())
+	}
+	err = u.repo.CreateUser(ctx, userModel)
 	if err != nil {
 		logrus.Errorln(err)
 		return nil, errors.New("internal error: " + err.Error())
