@@ -12,5 +12,5 @@ type ItemTag struct {
 }
 
 func (ItemTag) TableName() string {
-	return "content_tag"
+	return "item_tag"
 }

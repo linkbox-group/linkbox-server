@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/tag"
@@ -29,6 +30,28 @@ const (
 	ErrItemNotFound  = 40000 // 内容项不存在
 )
 
+// 响应结构体定义
+type TagResponse struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Color       string    `json:"color"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type TagListResponse struct {
+	Tags       []TagResponse `json:"tags"`
+	Total      int32         `json:"total"`
+	Page       int32         `json:"page"`
+	PageSize   int32         `json:"page_size"`
+	TotalPages int32         `json:"total_pages"`
+}
+
+type TagSuccessResponse struct {
+	Success bool `json:"success"`
+}
+
 // CreateTag 创建标签
 func (a *TagAPI) CreateTag(c *gin.Context) {
 	var req tag.CreateTagRequest
@@ -43,7 +66,16 @@ func (a *TagAPI) CreateTag(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	tag := resp.GetTag()
+	tagResp := TagResponse{
+		ID:          tag.Id,
+		Name:        tag.Name,
+		Description: tag.Description,
+		Color:       tag.Color,
+		CreatedAt:   tag.CreatedAt.AsTime(),
+		UpdatedAt:   tag.UpdatedAt.AsTime(),
+	}
+	domain.Success(c, tagResp)
 }
 
 // GetTag 获取标签
@@ -59,7 +91,16 @@ func (a *TagAPI) GetTag(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	tag := resp.GetTag()
+	tagResp := TagResponse{
+		ID:          tag.Id,
+		Name:        tag.Name,
+		Description: tag.Description,
+		Color:       tag.Color,
+		CreatedAt:   tag.CreatedAt.AsTime(),
+		UpdatedAt:   tag.UpdatedAt.AsTime(),
+	}
+	domain.Success(c, tagResp)
 }
 
 // UpdateTag 更新标签
@@ -78,7 +119,16 @@ func (a *TagAPI) UpdateTag(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	tag := resp.GetTag()
+	tagResp := TagResponse{
+		ID:          tag.Id,
+		Name:        tag.Name,
+		Description: tag.Description,
+		Color:       tag.Color,
+		CreatedAt:   tag.CreatedAt.AsTime(),
+		UpdatedAt:   tag.UpdatedAt.AsTime(),
+	}
+	domain.Success(c, tagResp)
 }
 
 // DeleteTag 删除标签
@@ -99,7 +149,11 @@ func (a *TagAPI) DeleteTag(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	success := resp.GetSuccess()
+	tagResp := TagSuccessResponse{
+		Success: success,
+	}
+	domain.Success(c, tagResp)
 }
 
 // GetUserTags 获取用户所有标签
@@ -128,7 +182,26 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	var tags []TagResponse
+	for _, tag := range resp.GetTags().Tags {
+		tags = append(tags, TagResponse{
+			ID:          tag.Id,
+			Name:        tag.Name,
+			Description: tag.Description,
+			Color:       tag.Color,
+			CreatedAt:   tag.CreatedAt.AsTime(),
+			UpdatedAt:   tag.UpdatedAt.AsTime(),
+		})
+	}
+
+	tagListResp := TagListResponse{
+		Tags:       tags,
+		Total:      resp.GetTags().Pagination.TotalItems,
+		Page:       resp.GetTags().Pagination.Page,
+		PageSize:   resp.GetTags().Pagination.PageSize,
+		TotalPages: resp.GetTags().Pagination.TotalPages,
+	}
+	domain.Success(c, tagListResp)
 }
 
 // AddTagsToItems 添加标签到内容项
@@ -197,5 +270,16 @@ func (a *TagAPI) GetItemTags(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	var tags []TagResponse
+	for _, tag := range resp.GetTags().Tags {
+		tags = append(tags, TagResponse{
+			ID:          tag.Id,
+			Name:        tag.Name,
+			Description: tag.Description,
+			Color:       tag.Color,
+			CreatedAt:   tag.CreatedAt.AsTime(),
+			UpdatedAt:   tag.UpdatedAt.AsTime(),
+		})
+	}
+	domain.Success(c, tags)
 }

@@ -29,7 +29,6 @@ func (s *OrganizationDelivery) CreateOrganization(ctx context.Context, req *orga
 		IsShared:      *req.IsShared,
 		SortOrder:     int(*req.SortOrder),
 		ShareExpireAt: req.ShareExpireAt.AsTime(),
-		ShareCode:     req.ShareCode,
 	}
 
 	err = s.service.CreateOrganizationService(ctx, &oModel)
@@ -171,6 +170,7 @@ func (s *OrganizationDelivery) DeleteOrganization(ctx context.Context, req *orga
 // GetUserOrganizations implements the OrganizationDelivery interface.
 func (s *OrganizationDelivery) GetUserOrganizations(ctx context.Context, req *organization.GetUserOrganizationsRequest) (resp *organization.GetUserOrganizationsResponse, err error) {
 	organizations, err := s.service.GetUserOrganizationsService(ctx, req.UserId)
+	logrus.Infoln(organizations)
 	if err != nil {
 		resp = &organization.GetUserOrganizationsResponse{
 			Result: &organization.GetUserOrganizationsResponse_Error{
@@ -186,24 +186,22 @@ func (s *OrganizationDelivery) GetUserOrganizations(ctx context.Context, req *or
 	orgList := make([]*organization.Organization, 0, len(organizations))
 	for _, org := range organizations {
 		orgList = append(orgList, &organization.Organization{
-			Id:            org.ID,
-			Code:          org.Code,
-			ParentCode:    org.ParentCode,
-			ParentCodes:   org.ParentCodes,
-			TreeLeaf:      org.TreeLeaf,
-			TreeLevel:     int32(org.TreeLevel),
-			TreeNames:     org.TreeNames,
-			Name:          org.Name,
-			UserId:        org.UserID,
-			Description:   *org.Description,
-			IsDefault:     org.IsDefault,
-			IsShared:      org.IsShared,
-			ShareCode:     *org.ShareCode,
-			ShareExpireAt: timestamppb.New(org.ShareExpireAt),
-			SortOrder:     int32(org.SortOrder),
-			ItemsCount:    uint32(org.ItemsCount),
-			CreatedAt:     timestamppb.New(org.CreatedAt),
-			UpdatedAt:     timestamppb.New(org.UpdatedAt),
+			Id:          org.ID,
+			Code:        org.Code,
+			ParentCode:  org.ParentCode,
+			ParentCodes: org.ParentCodes,
+			TreeLeaf:    org.TreeLeaf,
+			TreeLevel:   int32(org.TreeLevel),
+			TreeNames:   org.TreeNames,
+			Name:        org.Name,
+			UserId:      org.UserID,
+			Description: *org.Description,
+			IsDefault:   org.IsDefault,
+			IsShared:    org.IsShared,
+			SortOrder:   int32(org.SortOrder),
+			ItemsCount:  uint32(org.ItemsCount),
+			CreatedAt:   timestamppb.New(org.CreatedAt),
+			UpdatedAt:   timestamppb.New(org.UpdatedAt),
 		})
 	}
 

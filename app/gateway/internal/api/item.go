@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
@@ -21,6 +22,31 @@ func NewItemAPI() *ItemAPI {
 const (
 	ErrTitleExists = 40001 // 标题已存在
 )
+
+// 响应结构体定义
+type ItemResponse struct {
+	ID              string    `json:"id"`
+	UserID          string    `json:"user_id"`
+	URL             string    `json:"url"`
+	Title           string    `json:"title"`
+	ThumbnailURL    string    `json:"thumbnail_url"`
+	Tags            []string  `json:"tags"`
+	OrganizationIDs []string  `json:"organization_ids"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
+
+type ItemListResponse struct {
+	Items      []ItemResponse `json:"items"`
+	Total      int32          `json:"total"`
+	Page       int32          `json:"page"`
+	PageSize   int32          `json:"page_size"`
+	TotalPages int32          `json:"total_pages"`
+}
+
+type ItemSuccessResponse struct {
+	Success bool `json:"success"`
+}
 
 // CreateItem 创建内容
 func (a *ItemAPI) CreateItem(c *gin.Context) {
@@ -44,7 +70,19 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	item := resp.GetItem()
+	itemResp := ItemResponse{
+		ID:              item.Id,
+		UserID:          item.UserId,
+		URL:             item.Url,
+		Title:           item.Title,
+		ThumbnailURL:    item.ThumbnailUrl,
+		Tags:            item.Tags,
+		OrganizationIDs: item.CollectionIds,
+		CreatedAt:       item.CreatedAt.AsTime(),
+		UpdatedAt:       item.UpdatedAt.AsTime(),
+	}
+	domain.Success(c, itemResp)
 }
 
 // GetItem 获取内容
@@ -65,7 +103,19 @@ func (a *ItemAPI) GetItem(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	item := resp.GetItem()
+	itemResp := ItemResponse{
+		ID:              item.Id,
+		UserID:          item.UserId,
+		URL:             item.Url,
+		Title:           item.Title,
+		ThumbnailURL:    item.ThumbnailUrl,
+		Tags:            item.Tags,
+		OrganizationIDs: item.CollectionIds,
+		CreatedAt:       item.CreatedAt.AsTime(),
+		UpdatedAt:       item.UpdatedAt.AsTime(),
+	}
+	domain.Success(c, itemResp)
 }
 
 // UpdateItem 更新内容
@@ -90,20 +140,20 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 		domain.Error(c, ErrTitleExists, err.Error())
 		return
 	}
-	vo := domain.UpdateContentResponse{
-		Content: &domain.Content{
-			ID:              resp.GetItem().Id,
-			UserID:          resp.GetItem().UserId,
-			URL:             resp.GetItem().Url,
-			Title:           resp.GetItem().Title,
-			ThumbnailURL:    resp.GetItem().ThumbnailUrl,
-			Tags:            resp.GetItem().Tags,
-			OrganizationIDs: resp.GetItem().CollectionIds,
-			CreatedAt:       resp.GetItem().CreatedAt.AsTime(),
-			UpdatedAt:       resp.GetItem().UpdatedAt.AsTime(),
-		},
+
+	item := resp.GetItem()
+	itemResp := ItemResponse{
+		ID:              item.Id,
+		UserID:          item.UserId,
+		URL:             item.Url,
+		Title:           item.Title,
+		ThumbnailURL:    item.ThumbnailUrl,
+		Tags:            item.Tags,
+		OrganizationIDs: item.CollectionIds,
+		CreatedAt:       item.CreatedAt.AsTime(),
+		UpdatedAt:       item.UpdatedAt.AsTime(),
 	}
-	domain.Success(c, vo)
+	domain.Success(c, itemResp)
 }
 
 // DeleteItem 删除内容
@@ -124,7 +174,11 @@ func (a *ItemAPI) DeleteItem(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	success := resp.GetSuccess()
+	itemResp := ItemSuccessResponse{
+		Success: success,
+	}
+	domain.Success(c, itemResp)
 }
 
 // GetItemsByTags 按标签获取内容
@@ -143,7 +197,6 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 	if err != nil {
 		logrus.Infoln(err)
 		domain.ErrorMsg(c, ErrInvalidParamCode, err.Error())
-
 		return
 	}
 	logrus.Infoln(req.Pagination)
@@ -153,8 +206,32 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	var items []ItemResponse
+	for _, ite := range resp.GetItemsPage().Items {
+		items = append(items, ItemResponse{
+			ID:              ite.Id,
+			UserID:          ite.UserId,
+			URL:             ite.Url,
+			Title:           ite.Title,
+			ThumbnailURL:    ite.ThumbnailUrl,
+			Tags:            ite.Tags,
+			OrganizationIDs: ite.CollectionIds,
+			CreatedAt:       ite.CreatedAt.AsTime(),
+			UpdatedAt:       ite.UpdatedAt.AsTime(),
+		})
+	}
+
+	itemListResp := ItemListResponse{
+		Items:      items,
+		Total:      resp.GetItemsPage().Pagination.TotalItems,
+		Page:       resp.GetItemsPage().Pagination.Page,
+		PageSize:   resp.GetItemsPage().Pagination.PageSize,
+		TotalPages: resp.GetItemsPage().Pagination.TotalPages,
+	}
+	domain.Success(c, itemListResp)
 }
+
+// GetItemsByOrganization 按组织获取内容
 func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
@@ -174,5 +251,70 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 		domain.Error(c, ErrNoPermission, "没有操作权限")
 		return
 	}
-	domain.Success(c, resp)
+
+	var items []ItemResponse
+	for _, ite := range resp.GetItemsPage().Items {
+		items = append(items, ItemResponse{
+			ID:              ite.Id,
+			UserID:          ite.UserId,
+			URL:             ite.Url,
+			Title:           ite.Title,
+			ThumbnailURL:    ite.ThumbnailUrl,
+			Tags:            ite.Tags,
+			OrganizationIDs: ite.CollectionIds,
+			CreatedAt:       ite.CreatedAt.AsTime(),
+			UpdatedAt:       ite.UpdatedAt.AsTime(),
+		})
+	}
+
+	itemListResp := ItemListResponse{
+		Items:      items,
+		Total:      resp.GetItemsPage().Pagination.TotalItems,
+		Page:       resp.GetItemsPage().Pagination.Page,
+		PageSize:   resp.GetItemsPage().Pagination.PageSize,
+		TotalPages: resp.GetItemsPage().Pagination.TotalPages,
+	}
+	domain.Success(c, itemListResp)
+}
+func (a *ItemAPI) SearchItems(c *gin.Context) {
+	userId, err := domain.GetUserIdFromContext(c)
+	if err!= nil {
+		domain.ErrorMsg(c, ErrAuthFailedCode, err.Error())
+		return
+	}
+	req := item.SearchItemsRequest{
+		Pagination: &pagination.PaginationRequest{},
+	}
+	req.UserId = userId
+	err = c.ShouldBind(&req)
+	if err!= nil {
+		domain.Error(c, ErrInvalidReq, err.Error())
+	}
+	resp, err := rpc.ItemClient.SearchItems(context.Background(), &req)
+	if err!= nil {
+		domain.Error(c, ErrRpcFailedCode, "rpc调用失败")
+		return
+	}
+	var items []ItemResponse
+	for _, ite := range resp.GetData().GetItems() {
+		items = append(items, ItemResponse{
+			ID:              ite.Id,
+			UserID:          ite.UserId,
+			URL:             ite.Url,
+			Title:           ite.Title,
+			ThumbnailURL:    ite.ThumbnailUrl,
+			Tags:            ite.Tags,
+			OrganizationIDs: ite.CollectionIds,
+			CreatedAt:       ite.CreatedAt.AsTime(),
+			UpdatedAt:       ite.UpdatedAt.AsTime(),	
+		})
+	}
+	itemListResp := ItemListResponse{
+		Items:      items,
+		Total:      resp.GetData().GetPagination().TotalItems,
+		Page:       resp.GetData().GetPagination().Page,
+		PageSize:   resp.GetData().GetPagination().PageSize,
+		TotalPages: resp.GetData().GetPagination().TotalPages,	
+	}
+	domain.Success(c, itemListResp)
 }

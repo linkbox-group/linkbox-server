@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
@@ -22,6 +23,33 @@ const (
 	ErrOrganizationNameExists = 40001 // 组织名已存在
 )
 
+// 响应结构体定义
+type OrganizationResponse struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Code        string    `json:"code"`
+	Description string    `json:"description"`
+	ParentID    string    `json:"parent_id"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type OrganizationListResponse struct {
+	Organizations []OrganizationResponse `json:"organizations"`
+}
+
+type OrganizationTreeResponse struct {
+	ID          string                     `json:"id"`
+	Name        string                     `json:"name"`
+	Code        string                     `json:"code"`
+	Description string                     `json:"description"`
+	ParentID    string                     `json:"parent_id"`
+	Children    []OrganizationTreeResponse `json:"children"`
+}
+type OrganizationSuccessResponse struct {
+	Success bool `json:"success"`
+}
+
 // CreateOrganization 创建组织
 func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
 	var req organization.CreateOrganizationRequest
@@ -30,14 +58,29 @@ func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
-
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.Error(c, ErrAuthFailedCode, err.Error())
+		return
+	}
+	req.UserId = userId
 	resp, err := rpc.OrganizationClient.CreateOrganization(context.Background(), &req)
 	if err != nil {
 		domain.Error(c, ErrOrganizationNameExists, err.Error())
 		return
 	}
 
-	domain.Success(c, resp)
+	org := resp.GetOrganization()
+	orgResp := OrganizationResponse{
+		ID:          org.Id,
+		Name:        org.Name,
+		Code:        org.Code,
+		Description: org.Description,
+		ParentID:    org.ParentCode,
+		CreatedAt:   org.CreatedAt.AsTime(),
+		UpdatedAt:   org.UpdatedAt.AsTime(),
+	}
+	domain.Success(c, orgResp)
 }
 
 // GetOrganization 获取组织详情
@@ -58,7 +101,17 @@ func (a *OrganizationAPI) GetOrganization(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	org := resp.GetOrganization()
+	orgResp := OrganizationResponse{
+		ID:          org.Id,
+		Name:        org.Name,
+		Code:        org.Code,
+		Description: org.Description,
+		ParentID:    org.ParentCode,
+		CreatedAt:   org.CreatedAt.AsTime(),
+		UpdatedAt:   org.UpdatedAt.AsTime(),
+	}
+	domain.Success(c, orgResp)
 }
 
 // UpdateOrganization 更新组织
@@ -75,7 +128,17 @@ func (a *OrganizationAPI) UpdateOrganization(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	org := resp.GetOrganization()
+	orgResp := OrganizationResponse{
+		ID:          org.Id,
+		Name:        org.Name,
+		Code:        org.Code,
+		Description: org.Description,
+		ParentID:    org.ParentCode,
+		CreatedAt:   org.CreatedAt.AsTime(),
+		UpdatedAt:   org.UpdatedAt.AsTime(),
+	}
+	domain.Success(c, orgResp)
 }
 
 // DeleteOrganization 删除组织
@@ -118,7 +181,19 @@ func (a *OrganizationAPI) GetUserOrganizations(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	var orgs []OrganizationResponse
+	for _, org := range resp.GetOrganizations().Organizations {
+		orgs = append(orgs, OrganizationResponse{
+			ID:          org.Id,
+			Name:        org.Name,
+			Code:        org.Code,
+			Description: org.Description,
+			ParentID:    org.ParentCode,
+			CreatedAt:   org.CreatedAt.AsTime(),
+			UpdatedAt:   org.UpdatedAt.AsTime(),
+		})
+	}
+	domain.Success(c, OrganizationListResponse{Organizations: orgs})
 }
 
 // GetOrganizationTree 获取组织树
@@ -139,7 +214,7 @@ func (a *OrganizationAPI) GetOrganizationTree(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	domain.Success(c, resp.GetRoot().GetData())
 }
 
 // GetOrganizationChildren 获取组织子节点
@@ -167,7 +242,19 @@ func (a *OrganizationAPI) GetOrganizationChildren(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	var orgs []OrganizationResponse
+	for _, org := range resp.GetChildren().Organizations {
+		orgs = append(orgs, OrganizationResponse{
+			ID:          org.Id,
+			Name:        org.Name,
+			Code:        org.Code,
+			Description: org.Description,
+			ParentID:    org.ParentCode,
+			CreatedAt:   org.CreatedAt.AsTime(),
+			UpdatedAt:   org.UpdatedAt.AsTime(),
+		})
+	}
+	domain.Success(c, OrganizationListResponse{Organizations: orgs})
 }
 
 // MoveOrganization 移动组织
@@ -184,7 +271,11 @@ func (a *OrganizationAPI) MoveOrganization(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	org := resp.GetSuccess()
+	orgResp := OrganizationSuccessResponse{
+		Success: org,
+	}
+	domain.Success(c, orgResp)
 }
 
 // AddItemsToOrganization 添加内容项到组织
@@ -207,7 +298,11 @@ func (a *OrganizationAPI) AddItemsToOrganization(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	success := resp.GetSuccess()
+	orgResp := OrganizationSuccessResponse{
+		Success: success,
+	}
+	domain.Success(c, orgResp)
 }
 
 // RemoveItemsFromOrganization 从组织移除内容项
@@ -229,5 +324,9 @@ func (a *OrganizationAPI) RemoveItemsFromOrganization(c *gin.Context) {
 		return
 	}
 
-	domain.Success(c, resp)
+	success := resp.GetSuccess()
+	orgResp := OrganizationSuccessResponse{
+		Success: success,
+	}
+	domain.Success(c, orgResp)
 }
