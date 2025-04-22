@@ -204,19 +204,6 @@ message MoveOrganizationResponse {
   }
 }
 
-// 批量保存组织请求
-message BatchSaveOrganizationRequest {
-  string user_id = 1;
-  repeated Organization organizations = 2;
-}
-
-// 批量保存组织响应
-message BatchSaveOrganizationResponse {
-  oneof result {
-    OrganizationsData organizations = 1;
-    common.cError.Error error = 2;
-  }
-}
 
 // 添加内容项到组织请求
 message AddItemsToOrganizationRequest {
