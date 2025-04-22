@@ -76,8 +76,6 @@ message CreateItemRequest {
   string thumbnail_url = 6;
   repeated string tags = 8;
   repeated string collection_ids = 9;
-  bool is_favorite = 10;
-  bool is_private = 11;
   string note = 12;
 }
 
@@ -112,9 +110,6 @@ message UpdateItemRequest {
   string thumbnail_url = 5;
   repeated string tags = 7;
   repeated string collection_ids = 8;
-  bool is_favorite = 9;
-  bool is_archived = 10;
-  bool is_private = 11;
 }
 
 // 更新内容项响应

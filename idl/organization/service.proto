@@ -60,15 +60,11 @@ message Organization {
   string parent_code = 3;
   string parent_codes = 4;
   string tree_leaf = 5;
-  int32 tree_level = 6;
+  int32  tree_level = 6;
   string tree_names = 7;
   string name = 8;
   string user_id = 9;
   string description = 10;
-  bool is_default = 11;
-  bool is_shared = 12;
-  string share_code = 13;
-  google.protobuf.Timestamp share_expire_at = 14;
   int32 sort_order = 15;
   uint32 items_count = 16;
   google.protobuf.Timestamp created_at = 17;
@@ -82,10 +78,6 @@ message CreateOrganizationRequest {
   string code = 3;
   optional string parent_code = 4;
   optional string description = 5;
-  optional bool is_default = 6;
-  optional bool is_shared = 7;
-  optional string share_code = 8;
-  optional google.protobuf.Timestamp share_expire_at = 9;
   optional int32 sort_order = 10;
 }
 
@@ -118,10 +110,6 @@ message UpdateOrganizationRequest {
   string user_id = 2;
   optional string name = 3;
   optional string description = 4;
-  optional bool is_default = 5;
-  optional bool is_shared = 6;
-  optional string share_code = 7;
-  optional google.protobuf.Timestamp share_expire_at = 8;
   optional int32 sort_order = 9;
 }
 

@@ -3,7 +3,7 @@ syntax = "proto3";
 
 package search;
 
-option go_package = "github.com/linkbox-group/linkbox-server/rpc-gen/search";
+option go_package = "search";
 
 import "google/protobuf/timestamp.proto";
 import "model/model.proto";

@@ -2,22 +2,14 @@ syntax ="proto3";
 package model;
 option go_package="model";
 
-
 import "google/protobuf/timestamp.proto";
-import "common/cError/error.proto";
-import "common/pagination/pagination.proto";
-import "common/types/types.proto";
+
 
 // 内容类型枚举
 enum ItemType {
   UNKNOWN_TYPE = 0;
   LINK = 1;
   NOTE = 2;
-  IMAGE = 3;
-  DOCUMENT = 4;
-  VIDEO = 5;
-  AUDIO = 6;
-  CODE = 7;
 }
 message Item {
   string id = 1;
@@ -29,9 +21,6 @@ message Item {
   string thumbnail_url = 7;
   repeated string tags = 8;
   repeated string collection_ids = 9;
-  bool is_favorite = 10;
-  bool is_archived = 11;
-  bool is_private = 12;
   google.protobuf.Timestamp created_at = 13;
   google.protobuf.Timestamp updated_at = 14;
   string note = 15;
