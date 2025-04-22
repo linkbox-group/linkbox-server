@@ -3,10 +3,11 @@ syntax = "proto3";
 
 package search;
 
-option go_package = "search";
+option go_package = "github.com/linkbox-group/linkbox-server/rpc-gen/search";
 
 import "google/protobuf/timestamp.proto";
-import "common/error/error.proto";
+import "model/model.proto";
+import "common/cError/error.proto";
 import "common/pagination/pagination.proto";
 import "common/types/types.proto";
 
@@ -18,23 +19,12 @@ service SearchService {
   // 高级搜索
   rpc AdvancedSearch(AdvancedSearchRequest) returns (SearchResponse);
 
-  // 获取搜索建议
-  rpc GetSearchSuggestions(SearchSuggestionRequest) returns (SearchSuggestionResponse);
 
   // 获取搜索历史
   rpc GetSearchHistory(SearchHistoryRequest) returns (SearchHistoryResponse);
 
   // 清除搜索历史
   rpc ClearSearchHistory(ClearSearchHistoryRequest) returns (ClearSearchHistoryResponse);
-
-  // 保存搜索
-  rpc SaveSearch(SaveSearchRequest) returns (SaveSearchResponse);
-
-  // 获取保存的搜索
-  rpc GetSavedSearches(GetSavedSearchesRequest) returns (GetSavedSearchesResponse);
-
-  // 删除保存的搜索
-  rpc DeleteSavedSearch(DeleteSavedSearchRequest) returns (DeleteSavedSearchResponse);
 }
 
 // 搜索类型
@@ -71,61 +61,17 @@ message AdvancedSearchRequest {
 message SearchResponse {
   oneof result {
     SearchResult data = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
 // 搜索结果
 message SearchResult {
-  repeated SearchItem items = 1;
+  repeated model.Item items = 1;
   common.pagination.PaginationMeta pagination = 2;
-  repeated string suggested_terms = 3;
   int64 search_time_ms = 4;
 }
 
-// 搜索项
-message SearchItem {
-  string id = 1;
-  string type = 2;  // "link", "note", "collection", "tag"
-  string title = 3;
-  string description = 4;
-  string url = 5;
-  string thumbnail_url = 6;
-  repeated string tags = 7;
-  repeated string collection_ids = 8;
-  float relevance_score = 9;
-  repeated string matched_fields = 10;
-  repeated HighlightedText highlights = 11;
-  google.protobuf.Timestamp created_at = 12;
-  google.protobuf.Timestamp updated_at = 13;
-}
-
-// 高亮文本
-message HighlightedText {
-  string field = 1;
-  string text = 2;
-}
-
-// 搜索建议请求
-message SearchSuggestionRequest {
-  string user_id = 1;
-  string partial_query = 2;
-  int32 limit = 3;
-}
-
-// 搜索建议响应
-message SearchSuggestionResponse {
-  oneof result {
-    SuggestionResult suggestions = 1;
-    common.error.Error error = 2;
-  }
-}
-
-// 建议结果
-message SuggestionResult {
-  repeated string terms = 1;
-  repeated SearchItem top_results = 2;
-}
 
 // 搜索历史请求
 message SearchHistoryRequest {
@@ -137,7 +83,7 @@ message SearchHistoryRequest {
 message SearchHistoryResponse {
   oneof result {
     SearchHistoryResult history = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
 
@@ -165,78 +111,6 @@ message ClearSearchHistoryRequest {
 message ClearSearchHistoryResponse {
   oneof result {
     bool success = 1;
-    common.error.Error error = 2;
-  }
-}
-
-// 保存搜索请求
-message SaveSearchRequest {
-  string user_id = 1;
-  string query = 2;
-  SearchType type = 3;
-  string name = 4;
-  optional string description = 5;
-  optional AdvancedSearchParams advanced_params = 6;
-}
-
-// 高级搜索参数
-message AdvancedSearchParams {
-  repeated string collections = 1;
-  repeated string tags = 2;
-  common.types.TimeRange date_range = 3;
-  bool include_archived = 4;
-  bool favorites_only = 5;
-}
-
-// 保存搜索响应
-message SaveSearchResponse {
-  oneof result {
-    SavedSearch saved_search = 1;
-    common.error.Error error = 2;
-  }
-}
-
-// 保存的搜索
-message SavedSearch {
-  string id = 1;
-  string user_id = 2;
-  string name = 3;
-  string description = 4;
-  string query = 5;
-  SearchType type = 6;
-  AdvancedSearchParams advanced_params = 7;
-  google.protobuf.Timestamp created_at = 8;
-  google.protobuf.Timestamp updated_at = 9;
-}
-
-// 获取保存的搜索请求
-message GetSavedSearchesRequest {
-  string user_id = 1;
-}
-
-// 获取保存的搜索响应
-message GetSavedSearchesResponse {
-  oneof result {
-    SavedSearchesResult saved_searches = 1;
-    common.error.Error error = 2;
-  }
-}
-
-// 保存的搜索结果
-message SavedSearchesResult {
-  repeated SavedSearch searches = 1;
-}
-
-// 删除保存的搜索请求
-message DeleteSavedSearchRequest {
-  string id = 1;
-  string user_id = 2;
-}
-
-// 删除保存的搜索响应
-message DeleteSavedSearchResponse {
-  oneof result {
-    bool success = 1;
-    common.error.Error error = 2;
+    common.cError.Error error = 2;
   }
 }
