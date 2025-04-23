@@ -1,4 +1,3 @@
-create database tag;
 -- 用户表
 CREATE TABLE `user` (
                         `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
@@ -45,24 +44,16 @@ CREATE TABLE `item` (
                         `user_id` VARCHAR(36) NOT NULL COMMENT '用户ID',
                         `item_type` VARCHAR(20) NOT NULL COMMENT '类型:text,image,link,bookmark',
                         `title` VARCHAR(500) NULL COMMENT '标题',
-                        `content` TEXT NULL COMMENT '内容/文本',
+                        `note` TEXT NULL COMMENT '内容/文本',
                         `url` VARCHAR(2000) NULL COMMENT '链接地址',
-                        `image_url` VARCHAR(2000) NULL COMMENT '图片地址',
                         `thumbnail_url` VARCHAR(2000) NULL COMMENT '缩略图地址',
-                        `source_domain` VARCHAR(255) NULL COMMENT '来源网站域名',
-                        `source_page_title` VARCHAR(500) NULL COMMENT '来源页面标题',
-                        `is_favorited` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否收藏',
-                        `favorited_at` DATETIME NULL COMMENT '收藏时间',
-                        `is_deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
                         `deleted_at` DATETIME NULL COMMENT '删除时间',
                         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                         PRIMARY KEY (`id`),
                         KEY `idx_user_id` (`user_id`),
                         KEY `idx_type` (`item_type`),
-                        KEY `idx_user_deleted` (`user_id`, `is_deleted`),
                         KEY `idx_deleted_at` (`deleted_at`),
-                        KEY `idx_domain` (`source_domain`),
                         CONSTRAINT `fk_item_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏项目表';
 
@@ -77,19 +68,14 @@ CREATE TABLE `organization` (
                                 `name` VARCHAR(100) NOT NULL COMMENT '组织名称',
                                 `user_id` VARCHAR(36) NOT NULL COMMENT '用户ID',
                                 `description` VARCHAR(500) NULL COMMENT '描述',
-                                `is_default` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否默认组织',
-                                `is_shared` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否共享',
-                                `share_code` VARCHAR(32) NULL COMMENT '分享码',
-                                `share_expire_at` DATETIME NULL COMMENT '分享过期时间',
                                 `sort_order` INT NOT NULL DEFAULT 0 COMMENT '排序顺序',
                                 `items_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '组织项目数',
                                 `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                 `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                                 PRIMARY KEY (`id`),
-                                UNIQUE KEY `uidx_code` (`code`),
+                                UNIQUE KEY `uid_code` (`code`),
                                 KEY `idx_parent_code` (`parent_code`),
                                 KEY `idx_user_code` (`user_id`),
-                                KEY `idx_share_code` (`share_code`),
                                 CONSTRAINT `fk_organization_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='组织表';
 
@@ -112,7 +98,6 @@ CREATE TABLE `tag` (
                        `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
                        `user_id` VARCHAR(36) NOT NULL COMMENT '用户ID',
                        `name` VARCHAR(100) NOT NULL COMMENT '标签名称',
-                       `is_system` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否系统标签',
                        `color` VARCHAR(20) NULL COMMENT '标签颜色',
                        `use_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '使用次数',
                        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
