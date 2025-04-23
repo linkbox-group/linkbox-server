@@ -4,8 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
-	"github.com/sirupsen/logrus"
+	"github.com/linkbox-group/linkbox-server/item/pkg/log"
 
 	"github.com/google/wire"
 	"github.com/linkbox-group/linkbox-server/item/internal/acl"
@@ -68,108 +67,99 @@ func (r *Repository) GetItemsByTags(ctx context.Context, userID string, tagNames
 	// 计算分页参数
 	limit, offset := int(paginationReq.GetPageSize()), int((paginationReq.Page-1)*paginationReq.PageSize)
 
-	// 基础查询构建器，应用 context 和 user_id 过滤
-	// 假设 model.Item 有 IsDeleted 字段用于软删除过滤
-	baseQuery := r.db.WithContext(ctx).Model(&model.Item{}).Where("user_id = ? AND deleted_at is not null", userID)
+	// 初始化查询构建器，应用 context 和 user_id 过滤
+	// 注意修正：deleted_at IS NULL 表示未删除的项目（基于软删除机制）
+	db := r.db.WithContext(ctx).Model(&model.Item{}).Where("user_id = ? AND deleted_at IS NULL", userID)
 
-	// 如果没有提供 tagNames，则查询用户的所有未删除项目
-	if len(tagNames) == 0 {
-		var totalCount int64
-		// 计算总数
-		if err = baseQuery.Count(&totalCount).Error; err != nil {
-			return nil, 0, fmt.Errorf("counting user items failed: %w", err)
-		}
-		total = int(totalCount)
+	// 记录总数查询器
+	countQuery := db.Session(&gorm.Session{})
 
-		// 获取分页数据
-		if err = baseQuery.Order("created_at DESC").Offset(offset).Limit(limit).Preload("Tags").Find(&items).Error; err != nil {
-			return nil, 0, fmt.Errorf("fetching user items failed: %w", err)
-		}
-		return items, total, nil
+	// 如果提供了标签名称，使用子查询构建高效的标签筛选
+	if len(tagNames) > 0 {
+		// 获取标签 ID 不必作为单独的查询
+		// 构建参数化子查询，找到包含所有指定标签的项目 ID
+		subQuery := r.db.WithContext(ctx).Table("item_tag").
+			Select("item_id").
+			Joins("JOIN tag ON item_tag.tag_id = tag.id").
+			Where("tag.user_id = ? AND tag.name IN ?", userID, tagNames).
+			Group("item_id").
+			Having("COUNT(DISTINCT tag.name) = ?", len(tagNames))
+
+		// 将子查询应用到主查询和计数查询
+		db = db.Where("id IN (?)", subQuery)
+		countQuery = countQuery.Where("id IN (?)", subQuery)
 	}
 
-	// --- 如果提供了 tagNames ---
-
-	// 首先根据标签名称获取对应的标签ID
-	var tagIDs []string
-	if err = r.db.WithContext(ctx).Model(&model.Tag{}).
-		Where("user_id = ? AND name IN ?", userID, tagNames).
-		Pluck("id", &tagIDs).Error; err != nil {
-		return nil, 0, fmt.Errorf("fetching tag IDs by names failed: %w", err)
+	// 执行计数查询
+	var totalCount int64
+	if err = countQuery.Count(&totalCount).Error; err != nil {
+		return nil, 0, fmt.Errorf("counting items failed: %w", err)
 	}
+	total = int(totalCount)
 
-	// 如果没有找到匹配的标签，直接返回空结果
-	if len(tagIDs) == 0 {
-		return []model.Item{}, 0, nil
-	}
-
-	// 构建带有 Joins, Group, Having 的查询，以查找包含所有指定标签的 items
-	query := baseQuery.
-		Joins("JOIN item_tag ON item.id = item_tag.item_id").
-		Where("item_tag.tag_id IN ?", tagIDs).
-		Group("item.id").
-		Having("COUNT(DISTINCT item_tag.tag_id) = ?", len(tagIDs))
-
-	// 克隆查询用于计算总数（因为 Count() 会忽略 Group/Having，我们需要先获取 ID 列表）
-	// 注意：直接在 Group/Having 查询上 Count 可能不准确，取决于数据库和 GORM 版本。
-	// 更可靠的方法是先查询 ID，再 Count ID 数量。
-	var ids []string // Item 的 ID 是 string 类型 (根据 model.Item 定义)
-	if err = query.Pluck("item.id", &ids).Error; err != nil {
-		return nil, 0, fmt.Errorf("plucking item IDs by tags failed: %w", err)
-	}
-	total = len(ids) // 总数就是满足条件的 ID 数量
-
-	// 如果没有找到匹配的 ID，直接返回空结果
+	// 如果没有结果，提前返回空数组
 	if total == 0 {
 		return []model.Item{}, 0, nil
 	}
 
-	// 现在使用原始的 baseQuery（只过滤 user_id 和 is_deleted）
-	// 并限制 ID 在我们找到的 ids 列表中，然后应用分页和 Preload
-	if err = r.db.WithContext(ctx).Model(&model.Item{}).
-		Where("id IN ?", ids).    // 使用上面找到的 ID 列表
-		Order("created_at DESC"). // 保持排序一致性
-		Offset(offset).           // 应用分页
-		Limit(limit).             // 应用分页
-		Preload("Tags").          // 预加载关联的 Tags
+	// 获取分页后的数据，并预加载关联的标签
+	if err = db.Order("created_at DESC").
+		Offset(offset).
+		Limit(limit).
+		Preload("Tags").
 		Find(&items).Error; err != nil {
-		return nil, 0, fmt.Errorf("fetching items by tags failed: %w", err)
+		return nil, 0, fmt.Errorf("fetching items failed: %w", err)
 	}
 
 	return items, total, nil
 }
 
 func (r *Repository) GetItemsByOrganization(ctx context.Context, userID string, organizationID string, pageNum int, pageSize int) (items []model.Item, total int, err error) {
+
+	// 参数验证
+	if pageNum < 1 {
+		pageNum = 1
+	}
+	if pageSize < 1 {
+		pageSize = 10 // 默认页大小
+	}
+
 	// 计算分页参数
-	logrus.Infoln(organizationID)
 	limit, offset := pageSize, (pageNum-1)*pageSize
 
-	// 基础查询构建器，使用连接表查询
-	baseQuery := r.db.WithContext(ctx).
-		Table("item").
+	// 创建查询构建器，使用 Model 而不是 Table 以获得更好的类型安全性
+	query := r.db.WithContext(ctx).Model(&model.Item{}).
 		Joins("JOIN organization_item ON item.id = organization_item.item_id").
-		Where("item.user_id = ? AND item.deleted_at is not null", userID)
+		Where("item.user_id = ? AND item.deleted_at IS NULL", userID) // 修正了软删除条件
 
 	// 添加组织ID过滤
 	if organizationID != "" {
-		baseQuery = baseQuery.Where("organization_item.organization_id = ?", organizationID)
+		query = query.Where("organization_item.organization_id = ?", organizationID)
 	}
 
 	// 计算总数
 	var totalCount int64
-	if err = baseQuery.Count(&totalCount).Error; err != nil {
-		return nil, 0, fmt.Errorf("counting user item failed: %w", err)
+	countQuery := query.Session(&gorm.Session{}) // 创建查询的副本用于计数
+	if err = countQuery.Count(&totalCount).Error; err != nil {
+		return nil, 0, fmt.Errorf("counting organization items failed: %w", err)
 	}
 	total = int(totalCount)
 
+	// 如果没有结果，提前返回
+	if total == 0 {
+		return []model.Item{}, 0, nil
+	}
+
 	// 获取分页数据
-	if err = baseQuery.
+	if err = query.
+		Select("item.*"). // 明确指定只选择 item 表的字段，避免列名冲突
 		Order("item.created_at DESC").
 		Offset(offset).
 		Limit(limit).
-		Preload("Tags").
+		Preload("Tags", "deleted_at IS NULL"). // 只加载未删除的标签
 		Find(&items).Error; err != nil {
-		return nil, 0, fmt.Errorf("fetching user items failed: %w", err)
+		log.Log().Error(err.Error())
+		return nil, 0, fmt.Errorf("fetching organization items failed: %w", err)
 	}
 
 	return items, total, nil
