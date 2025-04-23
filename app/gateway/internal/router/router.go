@@ -88,7 +88,7 @@ func (r *Group) RegisterOrganizationRoutes() {
 		// 组织树相关
 		orgGroup.GET("/tree", orgAPI.GetOrganizationTree)
 		orgGroup.GET("/children", orgAPI.GetOrganizationChildren)
-		orgGroup.PUT("/move", orgAPI.MoveOrganization)
+		orgGroup.PATCH("/move", orgAPI.MoveOrganization)
 
 		// 组织内容项操作
 		orgGroup.POST("/items", orgAPI.AddItemsToOrganization)
