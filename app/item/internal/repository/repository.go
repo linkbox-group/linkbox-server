@@ -35,9 +35,13 @@ func (r *Repository) GetItem(ctx context.Context, item *model.Item) (err error) 
 }
 
 func (r *Repository) UpdateItem(ctx context.Context, req *model.Item) (err error) {
-	return r.db.
+	res := r.db.
 		Where("id = ? AND user_id = ?", req.ID, req.UserID).
-		Updates(req).Error
+		Updates(req)
+	if res.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return res.Error
 }
 func (r *Repository) DeleteItem(ctx context.Context, item *model.Item) (err error) {
 	if item == nil {
@@ -66,7 +70,7 @@ func (r *Repository) GetItemsByTags(ctx context.Context, userID string, tagNames
 
 	// 基础查询构建器，应用 context 和 user_id 过滤
 	// 假设 model.Item 有 IsDeleted 字段用于软删除过滤
-	baseQuery := r.db.WithContext(ctx).Model(&model.Item{}).Where("user_id = ? AND is_deleted = ?", userID, false)
+	baseQuery := r.db.WithContext(ctx).Model(&model.Item{}).Where("user_id = ? AND deleted_at is not null", userID)
 
 	// 如果没有提供 tagNames，则查询用户的所有未删除项目
 	if len(tagNames) == 0 {
@@ -123,11 +127,11 @@ func (r *Repository) GetItemsByTags(ctx context.Context, userID string, tagNames
 	// 现在使用原始的 baseQuery（只过滤 user_id 和 is_deleted）
 	// 并限制 ID 在我们找到的 ids 列表中，然后应用分页和 Preload
 	if err = r.db.WithContext(ctx).Model(&model.Item{}).
-		Where("id IN ?", ids). // 使用上面找到的 ID 列表
+		Where("id IN ?", ids).    // 使用上面找到的 ID 列表
 		Order("created_at DESC"). // 保持排序一致性
-		Offset(offset). // 应用分页
-		Limit(limit). // 应用分页
-		Preload("Tags"). // 预加载关联的 Tags
+		Offset(offset).           // 应用分页
+		Limit(limit).             // 应用分页
+		Preload("Tags").          // 预加载关联的 Tags
 		Find(&items).Error; err != nil {
 		return nil, 0, fmt.Errorf("fetching items by tags failed: %w", err)
 	}
@@ -144,7 +148,7 @@ func (r *Repository) GetItemsByOrganization(ctx context.Context, userID string, 
 	baseQuery := r.db.WithContext(ctx).
 		Table("item").
 		Joins("JOIN organization_item ON item.id = organization_item.item_id").
-		Where("item.user_id = ? AND item.is_deleted = ?", userID, false)
+		Where("item.user_id = ? AND item.deleted_at is not null", userID)
 
 	// 添加组织ID过滤
 	if organizationID != "" {
@@ -177,7 +181,7 @@ func (r *Repository) SearchItemsByTitle(ctx context.Context, userID string, quer
 	// 基础查询构建器，使用连接表查询
 	baseQuery := r.db.WithContext(ctx).
 		Table("item").
-		Where("item.user_id =? AND item.is_deleted =?", userID, false)
+		Where("item.user_id =? AND item.deleted_at is not null", userID)
 	// 添加组织ID过滤
 	if query != "" {
 		baseQuery = baseQuery.Where("item.title LIKE ?", "%"+query+"%")
