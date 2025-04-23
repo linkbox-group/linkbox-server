@@ -2,11 +2,11 @@ package api
 
 import (
 	"context"
+	"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
 	"strconv"
 
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/tag"
-	"github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
@@ -38,6 +38,12 @@ func (a *TagAPI) CreateTag(c *gin.Context) {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.Error(c, ErrAuthFailedCode, err.Error())
+		return
+	}
+	req.UserId = userId
 
 	resp, err := rpc.TagClient.CreateTag(context.Background(), &req)
 	if err != nil {
@@ -63,6 +69,10 @@ func (a *TagAPI) CreateTag(c *gin.Context) {
 func (a *TagAPI) GetTag(c *gin.Context) {
 	tagID := c.Param("id")
 	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.Error(c, ErrAuthFailedCode, err.Error())
+		return
+	}
 	resp, err := rpc.TagClient.GetTag(context.Background(), &tag.GetTagRequest{
 		Id:     tagID,
 		UserId: userId,
@@ -90,10 +100,17 @@ func (a *TagAPI) GetTag(c *gin.Context) {
 func (a *TagAPI) UpdateTag(c *gin.Context) {
 	tagID := c.Param("id")
 	var req tag.UpdateTagRequest
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.Error(c, ErrAuthFailedCode, err.Error())
+		return
+	}
+	req.UserId = userId
 
 	req.Id = tagID
 	resp, err := rpc.TagClient.UpdateTag(context.Background(), &req)
@@ -145,7 +162,7 @@ func (a *TagAPI) DeleteTag(c *gin.Context) {
 func (a *TagAPI) GetUserTags(c *gin.Context) {
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		logrus.Errorln(err)
+		log.Log().Error(err.Error())
 		domain.Error(c, ErrAuthFailedCode, err.Error())
 		return
 	}
@@ -163,7 +180,7 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 		SearchQuery: &searchQuery,
 	})
 	if err != nil {
-		domain.Error(c, ErrNoPermission, "没有操作权限")
+		domain.Error(c, ErrRpcFailedCode, "rpc调用失败")
 		return
 	}
 
@@ -184,10 +201,10 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 	tagListResp := domain.TagListResponse{
 		Tags: tags,
 		Pagination: domain.Pagination{
-			Total:      resp.GetTags().Pagination.TotalItems,
-			Page:       resp.GetTags().Pagination.Page,
-			PageSize:   resp.GetTags().Pagination.PageSize,
-			TotalPages: resp.GetTags().Pagination.TotalPages,
+			Total:      resp.GetTags().GetPagination().GetTotalItems(),
+			Page:       resp.GetTags().GetPagination().GetPage(),
+			PageSize:   resp.GetTags().GetPagination().GetPageSize(),
+			TotalPages: resp.GetTags().GetPagination().GetTotalPages(),
 		},
 	}
 	domain.Success(c, tagListResp)
@@ -210,7 +227,8 @@ func (a *TagAPI) AddTagsToItems(c *gin.Context) {
 
 	resp, err := rpc.TagClient.AddTagsToItems(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ErrNoPermission, "没有操作权限")
+		log.Log().Error(err.Error())
+		domain.Error(c, ErrRpcFailedCode, "rpc调用失败"+err.Error())
 		return
 	}
 

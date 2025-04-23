@@ -40,18 +40,18 @@ func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
 	if err != nil {
 		domain.Error(c, ErrOrganizationNameExists, err.Error())
 		return
-	} 
+	}
 	org := resp.GetOrganization()
 	orgResp := domain.Organization{
 		ID:          org.Id,
 		Code:        org.Code,
-		ParentCode:    org.ParentCode,
+		ParentCode:  org.ParentCode,
 		Name:        org.Name,
 		UserID:      org.UserId,
 		Description: org.Description,
 		SortOrder:   int(org.SortOrder),
 		CreatedAt:   org.CreatedAt.AsTime(),
-		UpdatedAt:   org.UpdatedAt.AsTime(),	
+		UpdatedAt:   org.UpdatedAt.AsTime(),
 	}
 	domain.Success(c, orgResp)
 }
@@ -78,12 +78,12 @@ func (a *OrganizationAPI) GetOrganization(c *gin.Context) {
 	orgResp := domain.Organization{
 		ID:          org.Id,
 		Code:        org.Code,
-		ParentCode:    org.ParentCode,
+		ParentCode:  org.ParentCode,
 		Name:        org.Name,
 		UserID:      org.UserId,
 		Description: org.Description,
 		SortOrder:   int(org.SortOrder),
-		CreatedAt:   org.CreatedAt.AsTime(),	
+		CreatedAt:   org.CreatedAt.AsTime(),
 		UpdatedAt:   org.UpdatedAt.AsTime(),
 	}
 	domain.Success(c, orgResp)
@@ -96,6 +96,12 @@ func (a *OrganizationAPI) UpdateOrganization(c *gin.Context) {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.Error(c, ErrAuthFailedCode, err.Error())
+		return
+	}
+	req.UserId = userId
 
 	resp, err := rpc.OrganizationClient.UpdateOrganization(context.Background(), &req)
 	if err != nil {
@@ -107,7 +113,7 @@ func (a *OrganizationAPI) UpdateOrganization(c *gin.Context) {
 	orgResp := domain.Organization{
 		ID:          org.Id,
 		Code:        org.Code,
-		ParentCode:    org.ParentCode,
+		ParentCode:  org.ParentCode,
 		Name:        org.Name,
 		UserID:      org.UserId,
 		Description: org.Description,
@@ -157,7 +163,7 @@ func (a *OrganizationAPI) GetUserOrganizations(c *gin.Context) {
 		UserId: userId,
 	})
 	if err != nil {
-		domain.Error(c, ErrNoPermission, "没有操作权限")
+		domain.Error(c, ErrRpcFailedCode, "rpc服务错误"+err.Error())
 		return
 	}
 
@@ -166,7 +172,7 @@ func (a *OrganizationAPI) GetUserOrganizations(c *gin.Context) {
 		orgs = append(orgs, &domain.Organization{
 			ID:          org.Id,
 			Code:        org.Code,
-			ParentCode:    org.ParentCode,
+			ParentCode:  org.ParentCode,
 			Name:        org.Name,
 			UserID:      org.UserId,
 			Description: org.Description,
@@ -233,7 +239,7 @@ func (a *OrganizationAPI) GetOrganizationChildren(c *gin.Context) {
 		orgs = append(orgs, &domain.Organization{
 			ID:          org.Id,
 			Code:        org.Code,
-			ParentCode:    org.ParentCode,
+			ParentCode:  org.ParentCode,
 			Name:        org.Name,
 			UserID:      org.UserId,
 			Description: org.Description,
@@ -243,9 +249,9 @@ func (a *OrganizationAPI) GetOrganizationChildren(c *gin.Context) {
 		})
 	}
 	orgsResp := domain.ListOrganizationsResponse{
-		Organizations: orgs,}
+		Organizations: orgs}
 	domain.Success(c, orgsResp)
-	
+
 }
 
 // MoveOrganization 移动组织
@@ -255,7 +261,12 @@ func (a *OrganizationAPI) MoveOrganization(c *gin.Context) {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
-
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.Error(c, ErrAuthFailedCode, err.Error())
+		return
+	}
+	req.UserId = userId
 	resp, err := rpc.OrganizationClient.MoveOrganization(context.Background(), &req)
 	if err != nil {
 		domain.Error(c, ErrOrganizationNotFound, "组织不存在")
