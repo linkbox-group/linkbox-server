@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	core.LoadLog()
 	err := core.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
