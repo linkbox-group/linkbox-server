@@ -4,22 +4,25 @@ import (
 	"github.com/cloudwego/kitex/server"
 	"github.com/linkbox-group/linkbox-server/common/serversuite"
 	"github.com/linkbox-group/linkbox-server/organization/internal/core"
+	"github.com/linkbox-group/linkbox-server/organization/pkg/log"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/organization/organizationservice"
+
 	"github.com/spf13/viper"
-	"log"
 	"net"
 )
 
 func main() {
+	core.LoadLog()
 	err := core.LoadConfig()
+
 	if err != nil {
-		log.Fatal("load config failed", err)
+		log.Log().Fatalf("load config failed: %v", err)
 	}
 	organizationHandler := NewOrganizationHandler()
 	srv := organizationservice.NewServer(organizationHandler, kitexInit()...)
 	err = srv.Run()
 	if err != nil {
-		log.Fatalf("Failed to run content service: %v", err)
+		log.Log().Fatalf("Failed to run content service: %v", err)
 	}
 }
 func kitexInit() (opts []server.Option) {
