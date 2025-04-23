@@ -19,6 +19,9 @@ const (
 	ErrResourceExhausted ErrorCode = 40008
 	ErrInvalidOperation  ErrorCode = 40009
 	ErrDataConflict      ErrorCode = 40010
+	// 未知错误: 50000-59999
+	ErrRpcServiceError ErrorCode = 50010
+	ErrInternalError   ErrorCode = 50001
 )
 
 var ErrorCode_name = map[int32]string{
@@ -32,6 +35,9 @@ var ErrorCode_name = map[int32]string{
 	40008: "RESOURCE_EXHAUSTED",
 	40009: "INVALID_OPERATION",
 	40010: "DATA_CONFLICT",
+
+	50010: "RPC_SERVICE_ERROR",
+	50001: "INTERNAL_ERROR",
 }
 
 func (x ErrorCode) String() string {

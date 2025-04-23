@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"github.com/linkbox-group/linkbox-server/common/ecode"
 
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
@@ -36,7 +37,7 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ErrAuthFailedCode, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	req.UserId = userId
@@ -67,7 +68,7 @@ func (a *ItemAPI) GetItem(c *gin.Context) {
 	itemID := c.Param("id")
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ErrAuthFailedCode, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 
@@ -106,7 +107,7 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ErrAuthFailedCode, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 
@@ -126,7 +127,7 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 		Title:           itemData.Title,
 		ThumbnailURL:    itemData.ThumbnailUrl,
 		Tags:            itemData.Tags,
-		OrganizationIDs: itemData.OrganizationIds,	
+		OrganizationIDs: itemData.OrganizationIds,
 		CreatedAt:       itemData.CreatedAt.AsTime(),
 		UpdatedAt:       itemData.UpdatedAt.AsTime(),
 	}
@@ -138,7 +139,7 @@ func (a *ItemAPI) DeleteItem(c *gin.Context) {
 	itemID := c.Param("id")
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ErrAuthFailedCode, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 
@@ -160,7 +161,7 @@ func (a *ItemAPI) DeleteItem(c *gin.Context) {
 func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ErrAuthFailedCode, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 
@@ -171,13 +172,13 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 	err = c.ShouldBind(&req)
 	if err != nil {
 		logrus.Infoln(err)
-		domain.ErrorMsg(c, ErrInvalidParamCode, err.Error())
+		domain.ErrorMsg(c, ecode.ErrInvalidParam, err.Error())
 		return
 	}
 	logrus.Infoln(req.Pagination)
 	resp, err := rpc.ItemClient.GetItemsByTags(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ErrRpcFailedCode, "rpc调用失败")
+		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败")
 		return
 	}
 
@@ -188,7 +189,7 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 			UserID:          ite.UserId,
 			URL:             ite.Url,
 			Title:           ite.Title,
-			ThumbnailURL:    ite.ThumbnailUrl,		
+			ThumbnailURL:    ite.ThumbnailUrl,
 			Tags:            ite.Tags,
 			OrganizationIDs: ite.OrganizationIds,
 			CreatedAt:       ite.CreatedAt.AsTime(),
@@ -197,7 +198,7 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 	}
 
 	itemListResp := domain.ItemListResponse{
-		Items:     	 items,
+		Items: items,
 		Pagination: domain.Pagination{
 			Total:      resp.GetItemsPage().Pagination.TotalItems,
 			Page:       resp.GetItemsPage().Pagination.Page,
@@ -212,7 +213,7 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ErrAuthFailedCode, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	req := item.GetItemsByOrganizationRequest{
@@ -243,9 +244,9 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 			UpdatedAt:       ite.UpdatedAt.AsTime(),
 		})
 	}
-	
+
 	itemListResp := domain.ItemListResponse{
-		Items:      items,
+		Items: items,
 		Pagination: domain.Pagination{
 			Total:      resp.GetItemsPage().Pagination.TotalItems,
 			Page:       resp.GetItemsPage().Pagination.Page,
@@ -258,7 +259,7 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 func (a *ItemAPI) SearchItems(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ErrAuthFailedCode, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	req := item.SearchItemsRequest{
@@ -271,7 +272,7 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 	}
 	resp, err := rpc.ItemClient.SearchItems(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ErrRpcFailedCode, "rpc调用失败")
+		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败")
 		return
 	}
 	var items []*domain.Item
@@ -288,11 +289,10 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 			UpdatedAt:       ite.UpdatedAt.AsTime(),
 		})
 	}
-	
-	
+
 	itemListResp := domain.ItemListResponse{
 
-		Items:      items,
+		Items: items,
 		Pagination: domain.Pagination{
 			Total:      resp.GetData().GetPagination().TotalItems,
 			Page:       resp.GetData().GetPagination().Page,

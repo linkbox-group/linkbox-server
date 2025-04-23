@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
 	"strconv"
 
@@ -40,7 +41,7 @@ func (a *TagAPI) CreateTag(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	req.UserId = userId
@@ -70,7 +71,7 @@ func (a *TagAPI) GetTag(c *gin.Context) {
 	tagID := c.Param("id")
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	resp, err := rpc.TagClient.GetTag(context.Background(), &tag.GetTagRequest{
@@ -107,7 +108,7 @@ func (a *TagAPI) UpdateTag(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	req.UserId = userId
@@ -138,7 +139,7 @@ func (a *TagAPI) DeleteTag(c *gin.Context) {
 	tagID := c.Param("id")
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 
@@ -163,7 +164,7 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
 		log.Log().Error(err.Error())
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 
@@ -180,7 +181,7 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 		SearchQuery: &searchQuery,
 	})
 	if err != nil {
-		domain.Error(c, ErrRpcFailedCode, "rpc调用失败")
+		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败")
 		return
 	}
 
@@ -214,7 +215,7 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 func (a *TagAPI) AddTagsToItems(c *gin.Context) {
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 
@@ -228,7 +229,7 @@ func (a *TagAPI) AddTagsToItems(c *gin.Context) {
 	resp, err := rpc.TagClient.AddTagsToItems(context.Background(), &req)
 	if err != nil {
 		log.Log().Error(err.Error())
-		domain.Error(c, ErrRpcFailedCode, "rpc调用失败"+err.Error())
+		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败"+err.Error())
 		return
 	}
 
@@ -245,7 +246,7 @@ func (a *TagAPI) AddTagsToItems(c *gin.Context) {
 func (a *TagAPI) RemoveTagsFromItems(c *gin.Context) {
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 
@@ -276,7 +277,7 @@ func (a *TagAPI) GetItemTags(c *gin.Context) {
 	itemID := c.Param("item_id")
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrRpcServiceError, err.Error())
 		return
 	}
 
@@ -316,7 +317,7 @@ func (a *TagAPI) GetRelatedTags(c *gin.Context) {
 	tagID := c.Param("tag_id")
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 

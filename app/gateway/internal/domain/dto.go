@@ -52,7 +52,7 @@ func Error(c *gin.Context, code ecode.ErrorCode, msg string) {
 }
 
 // ErrorMsg 返回错误的响应
-func ErrorMsg(c *gin.Context, code int, msg string) {
+func ErrorMsg(c *gin.Context, code ecode.ErrorCode, msg string) {
 	resp := Resp{
 		Msg:  msg,
 		Code: code,

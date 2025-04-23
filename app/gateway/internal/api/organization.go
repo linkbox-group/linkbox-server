@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"github.com/linkbox-group/linkbox-server/common/ecode"
 
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
@@ -32,7 +33,7 @@ func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	req.UserId = userId
@@ -61,7 +62,7 @@ func (a *OrganizationAPI) GetOrganization(c *gin.Context) {
 	orgID := c.Param("id")
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 
@@ -98,7 +99,7 @@ func (a *OrganizationAPI) UpdateOrganization(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	req.UserId = userId
@@ -155,7 +156,7 @@ func (a *OrganizationAPI) DeleteOrganization(c *gin.Context) {
 func (a *OrganizationAPI) GetUserOrganizations(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 
@@ -163,7 +164,7 @@ func (a *OrganizationAPI) GetUserOrganizations(c *gin.Context) {
 		UserId: userId,
 	})
 	if err != nil {
-		domain.Error(c, ErrRpcFailedCode, "rpc服务错误"+err.Error())
+		domain.Error(c, ecode.ErrRpcServiceError, "rpc服务错误"+err.Error())
 		return
 	}
 
@@ -192,7 +193,7 @@ func (a *OrganizationAPI) GetUserOrganizations(c *gin.Context) {
 func (a *OrganizationAPI) GetOrganizationTree(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	rootCode := c.Query("root_code")
@@ -213,7 +214,7 @@ func (a *OrganizationAPI) GetOrganizationTree(c *gin.Context) {
 func (a *OrganizationAPI) GetOrganizationChildren(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	parentCode := c.Query("parent_code")
@@ -263,7 +264,7 @@ func (a *OrganizationAPI) MoveOrganization(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	req.UserId = userId
@@ -289,7 +290,7 @@ func (a *OrganizationAPI) AddItemsToOrganization(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	req.UserId = userId
@@ -316,7 +317,7 @@ func (a *OrganizationAPI) RemoveItemsFromOrganization(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ErrAuthFailedCode, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
 	req.UserId = userId
