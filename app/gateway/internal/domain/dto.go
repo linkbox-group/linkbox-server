@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,9 +24,9 @@ type Pagination struct {
 }
 
 type Resp struct {
-	Msg  string `json:"msg"`
-	Code int    `json:"code"`
-	Data any    `json:"data"`
+	Msg  string          `json:"msg"`
+	Code ecode.ErrorCode `json:"code"`
+	Data any             `json:"data"`
 }
 
 // Success 返回成功的响应
@@ -40,7 +41,7 @@ func Success(c *gin.Context, data any) {
 }
 
 // Error 返回错误的响应
-func Error(c *gin.Context, code int, msg string) {
+func Error(c *gin.Context, code ecode.ErrorCode, msg string) {
 	resp := Resp{
 		Msg:  msg,
 		Code: code,
