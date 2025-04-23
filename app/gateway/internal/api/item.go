@@ -2,9 +2,8 @@ package api
 
 import (
 	"context"
-	"github.com/linkbox-group/linkbox-server/common/ecode"
-
 	"github.com/gin-gonic/gin"
+	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
@@ -211,22 +210,20 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 
 // GetItemsByOrganization 按组织获取内容
 func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
+	req := &item.GetItemsByOrganizationRequest{}
+	err := c.ShouldBind(req)
+	if err != nil {
+		domain.Error(c, ErrInvalidReq, err.Error())
+	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
-	req := item.GetItemsByOrganizationRequest{
-		UserId: userId,
-	}
-	err = c.ShouldBind(&req)
+	req.UserId = userId
+	resp, err := rpc.ItemClient.GetItemsByOrganization(context.Background(), req)
 	if err != nil {
-		domain.Error(c, ErrInvalidReq, err.Error())
-	}
-	logrus.Infoln(req.OrganizationId)
-	resp, err := rpc.ItemClient.GetItemsByOrganization(context.Background(), &req)
-	if err != nil {
-		domain.Error(c, ErrNoPermission, "没有操作权限")
+		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败")
 		return
 	}
 
