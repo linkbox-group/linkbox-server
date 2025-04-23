@@ -352,6 +352,8 @@ type UpdateItemRequest struct {
 	ThumbnailUrl    string   `protobuf:"bytes,5,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
 	Tags            []string `protobuf:"bytes,7,rep,name=tags" json:"tags,omitempty"`
 	OrganizationIds []string `protobuf:"bytes,8,rep,name=organization_ids" json:"organization_ids,omitempty"`
+	Url             string   `protobuf:"bytes,9,opt,name=url" json:"url,omitempty"`
+	Note            string   `protobuf:"bytes,10,opt,name=note" json:"note,omitempty"`
 }
 
 func (x *UpdateItemRequest) Reset() { *x = UpdateItemRequest{} }
@@ -407,6 +409,20 @@ func (x *UpdateItemRequest) GetOrganizationIds() []string {
 		return x.OrganizationIds
 	}
 	return nil
+}
+
+func (x *UpdateItemRequest) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *UpdateItemRequest) GetNote() string {
+	if x != nil {
+		return x.Note
+	}
+	return ""
 }
 
 // 更新内容项响应

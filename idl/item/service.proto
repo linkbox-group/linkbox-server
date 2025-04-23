@@ -110,6 +110,8 @@ message UpdateItemRequest {
   string thumbnail_url = 5;
   repeated string tags = 7;
   repeated string organization_ids = 8;
+  string url = 9;
+  string note =10;
 }
 
 // 更新内容项响应

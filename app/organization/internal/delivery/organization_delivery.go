@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/model/treemodel"
+	"github.com/linkbox-group/linkbox-server/organization/pkg/log"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/organization"
 	"github.com/sirupsen/logrus"
@@ -24,11 +25,8 @@ func (s *OrganizationDelivery) CreateOrganization(ctx context.Context, req *orga
 			Name:       req.Name,
 			ParentCode: *req.ParentCode,
 		},
-		Description:   req.Description,
-		IsDefault:     *req.IsDefault,
-		IsShared:      *req.IsShared,
-		SortOrder:     int(*req.SortOrder),
-		ShareExpireAt: req.ShareExpireAt.AsTime(),
+		Description: req.Description,
+		SortOrder:   int(*req.SortOrder),
 	}
 
 	err = s.service.CreateOrganizationService(ctx, &oModel)
@@ -81,24 +79,13 @@ func (s *OrganizationDelivery) UpdateOrganization(ctx context.Context, req *orga
 		},
 		UserID: req.UserId,
 	}
+	log.Log().Debug("id is" + oModel.ID)
 
 	if req.Name != nil {
 		oModel.Name = *req.Name
 	}
 	if req.Description != nil {
 		oModel.Description = req.Description
-	}
-	if req.IsDefault != nil {
-		oModel.IsDefault = *req.IsDefault
-	}
-	if req.IsShared != nil {
-		oModel.IsShared = *req.IsShared
-	}
-	if req.ShareCode != nil {
-		oModel.ShareCode = req.ShareCode
-	}
-	if req.ShareExpireAt != nil {
-		oModel.ShareExpireAt = req.ShareExpireAt.AsTime()
 	}
 	if req.SortOrder != nil {
 		oModel.SortOrder = int(*req.SortOrder)
@@ -120,24 +107,20 @@ func (s *OrganizationDelivery) UpdateOrganization(ctx context.Context, req *orga
 	resp = &organization.UpdateOrganizationResponse{
 		Result: &organization.UpdateOrganizationResponse_Organization{
 			Organization: &organization.Organization{
-				Id:            updatedModel.ID,
-				Code:          updatedModel.Code,
-				ParentCode:    updatedModel.ParentCode,
-				ParentCodes:   updatedModel.ParentCodes,
-				TreeLeaf:      updatedModel.TreeLeaf,
-				TreeLevel:     int32(updatedModel.TreeLevel),
-				TreeNames:     updatedModel.TreeNames,
-				Name:          updatedModel.Name,
-				UserId:        updatedModel.UserID,
-				Description:   *updatedModel.Description,
-				IsDefault:     updatedModel.IsDefault,
-				IsShared:      updatedModel.IsShared,
-				ShareCode:     *updatedModel.ShareCode,
-				ShareExpireAt: timestamppb.New(updatedModel.ShareExpireAt),
-				SortOrder:     int32(updatedModel.SortOrder),
-				ItemsCount:    uint32(updatedModel.ItemsCount),
-				CreatedAt:     timestamppb.New(updatedModel.CreatedAt),
-				UpdatedAt:     timestamppb.New(updatedModel.UpdatedAt),
+				Id:          updatedModel.ID,
+				Code:        updatedModel.Code,
+				ParentCode:  updatedModel.ParentCode,
+				ParentCodes: updatedModel.ParentCodes,
+				TreeLeaf:    updatedModel.TreeLeaf,
+				TreeLevel:   int32(updatedModel.TreeLevel),
+				TreeNames:   updatedModel.TreeNames,
+				Name:        updatedModel.Name,
+				UserId:      updatedModel.UserID,
+				Description: *updatedModel.Description,
+				SortOrder:   int32(updatedModel.SortOrder),
+				ItemsCount:  uint32(updatedModel.ItemsCount),
+				CreatedAt:   timestamppb.New(updatedModel.CreatedAt),
+				UpdatedAt:   timestamppb.New(updatedModel.UpdatedAt),
 			},
 		},
 	}
@@ -196,12 +179,11 @@ func (s *OrganizationDelivery) GetUserOrganizations(ctx context.Context, req *or
 			Name:        org.Name,
 			UserId:      org.UserID,
 			Description: *org.Description,
-			IsDefault:   org.IsDefault,
-			IsShared:    org.IsShared,
-			SortOrder:   int32(org.SortOrder),
-			ItemsCount:  uint32(org.ItemsCount),
-			CreatedAt:   timestamppb.New(org.CreatedAt),
-			UpdatedAt:   timestamppb.New(org.UpdatedAt),
+
+			SortOrder:  int32(org.SortOrder),
+			ItemsCount: uint32(org.ItemsCount),
+			CreatedAt:  timestamppb.New(org.CreatedAt),
+			UpdatedAt:  timestamppb.New(org.UpdatedAt),
 		})
 	}
 
@@ -272,12 +254,6 @@ func (s *OrganizationDelivery) RemoveItemsFromOrganization(ctx context.Context, 
 			Success: true}}, nil
 }
 
-// GetOrganizationItems implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) GetOrganizationItems(ctx context.Context, req *organization.GetOrganizationItemsRequest) (resp *organization.GetOrganizationItemsResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
 // ReorderOrganizationItems implements the OrganizationDelivery interface.
 func (s *OrganizationDelivery) ReorderOrganizationItems(ctx context.Context, req *organization.ReorderOrganizationItemsRequest) (resp *organization.ReorderOrganizationItemsResponse, err error) {
 	// TODO: Your code here...
@@ -292,12 +268,6 @@ func (s *OrganizationDelivery) ReorderOrganizations(ctx context.Context, req *or
 
 // GetOrganizationActivity implements the OrganizationDelivery interface.
 func (s *OrganizationDelivery) GetOrganizationActivity(ctx context.Context, req *organization.GetOrganizationActivityRequest) (resp *organization.GetOrganizationActivityResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
-// GetOrganizationByCode implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) GetOrganizationByCode(ctx context.Context, req *organization.GetOrganizationByCodeRequest) (resp *organization.GetOrganizationByCodeResponse, err error) {
 	// TODO: Your code here...
 	return
 }

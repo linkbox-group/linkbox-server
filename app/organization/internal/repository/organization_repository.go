@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/linkbox-group/linkbox-server/model/treemodel"
-	"github.com/sirupsen/logrus"
+	"github.com/linkbox-group/linkbox-server/organization/pkg/log"
 
 	"github.com/linkbox-group/linkbox-server/model"
 	"gorm.io/gorm"
@@ -37,13 +37,9 @@ func (r *OrganizationRepository) UpdateOrganization(ctx context.Context, organiz
 
 	// 更新组织信息
 	err = r.db.Model(&existingOrg).Updates(map[string]interface{}{
-		"name":            organization.Name,
-		"description":     organization.Description,
-		"is_default":      organization.IsDefault,
-		"is_shared":       organization.IsShared,
-		"share_code":      organization.ShareCode,
-		"share_expire_at": organization.ShareExpireAt,
-		"sort_order":      organization.SortOrder,
+		"name":        organization.Name,
+		"description": organization.Description,
+		"sort_order":  organization.SortOrder,
 	}).Error
 	if err != nil {
 		return nil, err
@@ -148,14 +144,16 @@ func (r *OrganizationRepository) GetUserOrganizations(ctx context.Context, userI
 // MoveOrganization 移动组织到新的父组织下
 func (r *OrganizationRepository) MoveOrganization(ctx context.Context, id string, userId string, newParentCode string) error {
 	// 开启事务
+	log.Log().Info(id)
+	log.Log().Info(userId)
 	oldOrganization, err := r.GetOrganization(ctx, id, userId)
 	if err != nil {
-		logrus.Errorln(err)
+		log.Log().Error(err.Error())
 		return err
 	}
 	err = r.treeService.MoveNode(r.db, oldOrganization, newParentCode)
 	if err != nil {
-		logrus.Errorln(err)
+		log.Log().Error(err.Error())
 		return err
 	}
 	return nil

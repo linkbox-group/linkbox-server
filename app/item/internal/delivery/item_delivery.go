@@ -9,6 +9,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
+	itemmodel "github.com/linkbox-group/linkbox-server/rpc-gen/model"
 )
 
 func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemRequest) (resp *item.CreateItemResponse, err error) {
@@ -31,7 +32,7 @@ func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemReque
 	}
 	return &item.CreateItemResponse{
 		Result: &item.CreateItemResponse_Item{
-			Item: &item.Item{
+			Item: &itemmodel.Item{
 				Id:          itemModel.ID,
 				UserId:      itemModel.UserID,
 				Title:       itemModel.Title,
@@ -68,7 +69,7 @@ func (d *ItemDelivery) GetItem(ctx context.Context, req *item.GetItemRequest) (r
 
 	return &item.GetItemResponse{
 		Result: &item.GetItemResponse_Item{
-			Item: &item.Item{
+			Item: &itemmodel.Item{
 				Id:          itemModel.ID,
 				UserId:      itemModel.UserID,
 				Title:       itemModel.Title,
@@ -89,6 +90,8 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 		},
 		UserID: req.UserId,
 		Title:  req.Title,
+		URL:    req.Url,
+		Note:   req.Note,
 	}
 
 	err = d.s.UpdateItem(ctx, &itemModel)
@@ -106,14 +109,13 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 
 	return &item.UpdateItemResponse{
 		Result: &item.UpdateItemResponse_Item{
-			Item: &item.Item{
-				Id:          itemModel.ID,
-				UserId:      itemModel.UserID,
-				Title:       itemModel.Title,
-				Description: "",
-				Url:         itemModel.URL,
-				CreatedAt:   timestamppb.New(itemModel.CreatedAt),
-				UpdatedAt:   timestamppb.New(itemModel.UpdatedAt),
+			Item: &itemmodel.Item{
+				Id:        itemModel.ID,
+				UserId:    itemModel.UserID,
+				Title:     itemModel.Title,
+				Url:       itemModel.URL,
+				CreatedAt: timestamppb.New(itemModel.CreatedAt),
+				UpdatedAt: timestamppb.New(itemModel.UpdatedAt),
 			},
 		},
 	}, nil
@@ -152,12 +154,6 @@ func (d *ItemDelivery) GetItems(ctx context.Context, req *item.GetItemsRequest) 
 	return
 }
 
-// BatchDeleteItems implements the ItemDelivery interface.
-func (d *ItemDelivery) BatchDeleteItems(ctx context.Context, req *item.BatchDeleteItemsRequest) (resp *item.BatchDeleteItemsResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
 // GetItemsByTags implements the ContentDelivery interface.
 func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByTagsRequest) (resp *item.GetItemsByTagsResponse, err error) {
 	userID := req.UserId
@@ -177,14 +173,14 @@ func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByT
 	}
 
 	// 转换结果为响应格式
-	respItems := make([]*item.Item, 0, len(items))
+	respItems := make([]*itemmodel.Item, 0, len(items))
 	for _, dbItem := range items {
 		tagStrings := make([]string, 0, len(dbItem.Tags))
 		for _, tag := range dbItem.Tags {
 			tagStrings = append(tagStrings, tag.Name)
 		}
 
-		respItems = append(respItems, &item.Item{
+		respItems = append(respItems, &itemmodel.Item{
 			Id:     dbItem.ID,
 			UserId: dbItem.UserID,
 			Title:  dbItem.Title,
@@ -258,14 +254,14 @@ func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.Get
 	}
 
 	// 转换结果为响应格式
-	respItems := make([]*item.Item, 0, len(items))
+	respItems := make([]*itemmodel.Item, 0, len(items))
 	for _, dbItem := range items {
 		tagStrings := make([]string, 0, len(dbItem.Tags))
 		for _, tag := range dbItem.Tags {
 			tagStrings = append(tagStrings, tag.Name)
 		}
 
-		respItems = append(respItems, &item.Item{
+		respItems = append(respItems, &itemmodel.Item{
 			Id:          dbItem.ID,
 			UserId:      dbItem.UserID,
 			Title:       dbItem.Title,
@@ -293,20 +289,8 @@ func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.Get
 	}, nil
 }
 
-// ExtractMetadata implements the ItemDelivery interface.
-func (d *ItemDelivery) ExtractMetadata(ctx context.Context, req *item.ExtractMetadataRequest) (resp *item.ExtractMetadataResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
 // GetRecentItems implements the ItemDelivery interface.
 func (d *ItemDelivery) GetRecentItems(ctx context.Context, req *item.GetRecentItemsRequest) (resp *item.GetRecentItemsResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
-// BatchUpdateItems implements the ItemDelivery interface.
-func (d *ItemDelivery) BatchUpdateItems(ctx context.Context, req *item.BatchUpdateItemsRequest) (resp *item.BatchUpdateItemsResponse, err error) {
 	// TODO: Your code here...
 	return
 }
@@ -349,13 +333,13 @@ func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsReq
 		}, err
 	}
 	// 转换结果为响应格式
-	respItems := make([]*item.Item, 0, len(items))
+	respItems := make([]*itemmodel.Item, 0, len(items))
 	for _, dbItem := range items {
 		tagStrings := make([]string, 0, len(dbItem.Tags))
 		for _, tag := range dbItem.Tags {
 			tagStrings = append(tagStrings, tag.Name)
 		}
-		respItems = append(respItems, &item.Item{
+		respItems = append(respItems, &itemmodel.Item{
 			Id:          dbItem.ID,
 			UserId:      dbItem.UserID,
 			Title:       dbItem.Title,
@@ -379,22 +363,4 @@ func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsReq
 			},
 		},
 	}, nil
-}
-
-// AddItemNote implements the ItemDelivery interface.
-func (d *ItemDelivery) AddItemNote(ctx context.Context, req *item.AddItemNoteRequest) (resp *item.AddItemNoteResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
-// UpdateItemNote implements the ItemDelivery interface.
-func (d *ItemDelivery) UpdateItemNote(ctx context.Context, req *item.UpdateItemNoteRequest) (resp *item.UpdateItemNoteResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
-// GetItemNote implements the ItemDelivery interface.
-func (d *ItemDelivery) GetItemNote(ctx context.Context, req *item.GetItemNoteRequest) (resp *item.GetItemNoteResponse, err error) {
-	// TODO: Your code here...
-	return
 }

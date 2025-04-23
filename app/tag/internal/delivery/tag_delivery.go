@@ -199,20 +199,8 @@ func (s *TagDelivery) MergeTags(ctx context.Context, req *tag.MergeTagsRequest) 
 	return
 }
 
-// GetTagStats implements the TagDelivery interface.
-func (s *TagDelivery) GetTagStats(ctx context.Context, req *tag.GetTagStatsRequest) (resp *tag.GetTagStatsResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
 // GetRelatedTags implements the TagDelivery interface.
 func (s *TagDelivery) GetRelatedTags(ctx context.Context, req *tag.GetRelatedTagsRequest) (resp *tag.GetRelatedTagsResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
-// SuggestTags implements the TagDelivery interface.
-func (s *TagDelivery) SuggestTags(ctx context.Context, req *tag.SuggestTagsRequest) (resp *tag.SuggestTagsResponse, err error) {
 	// TODO: Your code here...
 	return
 }
