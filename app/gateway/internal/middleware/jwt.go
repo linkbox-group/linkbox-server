@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
+	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/auth"
@@ -14,7 +15,7 @@ func JWT() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authHeader := ctx.GetHeader("Authorization")
 		if authHeader == "" {
-			domain.Error(ctx, 403, "Token 为空")
+			domain.Error(ctx, ecode.ErrAuthFailed, "Token 为空")
 			return
 		}
 
@@ -29,7 +30,7 @@ func JWT() gin.HandlerFunc {
 				Token: tokenString,
 			})
 			if err != nil {
-				domain.Error(ctx, 403, "Token 验证错误")
+				domain.Error(ctx, ecode.ErrAuthFailed, "Token 验证错误")
 				return
 			}
 
@@ -37,7 +38,7 @@ func JWT() gin.HandlerFunc {
 			ctx.Set("userId", tokenInfo.Uid)
 			ctx.Next()
 		} else {
-			domain.Error(ctx, 403, "Token 格式错误")
+			domain.Error(ctx, ecode.ErrAuthFailed, "Token 格式错误")
 			return
 		}
 	}
