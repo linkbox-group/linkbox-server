@@ -36,13 +36,6 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"DeleteItem": kitex.NewMethodInfo(
-		deleteItemHandler,
-		newDeleteItemArgs,
-		newDeleteItemResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
 	"GetItems": kitex.NewMethodInfo(
 		getItemsHandler,
 		newGetItemsArgs,
@@ -89,6 +82,41 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		searchItemsHandler,
 		newSearchItemsArgs,
 		newSearchItemsResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"DeleteItem": kitex.NewMethodInfo(
+		deleteItemHandler,
+		newDeleteItemArgs,
+		newDeleteItemResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"RecoverItem": kitex.NewMethodInfo(
+		recoverItemHandler,
+		newRecoverItemArgs,
+		newRecoverItemResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"GetDeletedItems": kitex.NewMethodInfo(
+		getDeletedItemsHandler,
+		newGetDeletedItemsArgs,
+		newGetDeletedItemsResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"RecoverItemsBatch": kitex.NewMethodInfo(
+		recoverItemsBatchHandler,
+		newRecoverItemsBatchArgs,
+		newRecoverItemsBatchResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"DeleteItemsBatch": kitex.NewMethodInfo(
+		deleteItemsBatchHandler,
+		newDeleteItemsBatchArgs,
+		newDeleteItemsBatchResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
@@ -488,117 +516,6 @@ func (p *UpdateItemResult) IsSetSuccess() bool {
 }
 
 func (p *UpdateItemResult) GetResult() interface{} {
-	return p.Success
-}
-
-func deleteItemHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(item.DeleteItemRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(item.ItemService).DeleteItem(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *DeleteItemArgs:
-		success, err := handler.(item.ItemService).DeleteItem(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*DeleteItemResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newDeleteItemArgs() interface{} {
-	return &DeleteItemArgs{}
-}
-
-func newDeleteItemResult() interface{} {
-	return &DeleteItemResult{}
-}
-
-type DeleteItemArgs struct {
-	Req *item.DeleteItemRequest
-}
-
-func (p *DeleteItemArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *DeleteItemArgs) Unmarshal(in []byte) error {
-	msg := new(item.DeleteItemRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var DeleteItemArgs_Req_DEFAULT *item.DeleteItemRequest
-
-func (p *DeleteItemArgs) GetReq() *item.DeleteItemRequest {
-	if !p.IsSetReq() {
-		return DeleteItemArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *DeleteItemArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *DeleteItemArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type DeleteItemResult struct {
-	Success *item.DeleteItemResponse
-}
-
-var DeleteItemResult_Success_DEFAULT *item.DeleteItemResponse
-
-func (p *DeleteItemResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *DeleteItemResult) Unmarshal(in []byte) error {
-	msg := new(item.DeleteItemResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *DeleteItemResult) GetSuccess() *item.DeleteItemResponse {
-	if !p.IsSetSuccess() {
-		return DeleteItemResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *DeleteItemResult) SetSuccess(x interface{}) {
-	p.Success = x.(*item.DeleteItemResponse)
-}
-
-func (p *DeleteItemResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *DeleteItemResult) GetResult() interface{} {
 	return p.Success
 }
 
@@ -1379,6 +1296,561 @@ func (p *SearchItemsResult) GetResult() interface{} {
 	return p.Success
 }
 
+func deleteItemHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(item.DeleteItemRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(item.ItemService).DeleteItem(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *DeleteItemArgs:
+		success, err := handler.(item.ItemService).DeleteItem(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*DeleteItemResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newDeleteItemArgs() interface{} {
+	return &DeleteItemArgs{}
+}
+
+func newDeleteItemResult() interface{} {
+	return &DeleteItemResult{}
+}
+
+type DeleteItemArgs struct {
+	Req *item.DeleteItemRequest
+}
+
+func (p *DeleteItemArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *DeleteItemArgs) Unmarshal(in []byte) error {
+	msg := new(item.DeleteItemRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var DeleteItemArgs_Req_DEFAULT *item.DeleteItemRequest
+
+func (p *DeleteItemArgs) GetReq() *item.DeleteItemRequest {
+	if !p.IsSetReq() {
+		return DeleteItemArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *DeleteItemArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *DeleteItemArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type DeleteItemResult struct {
+	Success *item.DeleteItemResponse
+}
+
+var DeleteItemResult_Success_DEFAULT *item.DeleteItemResponse
+
+func (p *DeleteItemResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *DeleteItemResult) Unmarshal(in []byte) error {
+	msg := new(item.DeleteItemResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *DeleteItemResult) GetSuccess() *item.DeleteItemResponse {
+	if !p.IsSetSuccess() {
+		return DeleteItemResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *DeleteItemResult) SetSuccess(x interface{}) {
+	p.Success = x.(*item.DeleteItemResponse)
+}
+
+func (p *DeleteItemResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *DeleteItemResult) GetResult() interface{} {
+	return p.Success
+}
+
+func recoverItemHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(item.RecoverItemRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(item.ItemService).RecoverItem(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *RecoverItemArgs:
+		success, err := handler.(item.ItemService).RecoverItem(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*RecoverItemResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newRecoverItemArgs() interface{} {
+	return &RecoverItemArgs{}
+}
+
+func newRecoverItemResult() interface{} {
+	return &RecoverItemResult{}
+}
+
+type RecoverItemArgs struct {
+	Req *item.RecoverItemRequest
+}
+
+func (p *RecoverItemArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *RecoverItemArgs) Unmarshal(in []byte) error {
+	msg := new(item.RecoverItemRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var RecoverItemArgs_Req_DEFAULT *item.RecoverItemRequest
+
+func (p *RecoverItemArgs) GetReq() *item.RecoverItemRequest {
+	if !p.IsSetReq() {
+		return RecoverItemArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *RecoverItemArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *RecoverItemArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type RecoverItemResult struct {
+	Success *item.RecoverItemREsponse
+}
+
+var RecoverItemResult_Success_DEFAULT *item.RecoverItemREsponse
+
+func (p *RecoverItemResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *RecoverItemResult) Unmarshal(in []byte) error {
+	msg := new(item.RecoverItemREsponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *RecoverItemResult) GetSuccess() *item.RecoverItemREsponse {
+	if !p.IsSetSuccess() {
+		return RecoverItemResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *RecoverItemResult) SetSuccess(x interface{}) {
+	p.Success = x.(*item.RecoverItemREsponse)
+}
+
+func (p *RecoverItemResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *RecoverItemResult) GetResult() interface{} {
+	return p.Success
+}
+
+func getDeletedItemsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(item.GetDeletedItemsRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(item.ItemService).GetDeletedItems(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *GetDeletedItemsArgs:
+		success, err := handler.(item.ItemService).GetDeletedItems(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*GetDeletedItemsResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newGetDeletedItemsArgs() interface{} {
+	return &GetDeletedItemsArgs{}
+}
+
+func newGetDeletedItemsResult() interface{} {
+	return &GetDeletedItemsResult{}
+}
+
+type GetDeletedItemsArgs struct {
+	Req *item.GetDeletedItemsRequest
+}
+
+func (p *GetDeletedItemsArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *GetDeletedItemsArgs) Unmarshal(in []byte) error {
+	msg := new(item.GetDeletedItemsRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var GetDeletedItemsArgs_Req_DEFAULT *item.GetDeletedItemsRequest
+
+func (p *GetDeletedItemsArgs) GetReq() *item.GetDeletedItemsRequest {
+	if !p.IsSetReq() {
+		return GetDeletedItemsArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *GetDeletedItemsArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *GetDeletedItemsArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type GetDeletedItemsResult struct {
+	Success *item.GetDeletedItemsResponse
+}
+
+var GetDeletedItemsResult_Success_DEFAULT *item.GetDeletedItemsResponse
+
+func (p *GetDeletedItemsResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *GetDeletedItemsResult) Unmarshal(in []byte) error {
+	msg := new(item.GetDeletedItemsResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *GetDeletedItemsResult) GetSuccess() *item.GetDeletedItemsResponse {
+	if !p.IsSetSuccess() {
+		return GetDeletedItemsResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *GetDeletedItemsResult) SetSuccess(x interface{}) {
+	p.Success = x.(*item.GetDeletedItemsResponse)
+}
+
+func (p *GetDeletedItemsResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *GetDeletedItemsResult) GetResult() interface{} {
+	return p.Success
+}
+
+func recoverItemsBatchHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(item.RecoverItemsBatchRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(item.ItemService).RecoverItemsBatch(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *RecoverItemsBatchArgs:
+		success, err := handler.(item.ItemService).RecoverItemsBatch(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*RecoverItemsBatchResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newRecoverItemsBatchArgs() interface{} {
+	return &RecoverItemsBatchArgs{}
+}
+
+func newRecoverItemsBatchResult() interface{} {
+	return &RecoverItemsBatchResult{}
+}
+
+type RecoverItemsBatchArgs struct {
+	Req *item.RecoverItemsBatchRequest
+}
+
+func (p *RecoverItemsBatchArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *RecoverItemsBatchArgs) Unmarshal(in []byte) error {
+	msg := new(item.RecoverItemsBatchRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var RecoverItemsBatchArgs_Req_DEFAULT *item.RecoverItemsBatchRequest
+
+func (p *RecoverItemsBatchArgs) GetReq() *item.RecoverItemsBatchRequest {
+	if !p.IsSetReq() {
+		return RecoverItemsBatchArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *RecoverItemsBatchArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *RecoverItemsBatchArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type RecoverItemsBatchResult struct {
+	Success *item.RecoverItemsBatchResponse
+}
+
+var RecoverItemsBatchResult_Success_DEFAULT *item.RecoverItemsBatchResponse
+
+func (p *RecoverItemsBatchResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *RecoverItemsBatchResult) Unmarshal(in []byte) error {
+	msg := new(item.RecoverItemsBatchResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *RecoverItemsBatchResult) GetSuccess() *item.RecoverItemsBatchResponse {
+	if !p.IsSetSuccess() {
+		return RecoverItemsBatchResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *RecoverItemsBatchResult) SetSuccess(x interface{}) {
+	p.Success = x.(*item.RecoverItemsBatchResponse)
+}
+
+func (p *RecoverItemsBatchResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *RecoverItemsBatchResult) GetResult() interface{} {
+	return p.Success
+}
+
+func deleteItemsBatchHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(item.DeleteItemsBatchRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(item.ItemService).DeleteItemsBatch(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *DeleteItemsBatchArgs:
+		success, err := handler.(item.ItemService).DeleteItemsBatch(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*DeleteItemsBatchResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newDeleteItemsBatchArgs() interface{} {
+	return &DeleteItemsBatchArgs{}
+}
+
+func newDeleteItemsBatchResult() interface{} {
+	return &DeleteItemsBatchResult{}
+}
+
+type DeleteItemsBatchArgs struct {
+	Req *item.DeleteItemsBatchRequest
+}
+
+func (p *DeleteItemsBatchArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *DeleteItemsBatchArgs) Unmarshal(in []byte) error {
+	msg := new(item.DeleteItemsBatchRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var DeleteItemsBatchArgs_Req_DEFAULT *item.DeleteItemsBatchRequest
+
+func (p *DeleteItemsBatchArgs) GetReq() *item.DeleteItemsBatchRequest {
+	if !p.IsSetReq() {
+		return DeleteItemsBatchArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *DeleteItemsBatchArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *DeleteItemsBatchArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type DeleteItemsBatchResult struct {
+	Success *item.DeleteItemsBatchResponse
+}
+
+var DeleteItemsBatchResult_Success_DEFAULT *item.DeleteItemsBatchResponse
+
+func (p *DeleteItemsBatchResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *DeleteItemsBatchResult) Unmarshal(in []byte) error {
+	msg := new(item.DeleteItemsBatchResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *DeleteItemsBatchResult) GetSuccess() *item.DeleteItemsBatchResponse {
+	if !p.IsSetSuccess() {
+		return DeleteItemsBatchResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *DeleteItemsBatchResult) SetSuccess(x interface{}) {
+	p.Success = x.(*item.DeleteItemsBatchResponse)
+}
+
+func (p *DeleteItemsBatchResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *DeleteItemsBatchResult) GetResult() interface{} {
+	return p.Success
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -1414,16 +1886,6 @@ func (p *kClient) UpdateItem(ctx context.Context, Req *item.UpdateItemRequest) (
 	_args.Req = Req
 	var _result UpdateItemResult
 	if err = p.c.Call(ctx, "UpdateItem", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) DeleteItem(ctx context.Context, Req *item.DeleteItemRequest) (r *item.DeleteItemResponse, err error) {
-	var _args DeleteItemArgs
-	_args.Req = Req
-	var _result DeleteItemResult
-	if err = p.c.Call(ctx, "DeleteItem", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
@@ -1494,6 +1956,56 @@ func (p *kClient) SearchItems(ctx context.Context, Req *item.SearchItemsRequest)
 	_args.Req = Req
 	var _result SearchItemsResult
 	if err = p.c.Call(ctx, "SearchItems", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) DeleteItem(ctx context.Context, Req *item.DeleteItemRequest) (r *item.DeleteItemResponse, err error) {
+	var _args DeleteItemArgs
+	_args.Req = Req
+	var _result DeleteItemResult
+	if err = p.c.Call(ctx, "DeleteItem", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) RecoverItem(ctx context.Context, Req *item.RecoverItemRequest) (r *item.RecoverItemREsponse, err error) {
+	var _args RecoverItemArgs
+	_args.Req = Req
+	var _result RecoverItemResult
+	if err = p.c.Call(ctx, "RecoverItem", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetDeletedItems(ctx context.Context, Req *item.GetDeletedItemsRequest) (r *item.GetDeletedItemsResponse, err error) {
+	var _args GetDeletedItemsArgs
+	_args.Req = Req
+	var _result GetDeletedItemsResult
+	if err = p.c.Call(ctx, "GetDeletedItems", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) RecoverItemsBatch(ctx context.Context, Req *item.RecoverItemsBatchRequest) (r *item.RecoverItemsBatchResponse, err error) {
+	var _args RecoverItemsBatchArgs
+	_args.Req = Req
+	var _result RecoverItemsBatchResult
+	if err = p.c.Call(ctx, "RecoverItemsBatch", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) DeleteItemsBatch(ctx context.Context, Req *item.DeleteItemsBatchRequest) (r *item.DeleteItemsBatchResponse, err error) {
+	var _args DeleteItemsBatchArgs
+	_args.Req = Req
+	var _result DeleteItemsBatchResult
+	if err = p.c.Call(ctx, "DeleteItemsBatch", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

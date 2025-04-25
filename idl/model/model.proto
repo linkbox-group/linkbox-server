@@ -21,6 +21,7 @@ message Item {
   string thumbnail_url = 7;
   repeated string tags = 8;
   repeated string organization_ids = 9;
+  google.protobuf.Timestamp deleted_ad =12;
   google.protobuf.Timestamp created_at = 13;
   google.protobuf.Timestamp updated_at = 14;
   string note = 15;

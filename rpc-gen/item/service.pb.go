@@ -1399,11 +1399,354 @@ func (x *TagCount) GetCount() int32 {
 	return 0
 }
 
+type RecoverItemRequest struct {
+	Id     string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	UserId string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+}
+
+func (x *RecoverItemRequest) Reset() { *x = RecoverItemRequest{} }
+
+func (x *RecoverItemRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *RecoverItemRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *RecoverItemRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *RecoverItemRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+type RecoverItemREsponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*RecoverItemREsponse_Success
+	//	*RecoverItemREsponse_Error
+	Result isRecoverItemREsponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *RecoverItemREsponse) Reset() { *x = RecoverItemREsponse{} }
+
+func (x *RecoverItemREsponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *RecoverItemREsponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *RecoverItemREsponse) GetResult() isRecoverItemREsponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *RecoverItemREsponse) GetSuccess() bool {
+	if p, ok := x.GetResult().(*RecoverItemREsponse_Success); ok {
+		return p.Success
+	}
+	return false
+}
+
+func (x *RecoverItemREsponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*RecoverItemREsponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*RecoverItemREsponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*RecoverItemREsponse_Success)(nil),
+		(*RecoverItemREsponse_Error)(nil),
+	}
+}
+
+type isRecoverItemREsponse_Result interface {
+	isRecoverItemREsponse_Result()
+}
+
+type RecoverItemREsponse_Success struct {
+	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
+}
+
+func (*RecoverItemREsponse_Success) isRecoverItemREsponse_Result() {}
+
+type RecoverItemREsponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*RecoverItemREsponse_Error) isRecoverItemREsponse_Result() {}
+
+type GetDeletedItemsRequest struct {
+	UserId     string                        `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Pagination *pagination.PaginationRequest `protobuf:"bytes,2,opt,name=pagination" json:"pagination,omitempty"`
+}
+
+func (x *GetDeletedItemsRequest) Reset() { *x = GetDeletedItemsRequest{} }
+
+func (x *GetDeletedItemsRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *GetDeletedItemsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetDeletedItemsRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetDeletedItemsRequest) GetPagination() *pagination.PaginationRequest {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
+type GetDeletedItemsResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*GetDeletedItemsResponse_ItemsPage
+	//	*GetDeletedItemsResponse_Error
+	Result isGetDeletedItemsResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *GetDeletedItemsResponse) Reset() { *x = GetDeletedItemsResponse{} }
+
+func (x *GetDeletedItemsResponse) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *GetDeletedItemsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetDeletedItemsResponse) GetResult() isGetDeletedItemsResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *GetDeletedItemsResponse) GetItemsPage() *ItemsPage {
+	if p, ok := x.GetResult().(*GetDeletedItemsResponse_ItemsPage); ok {
+		return p.ItemsPage
+	}
+	return nil
+}
+
+func (x *GetDeletedItemsResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*GetDeletedItemsResponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*GetDeletedItemsResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*GetDeletedItemsResponse_ItemsPage)(nil),
+		(*GetDeletedItemsResponse_Error)(nil),
+	}
+}
+
+type isGetDeletedItemsResponse_Result interface {
+	isGetDeletedItemsResponse_Result()
+}
+
+type GetDeletedItemsResponse_ItemsPage struct {
+	ItemsPage *ItemsPage `protobuf:"bytes,1,opt,name=items_page" json:"items_page,omitempty"`
+}
+
+func (*GetDeletedItemsResponse_ItemsPage) isGetDeletedItemsResponse_Result() {}
+
+type GetDeletedItemsResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*GetDeletedItemsResponse_Error) isGetDeletedItemsResponse_Result() {}
+
+type RecoverItemsBatchRequest struct {
+	UserId string   `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Ids    []string `protobuf:"bytes,2,rep,name=ids" json:"ids,omitempty"`
+}
+
+func (x *RecoverItemsBatchRequest) Reset() { *x = RecoverItemsBatchRequest{} }
+
+func (x *RecoverItemsBatchRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *RecoverItemsBatchRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *RecoverItemsBatchRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *RecoverItemsBatchRequest) GetIds() []string {
+	if x != nil {
+		return x.Ids
+	}
+	return nil
+}
+
+type RecoverItemsBatchResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*RecoverItemsBatchResponse_Success
+	//	*RecoverItemsBatchResponse_Error
+	Result isRecoverItemsBatchResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *RecoverItemsBatchResponse) Reset() { *x = RecoverItemsBatchResponse{} }
+
+func (x *RecoverItemsBatchResponse) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *RecoverItemsBatchResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *RecoverItemsBatchResponse) GetResult() isRecoverItemsBatchResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *RecoverItemsBatchResponse) GetSuccess() bool {
+	if p, ok := x.GetResult().(*RecoverItemsBatchResponse_Success); ok {
+		return p.Success
+	}
+	return false
+}
+
+func (x *RecoverItemsBatchResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*RecoverItemsBatchResponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*RecoverItemsBatchResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*RecoverItemsBatchResponse_Success)(nil),
+		(*RecoverItemsBatchResponse_Error)(nil),
+	}
+}
+
+type isRecoverItemsBatchResponse_Result interface {
+	isRecoverItemsBatchResponse_Result()
+}
+
+type RecoverItemsBatchResponse_Success struct {
+	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
+}
+
+func (*RecoverItemsBatchResponse_Success) isRecoverItemsBatchResponse_Result() {}
+
+type RecoverItemsBatchResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*RecoverItemsBatchResponse_Error) isRecoverItemsBatchResponse_Result() {}
+
+type DeleteItemsBatchRequest struct {
+	UserId string   `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Ids    []string `protobuf:"bytes,2,rep,name=ids" json:"ids,omitempty"`
+}
+
+func (x *DeleteItemsBatchRequest) Reset() { *x = DeleteItemsBatchRequest{} }
+
+func (x *DeleteItemsBatchRequest) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *DeleteItemsBatchRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *DeleteItemsBatchRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *DeleteItemsBatchRequest) GetIds() []string {
+	if x != nil {
+		return x.Ids
+	}
+	return nil
+}
+
+type DeleteItemsBatchResponse struct {
+	// Types that are assignable to Result:
+	//
+	//	*DeleteItemsBatchResponse_Success
+	//	*DeleteItemsBatchResponse_Error
+	Result isDeleteItemsBatchResponse_Result `protobuf_oneof:"result"`
+}
+
+func (x *DeleteItemsBatchResponse) Reset() { *x = DeleteItemsBatchResponse{} }
+
+func (x *DeleteItemsBatchResponse) Marshal(in []byte) ([]byte, error) {
+	return prutal.MarshalAppend(in, x)
+}
+
+func (x *DeleteItemsBatchResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *DeleteItemsBatchResponse) GetResult() isDeleteItemsBatchResponse_Result {
+	if x != nil {
+		return x.Result
+	}
+	return nil
+}
+func (x *DeleteItemsBatchResponse) GetSuccess() bool {
+	if p, ok := x.GetResult().(*DeleteItemsBatchResponse_Success); ok {
+		return p.Success
+	}
+	return false
+}
+
+func (x *DeleteItemsBatchResponse) GetError() *cError.Error {
+	if p, ok := x.GetResult().(*DeleteItemsBatchResponse_Error); ok {
+		return p.Error
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the prutal package.
+func (*DeleteItemsBatchResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*DeleteItemsBatchResponse_Success)(nil),
+		(*DeleteItemsBatchResponse_Error)(nil),
+	}
+}
+
+type isDeleteItemsBatchResponse_Result interface {
+	isDeleteItemsBatchResponse_Result()
+}
+
+type DeleteItemsBatchResponse_Success struct {
+	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
+}
+
+func (*DeleteItemsBatchResponse_Success) isDeleteItemsBatchResponse_Result() {}
+
+type DeleteItemsBatchResponse_Error struct {
+	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+}
+
+func (*DeleteItemsBatchResponse_Error) isDeleteItemsBatchResponse_Result() {}
+
 type ItemService interface {
 	CreateItem(ctx context.Context, req *CreateItemRequest) (res *CreateItemResponse, err error)
 	GetItem(ctx context.Context, req *GetItemRequest) (res *GetItemResponse, err error)
 	UpdateItem(ctx context.Context, req *UpdateItemRequest) (res *UpdateItemResponse, err error)
-	DeleteItem(ctx context.Context, req *DeleteItemRequest) (res *DeleteItemResponse, err error)
 	GetItems(ctx context.Context, req *GetItemsRequest) (res *GetItemsResponse, err error)
 	GetItemsByTags(ctx context.Context, req *GetItemsByTagsRequest) (res *GetItemsByTagsResponse, err error)
 	GetItemsByOrganization(ctx context.Context, req *GetItemsByOrganizationRequest) (res *GetItemsByOrganizationResponse, err error)
@@ -1411,4 +1754,9 @@ type ItemService interface {
 	ImportFromFile(ctx context.Context, req *ImportFromFileRequest) (res *ImportFromFileResponse, err error)
 	ExportToFile(ctx context.Context, req *ExportToFileRequest) (res *ExportToFileResponse, err error)
 	SearchItems(ctx context.Context, req *SearchItemsRequest) (res *SearchItemsResponse, err error)
+	DeleteItem(ctx context.Context, req *DeleteItemRequest) (res *DeleteItemResponse, err error)
+	RecoverItem(ctx context.Context, req *RecoverItemRequest) (res *RecoverItemREsponse, err error)
+	GetDeletedItems(ctx context.Context, req *GetDeletedItemsRequest) (res *GetDeletedItemsResponse, err error)
+	RecoverItemsBatch(ctx context.Context, req *RecoverItemsBatchRequest) (res *RecoverItemsBatchResponse, err error)
+	DeleteItemsBatch(ctx context.Context, req *DeleteItemsBatchRequest) (res *DeleteItemsBatchResponse, err error)
 }

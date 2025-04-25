@@ -14,7 +14,6 @@ type Client interface {
 	CreateItem(ctx context.Context, Req *item.CreateItemRequest, callOptions ...callopt.Option) (r *item.CreateItemResponse, err error)
 	GetItem(ctx context.Context, Req *item.GetItemRequest, callOptions ...callopt.Option) (r *item.GetItemResponse, err error)
 	UpdateItem(ctx context.Context, Req *item.UpdateItemRequest, callOptions ...callopt.Option) (r *item.UpdateItemResponse, err error)
-	DeleteItem(ctx context.Context, Req *item.DeleteItemRequest, callOptions ...callopt.Option) (r *item.DeleteItemResponse, err error)
 	GetItems(ctx context.Context, Req *item.GetItemsRequest, callOptions ...callopt.Option) (r *item.GetItemsResponse, err error)
 	GetItemsByTags(ctx context.Context, Req *item.GetItemsByTagsRequest, callOptions ...callopt.Option) (r *item.GetItemsByTagsResponse, err error)
 	GetItemsByOrganization(ctx context.Context, Req *item.GetItemsByOrganizationRequest, callOptions ...callopt.Option) (r *item.GetItemsByOrganizationResponse, err error)
@@ -22,6 +21,11 @@ type Client interface {
 	ImportFromFile(ctx context.Context, Req *item.ImportFromFileRequest, callOptions ...callopt.Option) (r *item.ImportFromFileResponse, err error)
 	ExportToFile(ctx context.Context, Req *item.ExportToFileRequest, callOptions ...callopt.Option) (r *item.ExportToFileResponse, err error)
 	SearchItems(ctx context.Context, Req *item.SearchItemsRequest, callOptions ...callopt.Option) (r *item.SearchItemsResponse, err error)
+	DeleteItem(ctx context.Context, Req *item.DeleteItemRequest, callOptions ...callopt.Option) (r *item.DeleteItemResponse, err error)
+	RecoverItem(ctx context.Context, Req *item.RecoverItemRequest, callOptions ...callopt.Option) (r *item.RecoverItemREsponse, err error)
+	GetDeletedItems(ctx context.Context, Req *item.GetDeletedItemsRequest, callOptions ...callopt.Option) (r *item.GetDeletedItemsResponse, err error)
+	RecoverItemsBatch(ctx context.Context, Req *item.RecoverItemsBatchRequest, callOptions ...callopt.Option) (r *item.RecoverItemsBatchResponse, err error)
+	DeleteItemsBatch(ctx context.Context, Req *item.DeleteItemsBatchRequest, callOptions ...callopt.Option) (r *item.DeleteItemsBatchResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -68,11 +72,6 @@ func (p *kItemServiceClient) UpdateItem(ctx context.Context, Req *item.UpdateIte
 	return p.kClient.UpdateItem(ctx, Req)
 }
 
-func (p *kItemServiceClient) DeleteItem(ctx context.Context, Req *item.DeleteItemRequest, callOptions ...callopt.Option) (r *item.DeleteItemResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.DeleteItem(ctx, Req)
-}
-
 func (p *kItemServiceClient) GetItems(ctx context.Context, Req *item.GetItemsRequest, callOptions ...callopt.Option) (r *item.GetItemsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetItems(ctx, Req)
@@ -106,4 +105,29 @@ func (p *kItemServiceClient) ExportToFile(ctx context.Context, Req *item.ExportT
 func (p *kItemServiceClient) SearchItems(ctx context.Context, Req *item.SearchItemsRequest, callOptions ...callopt.Option) (r *item.SearchItemsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.SearchItems(ctx, Req)
+}
+
+func (p *kItemServiceClient) DeleteItem(ctx context.Context, Req *item.DeleteItemRequest, callOptions ...callopt.Option) (r *item.DeleteItemResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.DeleteItem(ctx, Req)
+}
+
+func (p *kItemServiceClient) RecoverItem(ctx context.Context, Req *item.RecoverItemRequest, callOptions ...callopt.Option) (r *item.RecoverItemREsponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.RecoverItem(ctx, Req)
+}
+
+func (p *kItemServiceClient) GetDeletedItems(ctx context.Context, Req *item.GetDeletedItemsRequest, callOptions ...callopt.Option) (r *item.GetDeletedItemsResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetDeletedItems(ctx, Req)
+}
+
+func (p *kItemServiceClient) RecoverItemsBatch(ctx context.Context, Req *item.RecoverItemsBatchRequest, callOptions ...callopt.Option) (r *item.RecoverItemsBatchResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.RecoverItemsBatch(ctx, Req)
+}
+
+func (p *kItemServiceClient) DeleteItemsBatch(ctx context.Context, Req *item.DeleteItemsBatchRequest, callOptions ...callopt.Option) (r *item.DeleteItemsBatchResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.DeleteItemsBatch(ctx, Req)
 }

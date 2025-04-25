@@ -22,8 +22,6 @@ service ItemService {
   // 更新内容项
   rpc UpdateItem(UpdateItemRequest) returns (UpdateItemResponse);
 
-  // 删除内容项
-  rpc DeleteItem(DeleteItemRequest) returns (DeleteItemResponse);
 
   // 批量获取内容项
   rpc GetItems(GetItemsRequest) returns (GetItemsResponse);
@@ -46,6 +44,15 @@ service ItemService {
 
   // 内容项全文搜索
   rpc SearchItems(SearchItemsRequest) returns (SearchItemsResponse);
+  
+  //添加至回收站
+  rpc DeleteItem(DeleteItemRequest) returns (DeleteItemResponse);
+  //从回收站恢复
+  rpc RecoverItem(RecoverItemRequest) returns(RecoverItemREsponse);
+  //
+  rpc GetDeletedItems(GetDeletedItemsRequest) returns(GetDeletedItemsResponse);
+  rpc RecoverItemsBatch(RecoverItemsBatchRequest) returns(RecoverItemsBatchResponse);
+  rpc DeleteItemsBatch(DeleteItemsBatchRequest) returns(DeleteItemsBatchResponse);
 
 }
 
@@ -278,3 +285,44 @@ message TagCount {
   string tag = 1;
   int32 count = 2;
 }
+
+message RecoverItemRequest{
+  string id = 1;
+  string user_id = 2;
+}
+message RecoverItemREsponse{
+  oneof result {
+    bool success = 1;
+    common.cError.Error error = 2;
+  }
+}
+message GetDeletedItemsRequest{
+  string user_id = 1;
+  common.pagination.PaginationRequest pagination = 2;
+}
+message GetDeletedItemsResponse{
+  oneof result {
+    ItemsPage items_page = 1;
+    common.cError.Error error = 2;
+  }
+}
+message RecoverItemsBatchRequest{
+  string user_id = 1;
+  repeated string ids = 2;
+}
+message RecoverItemsBatchResponse{
+  oneof result {
+    bool success = 1;
+    common.cError.Error error = 2;
+  }
+}
+message DeleteItemsBatchRequest{
+  string user_id = 1;
+  repeated string ids = 2;
+}
+message DeleteItemsBatchResponse{
+  oneof result {
+    bool success = 1;
+    common.cError.Error error = 2;
+  }
+} 
