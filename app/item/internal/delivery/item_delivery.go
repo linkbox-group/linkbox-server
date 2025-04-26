@@ -364,3 +364,22 @@ func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsReq
 		},
 	}, nil
 }
+func (d *ItemDelivery) RecoverItem(ctx context.Context, req *item.RecoverItemRequest) (res *item.RecoverItemREsponse, err error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (d *ItemDelivery) GetDeletedItems(ctx context.Context, req *item.GetDeletedItemsRequest) (res *item.GetDeletedItemsResponse, err error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (d *ItemDelivery) RecoverItemsBatch(ctx context.Context, req *item.RecoverItemsBatchRequest) (res *item.RecoverItemsBatchResponse, err error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (d *ItemDelivery) DeleteItemsBatch(ctx context.Context, req *item.DeleteItemsBatchRequest) (res *item.DeleteItemsBatchResponse, err error) {
+	//TODO implement me
+	panic("implement me")
+}

@@ -283,9 +283,3 @@ func (s *OrganizationDelivery) GetOrganizationChildren(ctx context.Context, req 
 	// TODO: Your code here...
 	return
 }
-
-// BatchSaveOrganization implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) BatchSaveOrganization(ctx context.Context, req *organization.BatchSaveOrganizationRequest) (resp *organization.BatchSaveOrganizationResponse, err error) {
-	// TODO: Your code here...
-	return
-}
