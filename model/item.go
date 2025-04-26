@@ -1,5 +1,7 @@
 package model
 
+import "gorm.io/gorm"
+
 // 项目模型
 type Item struct {
 	BaseModel
@@ -9,6 +11,7 @@ type Item struct {
 	Note         string `gorm:"type:text;comment:内容/文本" json:"note,omitempty"`
 	URL          string `gorm:"type:varchar(2000);comment:链接地址" json:"url,omitempty"`
 	ThumbnailURL string `gorm:"type:varchar(2000);comment:缩略图地址" json:"thumbnailUrl,omitempty"`
+	DeletedAt    gorm.DeletedAt
 	// 关联
 	User          User           `gorm:"foreignKey:UserID" json:"-"`
 	Organizations []Organization `gorm:"many2many:organization_item;" json:"organizations,omitempty"`
