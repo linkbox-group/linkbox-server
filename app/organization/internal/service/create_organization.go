@@ -14,7 +14,7 @@ var (
 )
 
 func (s *OrganizationService) CreateOrganizationService(ctx context.Context, org *model.Organization) (err error) {
-	if org.ParentCode != "" || org.ParentCode != string(treemodel.ROOT_ID) {
+	if org.ParentCode != "" && org.ParentCode != treemodel.ROOT_ID {
 		log.Log().Debug("have parent")
 		_, err = s.repo.GetOrganization(ctx, org.ParentCode, org.UserID)
 
