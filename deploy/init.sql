@@ -1,4 +1,7 @@
 -- 用户表
+use  sys;
+create database tag;
+use tag;
 CREATE TABLE `user` (
                         `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
                         `email` VARCHAR(255) NOT NULL COMMENT '邮箱',

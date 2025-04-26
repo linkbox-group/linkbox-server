@@ -19,9 +19,61 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql/conf:/etc/mysql/conf.d
   redis:
     image: 'redis:latest'
     ports:
       - 6379:6379
 
     command: redis-server --requirepass 123456
+  linkbox-auth:
+    image: xyq777/linkbox-auth:latest
+    volumes:
+      - ./config/auth.toml:/app/configs/test/conf.toml
+    environment:
+      - MYSQL_PASSWORD=root
+      - REDIS_PASSWORD=123456
+      - REDIS_SECRET=fnqifqn
+  linkbox-gateway:
+    image: xyq777/linkbox-gateway:latest
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./config/gateway.toml:/app/configs/test/conf.toml
+    environment:
+      - MYSQL_PASSWORD=root
+      - REDIS_PASSWORD=123456
+      - REDIS_SECRET=fnqifqn
+  linkbox-item:
+    image: xyq777/linkbox-item:latest
+    volumes:
+      - ./config/item.toml:/app/configs/test/conf.toml
+    environment:
+      - MYSQL_PASSWORD=root
+      - REDIS_PASSWORD=123456
+      - REDIS_SECRET=fnqifqn
+  linkbox-organization:
+    image: xyq777/linkbox-organization:latest
+    volumes:
+      - ./config/organization.toml:/app/configs/test/conf.toml
+    environment:
+      - MYSQL_PASSWORD=root
+      - REDIS_PASSWORD=123456
+      - REDIS_SECRET=fnqifqn
+  linkbox-tag:
+    image: xyq777/linkbox-tag:latest
+    volumes:
+      - ./config/tag.toml:/app/configs/test/conf.toml
+    environment:
+      - MYSQL_PASSWORD=root
+      - REDIS_PASSWORD=123456
+      - REDIS_SECRET=fnqifqn
+  linkbox-user:
+    image: xyq777/linkbox-user:latest
+    volumes:
+      - ./config/user.toml:/app/configs/test/conf.toml
+    environment:
+      - MYSQL_PASSWORD=root
+      - REDIS_PASSWORD=123456
+      - REDIS_SECRET=fnqifqn
