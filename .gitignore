@@ -26,3 +26,4 @@ go.work.sum
 .idea
 **.toml
 **.log
+/deploy/k3s
