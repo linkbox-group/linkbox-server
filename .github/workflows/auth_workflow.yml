@@ -56,7 +56,7 @@ jobs:
       - name: Update Deployment
         uses: MultiMx/K8sSetImageAction@v0.2
         with:
-          backend: "http://rancher.xyq777.com"
+          backend: "https://rancher.xyq777.com"
           token: ${{ secrets.RANCHER_TOKEN }}
           namespace: "linkbox"
           image: ${{ steps.image.outputs.VERSION }}
