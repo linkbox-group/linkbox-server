@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+
 	core.LoadLog()
 	err := core.LoadConfig()
 
