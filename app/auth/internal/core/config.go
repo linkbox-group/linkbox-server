@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"os"
-	"path/filepath"
 )
 
 const (
@@ -60,13 +59,9 @@ func LoadConfig(opts ...Option) (err error) {
 	for _, opt := range opts {
 		opt.apply(&o)
 	}
-	rootDir, err := getProjectRoot()
-	if err != nil {
-		return fmt.Errorf("获取项目根目录失败: %w", err)
-	}
 
 	// 加载 .env 文件
-	if err := godotenv.Load(filepath.Join(rootDir, ".env")); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Println("未找到.env,使用默认环境变量")
 	}
 	viper.AutomaticEnv()
@@ -87,25 +82,4 @@ func LoadConfig(opts ...Option) (err error) {
 			"read config: %w", err)
 	}
 	return nil
-}
-
-// getProjectRoot 获取项目根目录
-func getProjectRoot() (string, error) {
-	// 从当前目录开始向上查找，直到找到 go.mod 文件
-	dir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	for {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir, nil
-		}
-
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			return "", fmt.Errorf("未找到 go.mod 文件")
-		}
-		dir = parent
-	}
 }
