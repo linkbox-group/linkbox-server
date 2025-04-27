@@ -22,8 +22,8 @@ message Item {
   repeated string tag_names=10;
   string organization_path=11;
   repeated string tags = 8;
-  repeated string organization_ids = 9;
-  google.protobuf.Timestamp deleted_ad =12;
+  string organization_id = 9;
+  google.protobuf.Timestamp deleted_at =12;
   google.protobuf.Timestamp created_at = 13;
   google.protobuf.Timestamp updated_at = 14;
   string note = 15;

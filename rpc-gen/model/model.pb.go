@@ -50,8 +50,8 @@ type Item struct {
 	TagNames         []string               `protobuf:"bytes,10,rep,name=tag_names" json:"tag_names,omitempty"`
 	OrganizationPath string                 `protobuf:"bytes,11,opt,name=organization_path" json:"organization_path,omitempty"`
 	Tags             []string               `protobuf:"bytes,8,rep,name=tags" json:"tags,omitempty"`
-	OrganizationIds  []string               `protobuf:"bytes,9,rep,name=organization_ids" json:"organization_ids,omitempty"`
-	DeletedAd        *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=deleted_ad" json:"deleted_ad,omitempty"`
+	OrganizationId   string                 `protobuf:"bytes,9,opt,name=organization_id" json:"organization_id,omitempty"`
+	DeletedAt        *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=deleted_at" json:"deleted_at,omitempty"`
 	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=created_at" json:"created_at,omitempty"`
 	UpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=updated_at" json:"updated_at,omitempty"`
 	Note             string                 `protobuf:"bytes,15,opt,name=note" json:"note,omitempty"`
@@ -134,16 +134,16 @@ func (x *Item) GetTags() []string {
 	return nil
 }
 
-func (x *Item) GetOrganizationIds() []string {
+func (x *Item) GetOrganizationId() string {
 	if x != nil {
-		return x.OrganizationIds
+		return x.OrganizationId
 	}
-	return nil
+	return ""
 }
 
-func (x *Item) GetDeletedAd() *timestamppb.Timestamp {
+func (x *Item) GetDeletedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.DeletedAd
+		return x.DeletedAt
 	}
 	return nil
 }
