@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"github.com/linkbox-group/linkbox-server/common/ecode"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
 
 	"github.com/gin-gonic/gin"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
@@ -25,7 +26,7 @@ const (
 
 // CreateOrganization 创建组织
 func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
-	var req organization.CreateOrganizationRequest
+	var req domain.CreateOrganizationReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		logrus.Error(err)
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
@@ -36,8 +37,14 @@ func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
-	req.UserId = userId
-	resp, err := rpc.OrganizationClient.CreateOrganization(context.Background(), &req)
+	orgReq := organization.CreateOrganizationRequest{
+		UserId:      userId,
+		Name:        req.Name,
+		ParentCode:  &req.ParentCode,
+		Description: &req.Description,
+		SortOrder:   &req.SortOrder,
+	}
+	resp, err := rpc.OrganizationClient.CreateOrganization(context.Background(), &orgReq)
 	if err != nil {
 		domain.Error(c, ErrOrganizationNameExists, err.Error())
 		return
@@ -283,7 +290,7 @@ func (a *OrganizationAPI) MoveOrganization(c *gin.Context) {
 
 // AddItemsToOrganization 添加内容项到组织
 func (a *OrganizationAPI) AddItemsToOrganization(c *gin.Context) {
-	var req organization.AddItemsToOrganizationRequest
+	var req domain.AddItemRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
@@ -293,24 +300,27 @@ func (a *OrganizationAPI) AddItemsToOrganization(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
-	req.UserId = userId
+	itemReq := item.UpdateItemRequest{
+		Id:             req.ItemID,
+		OrganizationId: req.OrganizationID,
+		UserId:         userId,
+	}
 
-	resp, err := rpc.OrganizationClient.AddItemsToOrganization(context.Background(), &req)
+	_, err = rpc.ItemClient.UpdateItem(c, &itemReq)
 	if err != nil {
 		domain.Error(c, ErrItemNotFound, "内容项不存在")
 		return
 	}
 
-	success := resp.GetSuccess()
 	orgResp := domain.OrganizationSuccessResponse{
-		Success: success,
+		Success: true,
 	}
 	domain.Success(c, orgResp)
 }
 
 // RemoveItemsFromOrganization 从组织移除内容项
 func (a *OrganizationAPI) RemoveItemsFromOrganization(c *gin.Context) {
-	var req organization.RemoveItemsFromOrganizationRequest
+	var req domain.RemoveItemRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
@@ -320,16 +330,19 @@ func (a *OrganizationAPI) RemoveItemsFromOrganization(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
-	req.UserId = userId
-	resp, err := rpc.OrganizationClient.RemoveItemsFromOrganization(context.Background(), &req)
+	ItemReq := item.UpdateItemRequest{
+		Id:             req.ItemID,
+		OrganizationId: req.OrganizationID,
+		UserId:         userId,
+	}
+	_, err = rpc.ItemClient.UpdateItem(c, &ItemReq)
 	if err != nil {
 		domain.Error(c, ErrItemNotFound, "内容项不存在")
 		return
 	}
 
-	success := resp.GetSuccess()
 	orgResp := domain.OrganizationSuccessResponse{
-		Success: success,
+		Success: true,
 	}
 	domain.Success(c, orgResp)
 }

@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"context"
+	"github.com/linkbox-group/linkbox-server/model/treemodel"
 
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -13,10 +14,15 @@ import (
 )
 
 func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemRequest) (resp *item.CreateItemResponse, err error) {
+
 	itemModel := model.Item{
-		UserID: req.UserId,
-		Title:  req.Title,
-		URL:    req.Url,
+		UserID:         req.UserId,
+		Title:          req.Title,
+		URL:            req.Url,
+		OrganizationID: req.OrganizationId,
+	}
+	if req.OrganizationId == "" {
+		itemModel.OrganizationID = treemodel.DEFAULT_ID
 	}
 	err = d.s.CreateItem(ctx, &itemModel)
 
@@ -88,10 +94,11 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 		BaseModel: model.BaseModel{
 			ID: req.Id,
 		},
-		UserID: req.UserId,
-		Title:  req.Title,
-		URL:    req.Url,
-		Note:   req.Note,
+		UserID:         req.UserId,
+		Title:          req.Title,
+		URL:            req.Url,
+		Note:           req.Note,
+		OrganizationID: req.OrganizationId,
 	}
 
 	err = d.s.UpdateItem(ctx, &itemModel)

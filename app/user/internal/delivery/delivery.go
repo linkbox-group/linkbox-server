@@ -5,8 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/wire"
+	"github.com/linkbox-group/linkbox-server/model/treemodel"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/organization"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/user"
 	"github.com/linkbox-group/linkbox-server/user/internal/acl"
+	"github.com/linkbox-group/linkbox-server/user/internal/infra/rpc"
+	"github.com/linkbox-group/linkbox-server/user/pkg/log"
 	"github.com/sirupsen/logrus"
 )
 
@@ -49,10 +53,18 @@ func (d *UserDelivery) Register(ctx context.Context, req *user.RegisterReq) (res
 	// 执行注册用户逻辑
 	registerUser, err := d.service.RegisterUser(ctx, req.Email, req.Code, req.Password)
 	if err != nil {
-		logrus.Errorln(err)
+		log.Log().Error(err.Error())
 		return nil, fmt.Errorf("register:%w", err)
 	}
-
+	_, err = rpc.OrganizationClient.CreateOrganization(ctx, &organization.CreateOrganizationRequest{
+		UserId: registerUser.UserId,
+		Name:   "默认目录",
+		Code:   treemodel.DEFAULT_ID,
+	})
+	if err != nil {
+		log.Log().Error(err.Error())
+		return nil, fmt.Errorf("register:%w", err)
+	}
 	return registerUser, nil
 }
 

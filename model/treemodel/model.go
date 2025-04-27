@@ -20,7 +20,8 @@ const (
 	LEAF     = "1" // 叶子节点
 	NON_LEAF = "0" // 非叶子节点
 
-	ROOT_ID = "0" // 根节点ID
+	ROOT_ID    = "0" // 根节点ID
+	DEFAULT_ID = "777"
 )
 
 // TreeModelInterface 定义需要实现的接口，方便类型转换和反射操作

@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"github.com/linkbox-group/linkbox-server/rpc-gen/organization/organizationservice"
 	"log"
 
 	"github.com/spf13/viper"
@@ -14,11 +15,12 @@ import (
 )
 
 var (
-	AuthClient   authservice.Client
-	once         sync.Once
-	err          error
-	registryAddr string
-	commonSuite  client.Option
+	AuthClient         authservice.Client
+	OrganizationClient organizationservice.Client
+	once               sync.Once
+	err                error
+	registryAddr       string
+	commonSuite        client.Option
 )
 
 func InitClient() {
@@ -30,12 +32,19 @@ func InitClient() {
 			CurrentServiceName: serviceName,
 		})
 		initAuthClient()
+		initOrgClient()
 
 	})
 }
 
 func initAuthClient() {
 	AuthClient, err = authservice.NewClient("auth", commonSuite)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+}
+func initOrgClient() {
+	OrganizationClient, err = organizationservice.NewClient("organization", commonSuite)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
