@@ -17,9 +17,11 @@ func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemReque
 
 	itemModel := model.Item{
 		UserID:         req.UserId,
+		ItemType:       req.Type,
 		Title:          req.Title,
 		URL:            req.Url,
 		OrganizationID: req.OrganizationId,
+		Note:           req.Note,
 	}
 	if req.OrganizationId == "" {
 		itemModel.OrganizationID = treemodel.DEFAULT_ID
@@ -39,13 +41,17 @@ func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemReque
 	return &item.CreateItemResponse{
 		Result: &item.CreateItemResponse_Item{
 			Item: &itemmodel.Item{
-				Id:          itemModel.ID,
-				UserId:      itemModel.UserID,
-				Title:       itemModel.Title,
-				Description: "",
-				Url:         itemModel.URL,
-				CreatedAt:   timestamppb.New(itemModel.CreatedAt),
-				UpdatedAt:   timestamppb.New(itemModel.UpdatedAt),
+				Id:               itemModel.ID,
+				UserId:           itemModel.UserID,
+				Title:            itemModel.Title,
+				Type:             itemModel.ItemType,
+				Description:      "",
+				Url:              itemModel.URL,
+				Note:             itemModel.Note,
+				OrganizationPath: itemModel.OrganizationPath,
+				TagNames:         itemModel.TagNames,
+				CreatedAt:        timestamppb.New(itemModel.CreatedAt),
+				UpdatedAt:        timestamppb.New(itemModel.UpdatedAt),
 			},
 		},
 	}, nil
