@@ -23,12 +23,15 @@ func (s *OrganizationDelivery) CreateOrganization(ctx context.Context, req *orga
 		TreeModel: treemodel.TreeModel{
 			Code:       oid,
 			Name:       req.Name,
-			ParentCode: *req.ParentCode,
+			ParentCode: req.GetParentCode(),
 		},
-		Description: req.Description,
-		SortOrder:   int(*req.SortOrder),
+		Description: req.GetDescription(),
+		SortOrder:   int(req.GetSortOrder()),
 	}
-
+	if req.Code != "" {
+		oModel.Code = req.Code
+		oModel.ID = req.Code
+	}
 	err = s.service.CreateOrganizationService(ctx, &oModel)
 	if err != nil {
 		logrus.Errorln(err)
@@ -85,7 +88,7 @@ func (s *OrganizationDelivery) UpdateOrganization(ctx context.Context, req *orga
 		oModel.Name = *req.Name
 	}
 	if req.Description != nil {
-		oModel.Description = req.Description
+		oModel.Description = req.GetDescription()
 	}
 	if req.SortOrder != nil {
 		oModel.SortOrder = int(*req.SortOrder)
@@ -116,7 +119,7 @@ func (s *OrganizationDelivery) UpdateOrganization(ctx context.Context, req *orga
 				TreeNames:   updatedModel.TreeNames,
 				Name:        updatedModel.Name,
 				UserId:      updatedModel.UserID,
-				Description: *updatedModel.Description,
+				Description: updatedModel.Description,
 				SortOrder:   int32(updatedModel.SortOrder),
 				ItemsCount:  uint32(updatedModel.ItemsCount),
 				CreatedAt:   timestamppb.New(updatedModel.CreatedAt),
@@ -178,7 +181,7 @@ func (s *OrganizationDelivery) GetUserOrganizations(ctx context.Context, req *or
 			TreeNames:   org.TreeNames,
 			Name:        org.Name,
 			UserId:      org.UserID,
-			Description: *org.Description,
+			Description: org.Description,
 
 			SortOrder:  int32(org.SortOrder),
 			ItemsCount: uint32(org.ItemsCount),
