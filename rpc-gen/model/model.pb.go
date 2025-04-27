@@ -47,7 +47,7 @@ type Item struct {
 	Title            string                 `protobuf:"bytes,5,opt,name=title" json:"title,omitempty"`
 	Description      string                 `protobuf:"bytes,6,opt,name=description" json:"description,omitempty"`
 	ThumbnailUrl     string                 `protobuf:"bytes,7,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
-	TagNames         string                 `protobuf:"bytes,10,opt,name=tag_names" json:"tag_names,omitempty"`
+	TagNames         []string               `protobuf:"bytes,10,rep,name=tag_names" json:"tag_names,omitempty"`
 	OrganizationPath string                 `protobuf:"bytes,11,opt,name=organization_path" json:"organization_path,omitempty"`
 	Tags             []string               `protobuf:"bytes,8,rep,name=tags" json:"tags,omitempty"`
 	OrganizationIds  []string               `protobuf:"bytes,9,rep,name=organization_ids" json:"organization_ids,omitempty"`
@@ -113,11 +113,11 @@ func (x *Item) GetThumbnailUrl() string {
 	return ""
 }
 
-func (x *Item) GetTagNames() string {
+func (x *Item) GetTagNames() []string {
 	if x != nil {
 		return x.TagNames
 	}
-	return ""
+	return nil
 }
 
 func (x *Item) GetOrganizationPath() string {
