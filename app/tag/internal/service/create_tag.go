@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
-	"github.com/linkbox-group/linkbox-server/tag/internal/infra/rpc"
-
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 )
