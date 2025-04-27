@@ -9,7 +9,7 @@ const (
 	// 系统级错误: 10000-19999
 
 	// 业务逻辑错误: 40000-49999
-	ErrAuthFailed        ErrorCode = 40001
+	ErrAuthFailed        ErrorCode = 30000
 	ErrInvalidParam      ErrorCode = 40002
 	ErrNotFound          ErrorCode = 40003
 	ErrAlreadyExists     ErrorCode = 40004

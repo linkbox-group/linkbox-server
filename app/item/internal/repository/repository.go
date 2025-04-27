@@ -195,3 +195,37 @@ func (r *Repository) SearchItemsByTitle(ctx context.Context, userID string, quer
 	return items, total, nil
 
 }
+
+func (r *Repository) RecoverItemsBatch(ctx context.Context, userID string, ids []string) error {
+	if len(ids) == 0 {
+		println("No IDs provided for recovery.")
+		return nil
+	}
+	result := r.db.WithContext(ctx).Unscoped().
+		Model(&model.Item{}).
+		Where("user_id = ? AND id IN ? AND deleted_at IS NOT NULL", userID, ids).
+		Update("deleted_at", nil)
+	if result.Error != nil {
+		return fmt.Errorf("failed to recover items: %w", result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("no items found for recovery")
+	}
+	return nil
+}
+func (r *Repository) DeleteItemsBatch(ctx context.Context, userID string, ids []string) error {
+	if len(ids) == 0 {
+		println("No IDs provided for deletion.")
+		return nil
+	}
+	result := r.db.WithContext(ctx).
+		Where("user_id =? AND id IN?", userID, ids).
+		Delete(&model.Item{})
+	if result.Error != nil {
+		return fmt.Errorf("failed to delete items: %w", result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("no items found for deletion")
+	}
+	return nil
+}

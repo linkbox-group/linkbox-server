@@ -49,3 +49,9 @@ func (s *Service) GetItemsByOrganization(ctx context.Context, userID string, org
 func (s *Service) SearchItems(ctx context.Context, userID string, query string, pageNum int, pageSize int) ([]model.Item, int, error) {
 	return s.Repo.SearchItemsByTitle(ctx, userID, query, pageNum, pageSize)
 }
+func (s *Service) RecoverItemsBatch(ctx context.Context, userID string, ids []string) (err error) {
+	return s.Repo.RecoverItemsBatch(ctx, userID, ids)
+}
+func (s *Service) DeleteItemsBatch(ctx context.Context, userID string, ids []string) (err error) {
+	return s.Repo.DeleteItemsBatch(ctx, userID, ids)
+}
