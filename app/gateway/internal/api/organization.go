@@ -135,19 +135,18 @@ func (a *OrganizationAPI) UpdateOrganization(c *gin.Context) {
 // DeleteOrganization 删除组织
 func (a *OrganizationAPI) DeleteOrganization(c *gin.Context) {
 	orgID := c.Param("id")
-	userID := c.Query("user_id")
 	cascade := c.DefaultQuery("cascade", "false")
-
-	if userID == "" {
-		domain.Error(c, ErrInvalidReq, "请求参数错误")
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
-
-	resp, err := rpc.OrganizationClient.DeleteOrganization(context.Background(), &organization.DeleteOrganizationRequest{
+	req := &organization.DeleteOrganizationRequest{
+		UserId:  userId,
 		Id:      orgID,
-		UserId:  userID,
-		Cascade: cascade == "true",
-	})
+		Cascade: cascade == "ture",
+	}
+	resp, err := rpc.OrganizationClient.DeleteOrganization(context.Background(), req)
 	if err != nil {
 		domain.Error(c, ErrOrganizationNotFound, "组织不存在")
 		return

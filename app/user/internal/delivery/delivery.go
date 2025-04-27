@@ -65,6 +65,7 @@ func (d *UserDelivery) Register(ctx context.Context, req *user.RegisterReq) (res
 		log.Log().Error(err.Error())
 		return nil, fmt.Errorf("register:%w", err)
 	}
+	//TODO: use transaction
 	return registerUser, nil
 }
 
