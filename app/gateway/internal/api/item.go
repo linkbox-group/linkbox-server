@@ -299,3 +299,61 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 	}
 	domain.Success(c, itemListResp)
 }
+func (a *ItemAPI) RecoverItemBatch(c *gin.Context) {
+	var reqBody struct {
+		Ids []string `json:"ids" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
+		domain.Error(c, ErrInvalidReq, "请求参数错误")
+		return
+	}
+
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		return
+	}
+
+	resp, err := rpc.ItemClient.RecoverItemsBatch(context.Background(), &item.RecoverItemsBatchRequest{
+		Ids:    reqBody.Ids,
+		UserId: userId,
+	})
+	if err != nil {
+		domain.Error(c, ErrItemNotFound, "内容不存在")
+		return
+	}
+	itemResp := domain.ItemSuccessResponse{
+		Success: resp.GetSuccess(),
+	}
+	domain.Success(c, itemResp)
+}
+func (a *ItemAPI) DeleteItemBatch(c *gin.Context) {
+	var reqBody struct {
+		Ids []string `json:"ids" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
+		domain.Error(c, ErrInvalidReq, "请求参数错误")
+		return
+	}
+
+	userId, err := domain.GetUserIdFromContext(c)
+	if err != nil {
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		return
+	}
+
+	resp, err := rpc.ItemClient.DeleteItemsBatch(context.Background(), &item.DeleteItemsBatchRequest{
+		Ids:    reqBody.Ids,
+		UserId: userId,
+	})
+	if err != nil {
+		domain.Error(c, ErrItemNotFound, "内容不存在")
+		return
+	}
+	itemResp := domain.ItemSuccessResponse{
+		Success: resp.GetSuccess(),
+	}
+	domain.Success(c, itemResp)
+}

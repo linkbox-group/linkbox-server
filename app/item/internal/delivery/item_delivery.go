@@ -372,8 +372,7 @@ func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsReq
 	}, nil
 }
 func (d *ItemDelivery) RecoverItem(ctx context.Context, req *item.RecoverItemRequest) (res *item.RecoverItemREsponse, err error) {
-	//TODO implement me
-	panic("implement me")
+	return
 }
 
 func (d *ItemDelivery) GetDeletedItems(ctx context.Context, req *item.GetDeletedItemsRequest) (res *item.GetDeletedItemsResponse, err error) {
@@ -382,11 +381,48 @@ func (d *ItemDelivery) GetDeletedItems(ctx context.Context, req *item.GetDeleted
 }
 
 func (d *ItemDelivery) RecoverItemsBatch(ctx context.Context, req *item.RecoverItemsBatchRequest) (res *item.RecoverItemsBatchResponse, err error) {
-	//TODO implement me
-	panic("implement me")
+	userID := req.UserId
+
+	err = d.s.RecoverItemsBatch(ctx, userID, req.Ids)
+
+	if err != nil {
+		return &item.RecoverItemsBatchResponse{
+			Result: &item.RecoverItemsBatchResponse_Error{
+				Error: &cError.Error{
+					Code:    40000,
+					Message: err.Error(),
+				},
+			},
+		}, err
+	}
+
+	return &item.RecoverItemsBatchResponse{
+		Result: &item.RecoverItemsBatchResponse_Success{
+			Success: true,
+		},
+	}, nil
 }
 
 func (d *ItemDelivery) DeleteItemsBatch(ctx context.Context, req *item.DeleteItemsBatchRequest) (res *item.DeleteItemsBatchResponse, err error) {
 	//TODO implement me
-	panic("implement me")
+	userID := req.UserId
+
+	err = d.s.DeleteItemsBatch(ctx, userID, req.Ids)
+
+	if err != nil {
+		return &item.DeleteItemsBatchResponse{
+			Result: &item.DeleteItemsBatchResponse_Error{
+				Error: &cError.Error{
+					Code:    40000,
+					Message: err.Error(),
+				},
+			},
+		}, err
+	}
+
+	return &item.DeleteItemsBatchResponse{
+		Result: &item.DeleteItemsBatchResponse_Success{
+			Success: true,
+		},
+	}, nil
 }

@@ -12,6 +12,8 @@ type UserRepositoryItf interface {
 	UpdateItem(ctx context.Context, req *model.Item) (err error)
 	DeleteItem(ctx context.Context, req *model.Item) (err error)
 	GetItemsByTags(context.Context, string, []string, *pagination.PaginationRequest) ([]model.Item, int, error)
-	GetItemsByOrganization(context.Context, string,string,int,int) ([]model.Item, int, error)
+	GetItemsByOrganization(context.Context, string, string, int, int) ([]model.Item, int, error)
 	SearchItemsByTitle(context.Context, string, string, int, int) ([]model.Item, int, error)
+	RecoverItemsBatch(context.Context, string, []string) (err error)
+	DeleteItemsBatch(context.Context, string, []string) (err error)
 }
