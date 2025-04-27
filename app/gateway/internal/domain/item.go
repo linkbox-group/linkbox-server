@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"github.com/linkbox-group/linkbox-server/rpc-gen/model"
 	"time"
 )
 
@@ -14,18 +15,40 @@ const (
 
 // Content represents a content item in the system
 type Item struct {
-	ID              string    `json:"id"`
-	UserID          string    `json:"user_id"`
-	Type            string    `json:"type"`
-	Title           string    `json:"title"`
-	URL             string    `json:"url"`
-	Description     string    `json:"description"`
-	ThumbnailURL    string    `json:"thumbnail_url"`
-	Tags            []string  `json:"tags"`
-	OrganizationIDs []string  `json:"organization_ids"`
-	Note            string    `json:"note"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	ID               string    `json:"id"`
+	UserID           string    `json:"user_id"`
+	Type             string    `json:"type"`
+	Title            string    `json:"title"`
+	URL              string    `json:"url"`
+	Description      string    `json:"description"`
+	ThumbnailURL     string    `json:"thumbnail_url"`
+	TagNames         []string  `json:"tag_names"`
+	OrganizationPath string    `json:"organization_path"`
+	Tags             []string  `json:"tags"`
+	OrganizationID   string    `json:"organization_id"`
+	Note             string    `json:"note"`
+	DeletedAt        time.Time `json:"deleted_at"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
+}
+
+func (i *Item) Convert(item *model.Item) {
+	i.ID = item.Id
+	i.UserID = item.UserId
+	i.Type = item.Type.String()
+	i.Title = item.Title
+	i.URL = item.Url
+	i.Description = item.Description
+	i.ThumbnailURL = item.ThumbnailUrl
+	i.Tags = item.Tags
+	i.OrganizationPath = item.OrganizationPath
+	i.TagNames = item.TagNames
+	i.OrganizationID = item.OrganizationId
+	i.Note = item.Note
+	i.DeletedAt = item.DeletedAt.AsTime()
+	i.CreatedAt = item.CreatedAt.AsTime()
+	i.UpdatedAt = item.UpdatedAt.AsTime()
+
 }
 
 // CreateContentRequest represents the request to create a content

@@ -48,17 +48,8 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 	}
 
 	itemData := resp.GetItem()
-	itemResp := domain.Item{
-		ID:              itemData.Id,
-		UserID:          itemData.UserId,
-		URL:             itemData.Url,
-		Title:           itemData.Title,
-		ThumbnailURL:    itemData.ThumbnailUrl,
-		Tags:            itemData.Tags,
-		OrganizationIDs: itemData.OrganizationIds,
-		CreatedAt:       itemData.CreatedAt.AsTime(),
-		UpdatedAt:       itemData.UpdatedAt.AsTime(),
-	}
+	itemResp := &domain.Item{}
+	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
 }
 
@@ -81,17 +72,8 @@ func (a *ItemAPI) GetItem(c *gin.Context) {
 	}
 
 	itemData := resp.GetItem()
-	itemResp := domain.Item{
-		ID:              itemData.Id,
-		UserID:          itemData.UserId,
-		URL:             itemData.Url,
-		Title:           itemData.Title,
-		ThumbnailURL:    itemData.ThumbnailUrl,
-		Tags:            itemData.Tags,
-		OrganizationIDs: itemData.OrganizationIds,
-		CreatedAt:       itemData.CreatedAt.AsTime(),
-		UpdatedAt:       itemData.UpdatedAt.AsTime(),
-	}
+	itemResp := &domain.Item{}
+	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
 }
 
@@ -119,17 +101,8 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 	}
 
 	itemData := resp.GetItem()
-	itemResp := domain.Item{
-		ID:              itemData.Id,
-		UserID:          itemData.UserId,
-		URL:             itemData.Url,
-		Title:           itemData.Title,
-		ThumbnailURL:    itemData.ThumbnailUrl,
-		Tags:            itemData.Tags,
-		OrganizationIDs: itemData.OrganizationIds,
-		CreatedAt:       itemData.CreatedAt.AsTime(),
-		UpdatedAt:       itemData.UpdatedAt.AsTime(),
-	}
+	itemResp := &domain.Item{}
+	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
 }
 
@@ -183,17 +156,9 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 
 	var items []*domain.Item
 	for _, ite := range resp.GetItemsPage().Items {
-		items = append(items, &domain.Item{
-			ID:              ite.Id,
-			UserID:          ite.UserId,
-			URL:             ite.Url,
-			Title:           ite.Title,
-			ThumbnailURL:    ite.ThumbnailUrl,
-			Tags:            ite.Tags,
-			OrganizationIDs: ite.OrganizationIds,
-			CreatedAt:       ite.CreatedAt.AsTime(),
-			UpdatedAt:       ite.UpdatedAt.AsTime(),
-		})
+		itemResp := &domain.Item{}
+		itemResp.Convert(ite)
+		items = append(items, itemResp)
 	}
 
 	itemListResp := domain.ItemListResponse{
@@ -229,17 +194,9 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 
 	var items []*domain.Item
 	for _, ite := range resp.GetItemsPage().Items {
-		items = append(items, &domain.Item{
-			ID:              ite.Id,
-			UserID:          ite.UserId,
-			URL:             ite.Url,
-			Title:           ite.Title,
-			ThumbnailURL:    ite.ThumbnailUrl,
-			Tags:            ite.Tags,
-			OrganizationIDs: ite.OrganizationIds,
-			CreatedAt:       ite.CreatedAt.AsTime(),
-			UpdatedAt:       ite.UpdatedAt.AsTime(),
-		})
+		itemResp := &domain.Item{}
+		itemResp.Convert(ite)
+		items = append(items, itemResp)
 	}
 
 	itemListResp := domain.ItemListResponse{
@@ -274,17 +231,10 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 	}
 	var items []*domain.Item
 	for _, ite := range resp.GetData().Items {
-		items = append(items, &domain.Item{
-			ID:              ite.Id,
-			UserID:          ite.UserId,
-			URL:             ite.Url,
-			Title:           ite.Title,
-			ThumbnailURL:    ite.ThumbnailUrl,
-			Tags:            ite.Tags,
-			OrganizationIDs: ite.OrganizationIds,
-			CreatedAt:       ite.CreatedAt.AsTime(),
-			UpdatedAt:       ite.UpdatedAt.AsTime(),
-		})
+		itemResp := &domain.Item{}
+		itemResp.Convert(ite)
+
+		items = append(items, itemResp)
 	}
 
 	itemListResp := domain.ItemListResponse{
