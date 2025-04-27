@@ -82,7 +82,7 @@ message CreateItemRequest {
   string description = 5;
   string thumbnail_url = 6;
   repeated string tags = 8;
-  repeated string organization_ids = 9;
+  string organization_id = 9;
   string note = 12;
 }
 
@@ -116,7 +116,7 @@ message UpdateItemRequest {
   string description = 4;
   string thumbnail_url = 5;
   repeated string tags = 7;
-  repeated string organization_ids = 8;
+  string organization_id = 8;
   string url = 9;
   string note =10;
 }

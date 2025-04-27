@@ -119,15 +119,15 @@ func (*GetItemsByOrganizationResponse_Error) isGetItemsByOrganizationResponse_Re
 
 // 创建内容项请求
 type CreateItemRequest struct {
-	UserId          string         `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	Type            model.ItemType `protobuf:"varint,2,opt,name=type" json:"type,omitempty"`
-	Url             string         `protobuf:"bytes,3,opt,name=url" json:"url,omitempty"`
-	Title           string         `protobuf:"bytes,4,opt,name=title" json:"title,omitempty"`
-	Description     string         `protobuf:"bytes,5,opt,name=description" json:"description,omitempty"`
-	ThumbnailUrl    string         `protobuf:"bytes,6,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
-	Tags            []string       `protobuf:"bytes,8,rep,name=tags" json:"tags,omitempty"`
-	OrganizationIds []string       `protobuf:"bytes,9,rep,name=organization_ids" json:"organization_ids,omitempty"`
-	Note            string         `protobuf:"bytes,12,opt,name=note" json:"note,omitempty"`
+	UserId         string         `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Type           model.ItemType `protobuf:"varint,2,opt,name=type" json:"type,omitempty"`
+	Url            string         `protobuf:"bytes,3,opt,name=url" json:"url,omitempty"`
+	Title          string         `protobuf:"bytes,4,opt,name=title" json:"title,omitempty"`
+	Description    string         `protobuf:"bytes,5,opt,name=description" json:"description,omitempty"`
+	ThumbnailUrl   string         `protobuf:"bytes,6,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
+	Tags           []string       `protobuf:"bytes,8,rep,name=tags" json:"tags,omitempty"`
+	OrganizationId string         `protobuf:"bytes,9,opt,name=organization_id" json:"organization_id,omitempty"`
+	Note           string         `protobuf:"bytes,12,opt,name=note" json:"note,omitempty"`
 }
 
 func (x *CreateItemRequest) Reset() { *x = CreateItemRequest{} }
@@ -185,11 +185,11 @@ func (x *CreateItemRequest) GetTags() []string {
 	return nil
 }
 
-func (x *CreateItemRequest) GetOrganizationIds() []string {
+func (x *CreateItemRequest) GetOrganizationId() string {
 	if x != nil {
-		return x.OrganizationIds
+		return x.OrganizationId
 	}
-	return nil
+	return ""
 }
 
 func (x *CreateItemRequest) GetNote() string {
@@ -345,15 +345,15 @@ func (*GetItemResponse_Error) isGetItemResponse_Result() {}
 
 // 更新内容项请求
 type UpdateItemRequest struct {
-	Id              string   `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	UserId          string   `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Title           string   `protobuf:"bytes,3,opt,name=title" json:"title,omitempty"`
-	Description     string   `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
-	ThumbnailUrl    string   `protobuf:"bytes,5,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
-	Tags            []string `protobuf:"bytes,7,rep,name=tags" json:"tags,omitempty"`
-	OrganizationIds []string `protobuf:"bytes,8,rep,name=organization_ids" json:"organization_ids,omitempty"`
-	Url             string   `protobuf:"bytes,9,opt,name=url" json:"url,omitempty"`
-	Note            string   `protobuf:"bytes,10,opt,name=note" json:"note,omitempty"`
+	Id             string   `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	UserId         string   `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	Title          string   `protobuf:"bytes,3,opt,name=title" json:"title,omitempty"`
+	Description    string   `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
+	ThumbnailUrl   string   `protobuf:"bytes,5,opt,name=thumbnail_url" json:"thumbnail_url,omitempty"`
+	Tags           []string `protobuf:"bytes,7,rep,name=tags" json:"tags,omitempty"`
+	OrganizationId string   `protobuf:"bytes,8,opt,name=organization_id" json:"organization_id,omitempty"`
+	Url            string   `protobuf:"bytes,9,opt,name=url" json:"url,omitempty"`
+	Note           string   `protobuf:"bytes,10,opt,name=note" json:"note,omitempty"`
 }
 
 func (x *UpdateItemRequest) Reset() { *x = UpdateItemRequest{} }
@@ -404,11 +404,11 @@ func (x *UpdateItemRequest) GetTags() []string {
 	return nil
 }
 
-func (x *UpdateItemRequest) GetOrganizationIds() []string {
+func (x *UpdateItemRequest) GetOrganizationId() string {
 	if x != nil {
-		return x.OrganizationIds
+		return x.OrganizationId
 	}
-	return nil
+	return ""
 }
 
 func (x *UpdateItemRequest) GetUrl() string {
