@@ -5,6 +5,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/common/serversuite"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/tag/tagservice"
 	"github.com/linkbox-group/linkbox-server/tag/internal/core"
+	"github.com/linkbox-group/linkbox-server/tag/internal/infra/rpc"
 	"github.com/spf13/viper"
 	"log"
 	"net"
@@ -12,6 +13,7 @@ import (
 
 func main() {
 	err := core.LoadConfig()
+	rpc.InitClient()
 	if err != nil {
 		log.Fatal("load config failed", err)
 	}

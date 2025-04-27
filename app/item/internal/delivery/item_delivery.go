@@ -99,6 +99,7 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 		URL:            req.Url,
 		Note:           req.Note,
 		OrganizationID: req.OrganizationId,
+		TagNames:       req.GetTags(),
 	}
 
 	err = d.s.UpdateItem(ctx, &itemModel)

@@ -13,5 +13,5 @@ type TagServiceItf interface {
 	UpdateTagService(ctx context.Context, tag *model.Tag) (err error)
 	DeleteTagService(ctx context.Context, tag *model.Tag) (err error)
 	GetUserTagService(ctx context.Context, tag *model.Tag, paginationReq *pagination.PaginationRequest, searchQuery *string) (tags []model.Tag, err error)
-	AddTagsToItemsService(ctx context.Context, tag *model.Tag, tagIds []string, itemIds []string) (successCount int32, failedItemIds []string, err error)
+	AddTagsToItemsService(ctx context.Context, tag *model.Tag, tagNames []string, itemIds []string) (successCount int32, failedItemIds []string, err error)
 }
