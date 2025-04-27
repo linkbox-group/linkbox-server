@@ -1,6 +1,6 @@
 module github.com/linkbox-group/linkbox-server/item
 
-go 1.23.6
+go 1.24.1
 
 replace (
 	github.com/linkbox-group/linkbox-server/common => ../../common
@@ -15,7 +15,6 @@ require (
 	github.com/linkbox-group/linkbox-server/common v0.0.0-00010101000000-000000000000
 	github.com/linkbox-group/linkbox-server/model v0.0.0-00010101000000-000000000000
 	github.com/linkbox-group/linkbox-server/rpc-gen v0.0.0-00010101000000-000000000000
-	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.20.1
 	github.com/xyq777/holog v0.7.2
 	google.golang.org/protobuf v1.36.6
@@ -81,6 +80,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.12.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
