@@ -29,12 +29,6 @@ service OrganizationService {
   // 移动组织（变更父级）
   rpc MoveOrganization(MoveOrganizationRequest) returns (MoveOrganizationResponse);
 
-  // 将内容项添加到组织
-  rpc AddItemsToOrganization(AddItemsToOrganizationRequest) returns (AddItemsToOrganizationResponse);
-
-  // 从组织移除内容项
-  rpc RemoveItemsFromOrganization(RemoveItemsFromOrganizationRequest) returns (RemoveItemsFromOrganizationResponse);
-
 
   // 排序组织中的内容项
   rpc ReorderOrganizationItems(ReorderOrganizationItemsRequest) returns (ReorderOrganizationItemsResponse);
@@ -205,52 +199,14 @@ message MoveOrganizationResponse {
 }
 
 
-// 添加内容项到组织请求
-message AddItemsToOrganizationRequest {
-  string organization_id = 1;
-  string user_id = 2;
-  repeated string item_ids = 3;
-}
-
-// 添加内容项到组织响应
-message AddItemsToOrganizationResponse {
-  oneof result {
-    bool success = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 从组织移除内容项请求
-message RemoveItemsFromOrganizationRequest {
-  string organization_id = 1;
-  string user_id = 2;
-  repeated string item_ids = 3;
-}
-
-// 从组织移除内容项响应
-message RemoveItemsFromOrganizationResponse {
-  oneof result {
-    bool success = 1;
-    common.cError.Error error = 2;
-  }
-}
 
 
 
-// 组织内容项分页数据
-message OrganizationItemsPage {
-  repeated OrganizationItem items = 1;
-  common.pagination.PaginationMeta pagination = 2;
-}
 
-// 组织内容项
-message OrganizationItem {
-  string id = 1;
-  string organization_id = 2;
-  string item_id = 3;
-  int32 sort_order = 4;
-  google.protobuf.Timestamp created_at = 5;
-}
+
+
+
+
 
 // 排序组织内容项请求
 message ReorderOrganizationItemsRequest {

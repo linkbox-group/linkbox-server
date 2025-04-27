@@ -17,8 +17,6 @@ type Client interface {
 	DeleteOrganization(ctx context.Context, Req *organization.DeleteOrganizationRequest, callOptions ...callopt.Option) (r *organization.DeleteOrganizationResponse, err error)
 	GetUserOrganizations(ctx context.Context, Req *organization.GetUserOrganizationsRequest, callOptions ...callopt.Option) (r *organization.GetUserOrganizationsResponse, err error)
 	MoveOrganization(ctx context.Context, Req *organization.MoveOrganizationRequest, callOptions ...callopt.Option) (r *organization.MoveOrganizationResponse, err error)
-	AddItemsToOrganization(ctx context.Context, Req *organization.AddItemsToOrganizationRequest, callOptions ...callopt.Option) (r *organization.AddItemsToOrganizationResponse, err error)
-	RemoveItemsFromOrganization(ctx context.Context, Req *organization.RemoveItemsFromOrganizationRequest, callOptions ...callopt.Option) (r *organization.RemoveItemsFromOrganizationResponse, err error)
 	ReorderOrganizationItems(ctx context.Context, Req *organization.ReorderOrganizationItemsRequest, callOptions ...callopt.Option) (r *organization.ReorderOrganizationItemsResponse, err error)
 	ReorderOrganizations(ctx context.Context, Req *organization.ReorderOrganizationsRequest, callOptions ...callopt.Option) (r *organization.ReorderOrganizationsResponse, err error)
 	GetOrganizationActivity(ctx context.Context, Req *organization.GetOrganizationActivityRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationActivityResponse, err error)
@@ -83,16 +81,6 @@ func (p *kOrganizationServiceClient) GetUserOrganizations(ctx context.Context, R
 func (p *kOrganizationServiceClient) MoveOrganization(ctx context.Context, Req *organization.MoveOrganizationRequest, callOptions ...callopt.Option) (r *organization.MoveOrganizationResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.MoveOrganization(ctx, Req)
-}
-
-func (p *kOrganizationServiceClient) AddItemsToOrganization(ctx context.Context, Req *organization.AddItemsToOrganizationRequest, callOptions ...callopt.Option) (r *organization.AddItemsToOrganizationResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.AddItemsToOrganization(ctx, Req)
-}
-
-func (p *kOrganizationServiceClient) RemoveItemsFromOrganization(ctx context.Context, Req *organization.RemoveItemsFromOrganizationRequest, callOptions ...callopt.Option) (r *organization.RemoveItemsFromOrganizationResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.RemoveItemsFromOrganization(ctx, Req)
 }
 
 func (p *kOrganizationServiceClient) ReorderOrganizationItems(ctx context.Context, Req *organization.ReorderOrganizationItemsRequest, callOptions ...callopt.Option) (r *organization.ReorderOrganizationItemsResponse, err error) {
