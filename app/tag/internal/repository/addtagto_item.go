@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *TagRepository) AddTagsToItems(ctx context.Context, tag *model.Tag, tagsIds []string, itemIds []string) (successCount int32, failedItemIds []string, err error) {
+func (r *TagRepository) AddTagsToItems(ctx context.Context, tag *model.Tag, tagsIds []string, itemIds []string) (successCount int32, failedItemIds []string, err error) {
 	if tag == nil {
 		err = errors.New("tag is nil")
 		return 0, nil, err
@@ -23,7 +23,7 @@ func (s *TagRepository) AddTagsToItems(ctx context.Context, tag *model.Tag, tags
 	if len(itemIds) == 0 {
 		return 0, nil, nil
 	}
-	tx := s.db.WithContext(ctx).Begin()
+	tx := r.db.WithContext(ctx).Begin()
 	if tx.Error != nil {
 		return 0, nil, tx.Error
 	}
