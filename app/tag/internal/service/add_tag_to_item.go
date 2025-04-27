@@ -43,7 +43,7 @@ func (s *TagService) AddTagsToItemsService(ctx context.Context, tag *model.Tag, 
 		req := item.UpdateItemRequest{
 			Id:     itemData.Id,
 			UserId: itemData.UserId,
-			Tags:   append(itemData.Tags, tagIds...),
+			Tags:   append(itemData.GetTagNames(), tagNames...),
 		}
 
 		_, err = rpc.ItemClient.UpdateItem(
