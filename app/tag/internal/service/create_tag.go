@@ -60,7 +60,10 @@ func (s *TagService) AddTagsToItemsService(ctx context.Context, tag *model.Tag, 
 	//TODO !!使用事务
 	tagIds := make([]string, 0)
 	for _, tagName := range tagNames {
-		tag := &model.Tag{Name: tagName}
+		tag := &model.Tag{
+			Name:   tagName,
+			UserID: tag.UserID,
+		}
 		err := s.repo.CreateTag(ctx, tag)
 		if err != nil {
 			return 0, nil, fmt.Errorf("%w:%w", ErrDbAddTagsToItemsFailed, err)
