@@ -15,7 +15,7 @@ func JWT() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authHeader := ctx.GetHeader("Authorization")
 		if authHeader == "" {
-			domain.Error(ctx, ecode.ErrAuthFailed, "Token 为空")
+			domain.Error(ctx, ecode.ErrTokenInvalid, "Token 为空")
 			return
 		}
 
@@ -30,7 +30,7 @@ func JWT() gin.HandlerFunc {
 				Token: tokenString,
 			})
 			if err != nil {
-				domain.Error(ctx, ecode.ErrAuthFailed, "Token 验证错误")
+				domain.Error(ctx, ecode.ErrTokenInvalid, "Token 验证错误")
 				return
 			}
 
@@ -38,7 +38,7 @@ func JWT() gin.HandlerFunc {
 			ctx.Set("userId", tokenInfo.Uid)
 			ctx.Next()
 		} else {
-			domain.Error(ctx, ecode.ErrAuthFailed, "Token 格式错误")
+			domain.Error(ctx, ecode.ErrTokenInvalid, "Token 格式错误")
 			return
 		}
 	}

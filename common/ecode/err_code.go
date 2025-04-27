@@ -7,9 +7,10 @@ type ErrorCode int
 
 const (
 	// 系统级错误: 10000-19999
+	ErrTokenInvalid ErrorCode = 30000
 
 	// 业务逻辑错误: 40000-49999
-	ErrAuthFailed        ErrorCode = 30000
+	ErrAuthFailed        ErrorCode = 40001
 	ErrInvalidParam      ErrorCode = 40002
 	ErrNotFound          ErrorCode = 40003
 	ErrAlreadyExists     ErrorCode = 40004
@@ -19,12 +20,15 @@ const (
 	ErrResourceExhausted ErrorCode = 40008
 	ErrInvalidOperation  ErrorCode = 40009
 	ErrDataConflict      ErrorCode = 40010
+
 	// 未知错误: 50000-59999
 	ErrRpcServiceError ErrorCode = 50010
 	ErrInternalError   ErrorCode = 50001
 )
 
 var ErrorCode_name = map[int32]string{
+	30000: "TOKEN_INVALID",
+
 	40001: "AUTH_FAILED",
 	40002: "INVALID_PARAM",
 	40003: "NOT_FOUND",
