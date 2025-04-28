@@ -342,10 +342,18 @@ func (a *OrganizationAPI) RemoveItemsFromOrganization(c *gin.Context) {
 	successCount := 0
 	FailureCount := 0
 	FailedItemIDs := make([]string, 0)
+	orgID, err := rpc.OrganizationClient.GetDefaultOrgID(c, &organization.GetDefaultOrgIDReq{
+		UserId: userId,
+		Code:   treemodel.DEFAULT_ID,
+	})
+	if err != nil {
+		domain.Error(c, ecode.ErrRpcServiceError, err.Error())
+		return
+	}
 	for _, itemID := range req.ItemID {
 		ItemReq := item.UpdateItemRequest{
 			Id:             itemID,
-			OrganizationId: treemodel.DEFAULT_ID,
+			OrganizationId: orgID.GetId(),
 			UserId:         userId,
 		}
 		_, err = rpc.ItemClient.UpdateItem(c, &ItemReq)
