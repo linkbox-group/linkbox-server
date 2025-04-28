@@ -6,7 +6,6 @@ import (
 	"context"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/types"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/model"
 
 	"github.com/cloudwego/prutal"
@@ -1192,15 +1191,10 @@ func (x *ExportResult) GetItemCount() int32 {
 
 // 内容项全文搜索请求
 type SearchItemsRequest struct {
-	UserId          string                        `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	Query           string                        `protobuf:"bytes,2,opt,name=query" json:"query,omitempty"`
-	Pagination      *pagination.PaginationRequest `protobuf:"bytes,3,opt,name=pagination" json:"pagination,omitempty"`
-	Types           []model.ItemType              `protobuf:"varint,4,rep,packed,name=types" json:"types,omitempty"`
-	Organizations   []string                      `protobuf:"bytes,5,rep,name=organizations" json:"organizations,omitempty"`
-	Tags            []string                      `protobuf:"bytes,6,rep,name=tags" json:"tags,omitempty"`
-	IncludeArchived bool                          `protobuf:"varint,7,opt,name=include_archived" json:"include_archived,omitempty"`
-	DateRange       *types.TimeRange              `protobuf:"bytes,8,opt,name=date_range" json:"date_range,omitempty"`
-	FavoritesOnly   bool                          `protobuf:"varint,9,opt,name=favorites_only" json:"favorites_only,omitempty"`
+	UserId     string                        `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	Query      string                        `protobuf:"bytes,2,opt,name=query" json:"query,omitempty"`
+	Pagination *pagination.PaginationRequest `protobuf:"bytes,3,opt,name=pagination" json:"pagination,omitempty"`
+	Type       model.ItemType                `protobuf:"varint,4,opt,name=type" json:"type,omitempty"`
 }
 
 func (x *SearchItemsRequest) Reset() { *x = SearchItemsRequest{} }
@@ -1230,46 +1224,11 @@ func (x *SearchItemsRequest) GetPagination() *pagination.PaginationRequest {
 	return nil
 }
 
-func (x *SearchItemsRequest) GetTypes() []model.ItemType {
+func (x *SearchItemsRequest) GetType() model.ItemType {
 	if x != nil {
-		return x.Types
+		return x.Type
 	}
-	return nil
-}
-
-func (x *SearchItemsRequest) GetOrganizations() []string {
-	if x != nil {
-		return x.Organizations
-	}
-	return nil
-}
-
-func (x *SearchItemsRequest) GetTags() []string {
-	if x != nil {
-		return x.Tags
-	}
-	return nil
-}
-
-func (x *SearchItemsRequest) GetIncludeArchived() bool {
-	if x != nil {
-		return x.IncludeArchived
-	}
-	return false
-}
-
-func (x *SearchItemsRequest) GetDateRange() *types.TimeRange {
-	if x != nil {
-		return x.DateRange
-	}
-	return nil
-}
-
-func (x *SearchItemsRequest) GetFavoritesOnly() bool {
-	if x != nil {
-		return x.FavoritesOnly
-	}
-	return false
+	return model.ItemType_UNKNOWN_TYPE
 }
 
 // 内容项全文搜索响应
@@ -1333,10 +1292,8 @@ func (*SearchItemsResponse_Error) isSearchItemsResponse_Result() {}
 
 // 搜索结果
 type SearchResult struct {
-	Items          []*model.Item              `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
-	Pagination     *pagination.PaginationMeta `protobuf:"bytes,2,opt,name=pagination" json:"pagination,omitempty"`
-	SuggestedTerms []string                   `protobuf:"bytes,3,rep,name=suggested_terms" json:"suggested_terms,omitempty"`
-	TopTags        []*TagCount                `protobuf:"bytes,4,rep,name=top_tags" json:"top_tags,omitempty"`
+	Items      []*model.Item              `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
+	Pagination *pagination.PaginationMeta `protobuf:"bytes,2,opt,name=pagination" json:"pagination,omitempty"`
 }
 
 func (x *SearchResult) Reset() { *x = SearchResult{} }
@@ -1355,20 +1312,6 @@ func (x *SearchResult) GetItems() []*model.Item {
 func (x *SearchResult) GetPagination() *pagination.PaginationMeta {
 	if x != nil {
 		return x.Pagination
-	}
-	return nil
-}
-
-func (x *SearchResult) GetSuggestedTerms() []string {
-	if x != nil {
-		return x.SuggestedTerms
-	}
-	return nil
-}
-
-func (x *SearchResult) GetTopTags() []*TagCount {
-	if x != nil {
-		return x.TopTags
 	}
 	return nil
 }
