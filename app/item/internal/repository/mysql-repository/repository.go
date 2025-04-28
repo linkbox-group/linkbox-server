@@ -1,10 +1,11 @@
-package repository
+package mysql_repository
 
 import (
 	"context"
 	"errors"
 	"fmt"
 	"github.com/linkbox-group/linkbox-server/item/pkg/log"
+	"go.uber.org/zap"
 
 	"github.com/google/wire"
 	"github.com/linkbox-group/linkbox-server/item/internal/acl"
@@ -38,6 +39,7 @@ func (r *Repository) UpdateItem(ctx context.Context, req *model.Item) (err error
 		Where("id = ? AND user_id = ?", req.ID, req.UserID).
 		Updates(req)
 	if res.RowsAffected == 0 {
+		log.Log().Error("update item failed", zap.Any("item", req))
 		return gorm.ErrRecordNotFound
 	}
 	return res.Error

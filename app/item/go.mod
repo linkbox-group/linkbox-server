@@ -10,6 +10,7 @@ replace (
 
 require (
 	github.com/cloudwego/kitex v0.13.1
+	github.com/elastic/go-elasticsearch/v8 v8.18.0
 	github.com/google/wire v0.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/linkbox-group/linkbox-server/common v0.0.0-00010101000000-000000000000
@@ -17,6 +18,7 @@ require (
 	github.com/linkbox-group/linkbox-server/rpc-gen v0.0.0-00010101000000-000000000000
 	github.com/spf13/viper v1.20.1
 	github.com/xyq777/holog v0.7.2
+	go.uber.org/zap v1.27.0
 	google.golang.org/protobuf v1.36.6
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.25.12
@@ -41,6 +43,7 @@ require (
 	github.com/cloudwego/runtimex v0.1.1 // indirect
 	github.com/cloudwego/thriftgo v0.4.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+	github.com/elastic/elastic-transport-go/v8 v8.7.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
@@ -102,7 +105,6 @@ require (
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.5.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/arch v0.14.0 // indirect
 	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3 // indirect
 	golang.org/x/net v0.37.0 // indirect

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
+	itemmodel "github.com/linkbox-group/linkbox-server/rpc-gen/model"
 )
 
 type UserRepositoryItf interface {
@@ -16,4 +17,7 @@ type UserRepositoryItf interface {
 	SearchItemsByTitle(context.Context, string, string, int, int) ([]model.Item, int, error)
 	RecoverItemsBatch(context.Context, string, []string) (err error)
 	DeleteItemsBatch(context.Context, string, []string) (err error)
+}
+type EsRepositoryItf interface {
+	SearchItems(ctx context.Context, UserID string, query string, itemType itemmodel.ItemType) (items []model.Item, count int, err error)
 }
