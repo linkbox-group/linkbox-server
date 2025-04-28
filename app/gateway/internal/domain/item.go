@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/model"
 	"time"
 )
@@ -30,6 +31,11 @@ type Item struct {
 	DeletedAt        time.Time `json:"deleted_at"`
 	CreatedAt        time.Time `json:"created_at"`
 	UpdatedAt        time.Time `json:"updated_at"`
+}
+type SearchItemsReq struct {
+	Pagination *pagination.PaginationRequest
+	Query      string `json:"query"`
+	ItemType   string `json:"item_type"`
 }
 
 func (i *Item) Convert(item *model.Item) {

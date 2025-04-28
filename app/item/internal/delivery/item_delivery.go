@@ -53,8 +53,8 @@ func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemReque
 				Note:             itemModel.Note,
 				OrganizationPath: itemModel.OrganizationPath,
 				TagNames:         itemModel.TagNames,
-				CreatedAt:        timestamppb.New(itemModel.CreatedAt),
-				UpdatedAt:        timestamppb.New(itemModel.UpdatedAt),
+				CreatedAt:        timestamppb.New(itemModel.CreatedAt.Time()),
+				UpdatedAt:        timestamppb.New(itemModel.UpdatedAt.Time()),
 			},
 		},
 	}, nil
@@ -91,8 +91,8 @@ func (d *ItemDelivery) GetItem(ctx context.Context, req *item.GetItemRequest) (r
 				Description: "",
 				Url:         itemModel.URL,
 				TagNames:    itemModel.TagNames,
-				CreatedAt:   timestamppb.New(itemModel.CreatedAt),
-				UpdatedAt:   timestamppb.New(itemModel.UpdatedAt),
+				CreatedAt:   timestamppb.New(itemModel.CreatedAt.Time()),
+				UpdatedAt:   timestamppb.New(itemModel.UpdatedAt.Time()),
 			},
 		},
 	}, nil
@@ -141,8 +141,8 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 				UserId:    itemModel.UserID,
 				Title:     itemModel.Title,
 				Url:       itemModel.URL,
-				CreatedAt: timestamppb.New(itemModel.CreatedAt),
-				UpdatedAt: timestamppb.New(itemModel.UpdatedAt),
+				CreatedAt: timestamppb.New(itemModel.CreatedAt.Time()),
+				UpdatedAt: timestamppb.New(itemModel.UpdatedAt.Time()),
 			},
 		},
 	}, nil
@@ -214,8 +214,8 @@ func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByT
 			//Description: dbItem.Description,
 			Url:       dbItem.URL,
 			Tags:      tagStrings,
-			CreatedAt: timestamppb.New(dbItem.CreatedAt),
-			UpdatedAt: timestamppb.New(dbItem.UpdatedAt),
+			CreatedAt: timestamppb.New(dbItem.CreatedAt.Time()),
+			UpdatedAt: timestamppb.New(dbItem.UpdatedAt.Time()),
 		})
 	}
 
@@ -297,8 +297,8 @@ func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.Get
 			OrganizationPath: dbItem.OrganizationPath,
 			Url:              dbItem.URL,
 			Tags:             tagStrings,
-			CreatedAt:        timestamppb.New(dbItem.CreatedAt),
-			UpdatedAt:        timestamppb.New(dbItem.UpdatedAt),
+			CreatedAt:        timestamppb.New(dbItem.CreatedAt.Time()),
+			UpdatedAt:        timestamppb.New(dbItem.UpdatedAt.Time()),
 		})
 	}
 
@@ -350,7 +350,7 @@ func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsReq
 			currentPageSize = int(paginationReq.PageSize)
 		}
 	}
-	items, total, err := d.s.SearchItems(ctx, userID, req.Query, currentPage, currentPageSize)
+	items, total, err := d.s.SearchItems(ctx, userID, req.Query, req.Type, currentPage, currentPageSize)
 	if err != nil {
 		return &item.SearchItemsResponse{
 			Result: &item.SearchItemsResponse_Error{
@@ -369,14 +369,20 @@ func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsReq
 			tagStrings = append(tagStrings, tag.Name)
 		}
 		respItems = append(respItems, &itemmodel.Item{
-			Id:          dbItem.ID,
-			UserId:      dbItem.UserID,
-			Title:       dbItem.Title,
-			Description: "",
-			Url:         dbItem.URL,
-			Tags:        tagStrings,
-			CreatedAt:   timestamppb.New(dbItem.CreatedAt),
-			UpdatedAt:   timestamppb.New(dbItem.UpdatedAt),
+			Id:               dbItem.ID,
+			UserId:           dbItem.UserID,
+			Title:            dbItem.Title,
+			Type:             dbItem.ItemType,
+			Description:      "",
+			Url:              dbItem.URL,
+			TagNames:         dbItem.TagNames,
+			OrganizationPath: dbItem.OrganizationPath,
+			ThumbnailUrl:     dbItem.ThumbnailURL,
+			Note:             dbItem.Note,
+			OrganizationId:   dbItem.OrganizationID,
+			Tags:             tagStrings,
+			CreatedAt:        timestamppb.New(dbItem.CreatedAt.Time()),
+			UpdatedAt:        timestamppb.New(dbItem.UpdatedAt.Time()),
 		})
 	}
 

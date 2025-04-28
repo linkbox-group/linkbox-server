@@ -58,6 +58,7 @@ service ItemService {
 
 
 
+
 // 获取组织内容项请求
 message GetItemsByOrganizationRequest {
   string user_id = 1;
@@ -256,12 +257,7 @@ message SearchItemsRequest {
   string user_id = 1;
   string query = 2;
   common.pagination.PaginationRequest pagination = 3;
-  repeated model.ItemType types = 4;
-  repeated string organizations = 5;
-  repeated string tags = 6;
-  bool include_archived = 7;
-  common.types.TimeRange date_range = 8;
-  bool favorites_only = 9;
+   model.ItemType type = 4;
 }
 
 // 内容项全文搜索响应
@@ -276,8 +272,6 @@ message SearchItemsResponse {
 message SearchResult {
   repeated model.Item items = 1;
   common.pagination.PaginationMeta pagination = 2;
-  repeated string suggested_terms = 3;
-  repeated TagCount top_tags = 4;
 }
 
 // 标签计数

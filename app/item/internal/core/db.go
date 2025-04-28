@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"fmt"
-	"github.com/google/wire"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -24,7 +23,6 @@ var (
 	db     *gorm.DB
 	onceDb sync.Once
 )
-var ProviderSet = wire.NewSet(NewDB)
 
 // NewDB 初始化数据库连接
 func NewDB() *gorm.DB {

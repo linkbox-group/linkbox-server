@@ -165,7 +165,7 @@ func (r *Repository) GetItemsByOrganization(ctx context.Context, userID string, 
 	return items, total, nil
 }
 
-func (r *Repository) SearchItemsByTitle(ctx context.Context, userID string, query string, pageNum int, pageSize int) (items []model.Item, total int, err error) {
+func (r *Repository) SearchItems(ctx context.Context, userID string, query string, pageNum int, pageSize int) (items []model.Item, total int, err error) {
 	// 计算分页参数
 	limit, offset := pageSize, (pageNum-1)*pageSize
 	// 基础查询构建器，使用连接表查询

@@ -1,9 +1,12 @@
 package model
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/linkbox-group/linkbox-server/model/array"
 	itemmodel "github.com/linkbox-group/linkbox-server/rpc-gen/model"
 	"gorm.io/gorm"
+	"time"
 )
 
 // 项目模型
@@ -18,6 +21,8 @@ type Item struct {
 	TagNames         array.Array
 	OrganizationPath string
 
+	CreatedAt CustomTime `json:"created_at"`
+	UpdatedAt CustomTime `json:"updated_at"`
 	DeletedAt gorm.DeletedAt
 	// 关联
 	User           User         `gorm:"foreignKey:UserID" json:"-"`
@@ -28,4 +33,51 @@ type Item struct {
 
 func (Item) TableName() string {
 	return "item"
+}
+
+type CustomTime time.Time
+
+// UnmarshalJSON 实现 json.Unmarshaler 接口
+func (ct *CustomTime) UnmarshalJSON(b []byte) error {
+	// 移除引号
+	s := string(b)
+	s = s[1 : len(s)-1]
+
+	if s == "" {
+		return nil
+	}
+	// 先尝试时间格式带空格的情况：2025-04-28 05:46:48
+	t, err := time.Parse("2006-01-02 15:04:05", s)
+	if err == nil {
+		*ct = CustomTime(t)
+		return nil
+	}
+
+	// 退化方案：尝试标准RFC3339格式
+	t, err = time.Parse(time.RFC3339, s)
+	if err != nil {
+		return fmt.Errorf("unable to parse time: %v", err)
+	}
+
+	*ct = CustomTime(t)
+	return nil
+}
+
+// MarshalJSON 实现 json.Marshaler 接口
+func (ct CustomTime) MarshalJSON() ([]byte, error) {
+	t := time.Time(ct)
+	if t.IsZero() {
+		return []byte(`""`), nil
+	}
+	return json.Marshal(t.Format("2006-01-02 15:04:05"))
+}
+
+// 转换为普通 time.Time
+func (ct CustomTime) Time() time.Time {
+	return time.Time(ct)
+}
+
+// String 实现 fmt.Stringer 接口
+func (ct CustomTime) String() string {
+	return time.Time(ct).Format("2006-01-02 15:04:05")
 }

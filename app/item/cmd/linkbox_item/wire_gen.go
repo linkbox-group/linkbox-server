@@ -9,6 +9,7 @@ package main
 import (
 	"github.com/linkbox-group/linkbox-server/item/internal/core"
 	"github.com/linkbox-group/linkbox-server/item/internal/delivery"
+	"github.com/linkbox-group/linkbox-server/item/internal/repository/es-repository"
 	"github.com/linkbox-group/linkbox-server/item/internal/repository/mysql-repository"
 	"github.com/linkbox-group/linkbox-server/item/internal/service"
 )
@@ -17,8 +18,10 @@ import (
 
 func NewItemHandler() *delivery.ItemDelivery {
 	db := core.NewDB()
-	repositoryRepository := mysql_repository.NewRepository(db)
-	serviceService := service.NewItemService(repositoryRepository)
+	repository := mysql_repository.NewRepository(db)
+	typedClient := core.NewEs()
+	esRepository := es_repository.NewEsRepository(typedClient)
+	serviceService := service.NewItemService(repository, esRepository)
 	itemDelivery := delivery.NewItemDelivery(serviceService)
 	return itemDelivery
 }

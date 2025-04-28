@@ -2,11 +2,14 @@ package core
 
 import (
 	"fmt"
+	"github.com/google/wire"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"log"
 	"os"
 )
+
+var ProviderSet = wire.NewSet(NewDB, NewEs)
 
 const (
 	DefaultConfigFileType = "toml"

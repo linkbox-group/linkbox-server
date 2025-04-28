@@ -14,10 +14,10 @@ type UserRepositoryItf interface {
 	DeleteItem(ctx context.Context, req *model.Item) (err error)
 	GetItemsByTags(context.Context, string, []string, *pagination.PaginationRequest) ([]model.Item, int, error)
 	GetItemsByOrganization(context.Context, string, string, int, int) ([]model.Item, int, error)
-	SearchItemsByTitle(context.Context, string, string, int, int) ([]model.Item, int, error)
+	SearchItems(ctx context.Context, userID string, query string, pageNum int, pageSize int) ([]model.Item, int, error)
 	RecoverItemsBatch(context.Context, string, []string) (err error)
 	DeleteItemsBatch(context.Context, string, []string) (err error)
 }
 type EsRepositoryItf interface {
-	SearchItems(ctx context.Context, UserID string, query string, itemType itemmodel.ItemType) (items []model.Item, count int, err error)
+	SearchItems(ctx context.Context, UserID string, query string, itemType itemmodel.ItemType, pageNum int, pageSize int) (items []model.Item, count int, err error)
 }

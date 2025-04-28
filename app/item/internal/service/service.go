@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	itemmodel "github.com/linkbox-group/linkbox-server/rpc-gen/model"
 
 	"github.com/google/wire"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
@@ -15,43 +16,45 @@ var ProviderSet = wire.NewSet(wire.Bind(new(acl.UserServiceItf), new(*Service)),
 var _ acl.UserServiceItf = &Service{}
 
 type Service struct {
-	Repo acl.UserRepositoryItf
+	repo   acl.UserRepositoryItf
+	esRepo acl.EsRepositoryItf
 }
 
-func NewItemService(r acl.UserRepositoryItf) *Service {
+func NewItemService(r acl.UserRepositoryItf, esr acl.EsRepositoryItf) *Service {
 	return &Service{
-		Repo: r,
+		repo:   r,
+		esRepo: esr,
 	}
 }
 func (s *Service) CreateItem(ctx context.Context, item *model.Item) error {
 
-	return s.Repo.CreateItem(ctx, item)
+	return s.repo.CreateItem(ctx, item)
 }
 
 func (s *Service) GetItem(ctx context.Context, item *model.Item) error {
-	return s.Repo.GetItem(ctx, item)
+	return s.repo.GetItem(ctx, item)
 }
 
 func (s *Service) UpdateItem(ctx context.Context, item *model.Item) error {
-	return s.Repo.UpdateItem(ctx, item)
+	return s.repo.UpdateItem(ctx, item)
 }
 
 func (s *Service) DeleteItem(ctx context.Context, item *model.Item) error {
-	return s.Repo.DeleteItem(ctx, item)
+	return s.repo.DeleteItem(ctx, item)
 }
 func (s *Service) GetItemsByTags(ctx context.Context, userID string, tagNames []string, pagination *pagination.PaginationRequest) ([]model.Item, int, error) {
-	return s.Repo.GetItemsByTags(ctx, userID, tagNames, pagination)
+	return s.repo.GetItemsByTags(ctx, userID, tagNames, pagination)
 }
 func (s *Service) GetItemsByOrganization(ctx context.Context, userID string, organizationID string, pageNum int, pageSize int) ([]model.Item, int, error) {
-	return s.Repo.GetItemsByOrganization(ctx, userID, organizationID, pageNum, pageSize)
+	return s.repo.GetItemsByOrganization(ctx, userID, organizationID, pageNum, pageSize)
 
 }
-func (s *Service) SearchItems(ctx context.Context, userID string, query string, pageNum int, pageSize int) ([]model.Item, int, error) {
-	return s.Repo.SearchItemsByTitle(ctx, userID, query, pageNum, pageSize)
+func (s *Service) SearchItems(ctx context.Context, userID string, query string, itemType itemmodel.ItemType, pageNum int, pageSize int) ([]model.Item, int, error) {
+	return s.esRepo.SearchItems(ctx, userID, query, itemType, pageNum, pageSize)
 }
 func (s *Service) RecoverItemsBatch(ctx context.Context, userID string, ids []string) (err error) {
-	return s.Repo.RecoverItemsBatch(ctx, userID, ids)
+	return s.repo.RecoverItemsBatch(ctx, userID, ids)
 }
 func (s *Service) DeleteItemsBatch(ctx context.Context, userID string, ids []string) (err error) {
-	return s.Repo.DeleteItemsBatch(ctx, userID, ids)
+	return s.repo.DeleteItemsBatch(ctx, userID, ids)
 }
