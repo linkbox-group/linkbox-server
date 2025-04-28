@@ -5,22 +5,16 @@ use tag;
 CREATE TABLE `user` (
                         `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
                         `email` VARCHAR(255) NOT NULL COMMENT '邮箱',
-                        `phone` VARCHAR(20) NULL COMMENT '电话',
                         `password_hash` VARCHAR(255) NOT NULL COMMENT '密码哈希',
                         `username` VARCHAR(50) NOT NULL COMMENT '用户名',
                         `avatar_url` VARCHAR(255) NULL COMMENT '头像URL',
-                        `status` TINYINT NOT NULL DEFAULT 1 COMMENT '状态：1-正常，0-禁用',
-                        `last_login_at` DATETIME NULL COMMENT '最后登录时间',
-                        `login_count` INT UNSIGNED DEFAULT 0 COMMENT '登录次数',
                         theme VARCHAR(20) DEFAULT 'light' COMMENT '主题偏好',
                         `bio`  VARCHAR(255) COMMENT '用户简介',
                         register_date DATETIME NOT NULL COMMENT '注册时间',
-                        `registration_source` VARCHAR(20) DEFAULT 'email' COMMENT '注册来源: email,phone,wechat,github等',
                         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                         PRIMARY KEY (`id`),
-                        UNIQUE KEY `idx_email` (`email`),
-                        UNIQUE KEY `idx_phone` (`phone`)
+                        UNIQUE KEY `idx_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户基础信息表';-- 用户表
 
 -- 用户订阅表
@@ -40,26 +34,6 @@ CREATE TABLE `user_subscription` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户订阅信息表';
 
 -- 组织表
-
--- 收藏项目表
-CREATE TABLE `item` (
-                        `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
-                        `user_id` VARCHAR(36) NOT NULL COMMENT '用户ID',
-                        `item_type` VARCHAR(20) NOT NULL COMMENT '类型:text,image,link,bookmark',
-                        `title` VARCHAR(500) NULL COMMENT '标题',
-                        `note` TEXT NULL COMMENT '内容/文本',
-                        `url` VARCHAR(2000) NULL COMMENT '链接地址',
-                        `thumbnail_url` VARCHAR(2000) NULL COMMENT '缩略图地址',
-                        `deleted_at` DATETIME NULL COMMENT '删除时间',
-                        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-                        PRIMARY KEY (`id`),
-                        KEY `idx_user_id` (`user_id`),
-                        KEY `idx_type` (`item_type`),
-                        KEY `idx_deleted_at` (`deleted_at`),
-                        CONSTRAINT `fk_item_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏项目表';
-
 CREATE TABLE `organization` (
                                 `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
                                 `code` VARCHAR(64) NOT NULL COMMENT '节点编码',
@@ -76,25 +50,37 @@ CREATE TABLE `organization` (
                                 `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                 `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                                 PRIMARY KEY (`id`),
-                                UNIQUE KEY `uid_code` (`code`),
+                                UNIQUE KEY `uid_code` (`code`,`user_id`),
                                 KEY `idx_parent_code` (`parent_code`),
                                 KEY `idx_user_code` (`user_id`),
                                 CONSTRAINT `fk_organization_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='组织表';
 
-CREATE TABLE `organization_item` (
-                                     `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
-                                     `organization_id` VARCHAR(36) NOT NULL COMMENT '组织ID',
-                                     `item_id` VARCHAR(36) NOT NULL COMMENT '项目ID',
-                                     `sort_order` INT NOT NULL DEFAULT 0 COMMENT '排序顺序',
-                                     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-                                     PRIMARY KEY (`id`),
-                                     UNIQUE KEY `uidx_organization_item` (`organization_id`, `item_id`),
-                                     KEY `idx_item_id` (`item_id`),
-                                     CONSTRAINT `fk_organization_item_organization_id` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`) ON DELETE CASCADE,
-                                     CONSTRAINT `fk_organization_item_item_id` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='组织项目关联表';
+-- 收藏项目表
+
+CREATE TABLE `item` (
+                        `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
+                        `user_id` VARCHAR(36) NOT NULL COMMENT '用户ID',
+                        `item_type` VARCHAR(20) NOT NULL COMMENT '类型:text,image,link,bookmark',
+                        `title` VARCHAR(500) NULL COMMENT '标题',
+                        `note` TEXT NULL COMMENT '内容/文本',
+                        `url` VARCHAR(2000) NULL COMMENT '链接地址',
+                        `thumbnail_url` VARCHAR(2000) NULL COMMENT '缩略图地址',
+                        `tag_names` varchar(500) COMMENT '所有标签名',
+                        `organization_path` varchar(500) COMMENT '组织路径',
+                        `organization_id`VARCHAR(36) NOT NULL COMMENT '组织ID',
+                        `deleted_at` DATETIME NULL COMMENT '删除时间',
+                        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                        PRIMARY KEY (`id`),
+                        KEY `idx_user_id` (`user_id`),
+                        KEY `idx_type` (`item_type`),
+                        KEY `idx_deleted_at` (`deleted_at`),
+                        CONSTRAINT `fk_item_organization_id` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`id`) ON DELETE CASCADE,
+                        CONSTRAINT `fk_item_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏项目表';
+
 
 -- 标签表
 CREATE TABLE `tag` (
