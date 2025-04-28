@@ -8,6 +8,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
+	itemmodel "github.com/linkbox-group/linkbox-server/rpc-gen/model"
 	"github.com/sirupsen/logrus"
 )
 
@@ -188,7 +189,7 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 	req.UserId = userId
 	resp, err := rpc.ItemClient.GetItemsByOrganization(context.Background(), req)
 	if err != nil {
-		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败")
+		domain.Error(c, ecode.ErrRpcServiceError, err.Error())
 		return
 	}
 
@@ -216,15 +217,18 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
-	req := item.SearchItemsRequest{
-		Pagination: &pagination.PaginationRequest{},
-	}
-	req.UserId = userId
+	req := domain.SearchItemsReq{}
 	err = c.ShouldBind(&req)
+
 	if err != nil {
 		domain.Error(c, ErrInvalidReq, err.Error())
 	}
-	resp, err := rpc.ItemClient.SearchItems(context.Background(), &req)
+	resp, err := rpc.ItemClient.SearchItems(context.Background(), &item.SearchItemsRequest{
+		UserId:     userId,
+		Query:      req.Query,
+		Pagination: req.Pagination,
+		Type:       itemmodel.ItemType(itemmodel.ItemType_value[req.ItemType]),
+	})
 	if err != nil {
 		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败")
 		return

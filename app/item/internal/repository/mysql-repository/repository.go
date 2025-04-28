@@ -130,13 +130,11 @@ func (r *Repository) GetItemsByOrganization(ctx context.Context, userID string, 
 	limit, offset := pageSize, (pageNum-1)*pageSize
 
 	// 创建查询构建器，使用 Model 而不是 Table 以获得更好的类型安全性
-	query := r.db.WithContext(ctx).Model(&model.Item{}).
-		Joins("JOIN organization_item ON item.id = organization_item.item_id").
-		Where("item.user_id = ? AND item.deleted_at IS NULL", userID) // 修正了软删除条件
+	query := r.db.WithContext(ctx).Model(&model.Item{}).Where("user_id = ? AND deleted_at IS NULL", userID) // 修正了软删除条件
 
 	// 添加组织ID过滤
 	if organizationID != "" {
-		query = query.Where("organization_item.organization_id = ?", organizationID)
+		query = query.Where("organization_id = ?", organizationID)
 	}
 
 	// 计算总数

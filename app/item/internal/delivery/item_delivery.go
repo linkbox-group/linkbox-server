@@ -289,14 +289,16 @@ func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.Get
 		}
 
 		respItems = append(respItems, &itemmodel.Item{
-			Id:          dbItem.ID,
-			UserId:      dbItem.UserID,
-			Title:       dbItem.Title,
-			Description: "",
-			Url:         dbItem.URL,
-			Tags:        tagStrings,
-			CreatedAt:   timestamppb.New(dbItem.CreatedAt),
-			UpdatedAt:   timestamppb.New(dbItem.UpdatedAt),
+			Id:               dbItem.ID,
+			UserId:           dbItem.UserID,
+			Title:            dbItem.Title,
+			Description:      "",
+			TagNames:         dbItem.TagNames,
+			OrganizationPath: dbItem.OrganizationPath,
+			Url:              dbItem.URL,
+			Tags:             tagStrings,
+			CreatedAt:        timestamppb.New(dbItem.CreatedAt),
+			UpdatedAt:        timestamppb.New(dbItem.UpdatedAt),
 		})
 	}
 
