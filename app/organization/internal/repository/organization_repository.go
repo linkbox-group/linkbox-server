@@ -100,14 +100,6 @@ func (r *OrganizationRepository) DeleteOrganization(ctx context.Context, id stri
 			return errors.New("cannot delete organization with children, use cascade delete instead")
 		}
 	}
-
-	// 删除组织与项目的关联关系
-	err = tx.Exec("DELETE FROM organization_item WHERE organization_id = ?", id).Error
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
 	// 删除组织
 	err = tx.Delete(&organization).Error
 	if err != nil {
@@ -116,7 +108,7 @@ func (r *OrganizationRepository) DeleteOrganization(ctx context.Context, id stri
 	}
 
 	// 更新父节点的叶子状态
-	if organization.ParentCode != "0" {
+	if organization.ParentCode != "0" && organization.ParentCode != "" {
 		err = r.treeService.UpdateTreeLeaf(model.Organization{
 			TreeModel: treemodel.TreeModel{
 				Code: organization.ParentCode,

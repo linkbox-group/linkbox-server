@@ -142,14 +142,15 @@ func (a *OrganizationAPI) DeleteOrganization(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
+
 	req := &organization.DeleteOrganizationRequest{
 		UserId:  userId,
 		Id:      orgID,
-		Cascade: cascade == "ture",
+		Cascade: cascade == "true",
 	}
 	resp, err := rpc.OrganizationClient.DeleteOrganization(context.Background(), req)
 	if err != nil {
-		domain.Error(c, ErrOrganizationNotFound, "组织不存在")
+		domain.Error(c, ecode.ErrRpcServiceError, err.Error())
 		return
 	}
 	orgResp := domain.OrganizationSuccessResponse{
