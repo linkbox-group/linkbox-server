@@ -233,6 +233,48 @@ func (x *CreateOrganizationRequest) GetSortOrder() int32 {
 	return 0
 }
 
+type GetDefaultOrgIDReq struct {
+	Code   string `protobuf:"bytes,1,opt,name=code" json:"code,omitempty"`
+	UserId string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+}
+
+func (x *GetDefaultOrgIDReq) Reset() { *x = GetDefaultOrgIDReq{} }
+
+func (x *GetDefaultOrgIDReq) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *GetDefaultOrgIDReq) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetDefaultOrgIDReq) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *GetDefaultOrgIDReq) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+type GetDefaultOrgIDResp struct {
+	Id string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+}
+
+func (x *GetDefaultOrgIDResp) Reset() { *x = GetDefaultOrgIDResp{} }
+
+func (x *GetDefaultOrgIDResp) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *GetDefaultOrgIDResp) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *GetDefaultOrgIDResp) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
 // 创建组织响应
 type CreateOrganizationResponse struct {
 	// Types that are assignable to Result:
@@ -1431,6 +1473,7 @@ func (x *OrganizationActivityPage) GetPagination() *pagination.PaginationMeta {
 }
 
 type OrganizationService interface {
+	GetDefaultOrgID(ctx context.Context, req *GetDefaultOrgIDReq) (res *GetDefaultOrgIDResp, err error)
 	CreateOrganization(ctx context.Context, req *CreateOrganizationRequest) (res *CreateOrganizationResponse, err error)
 	GetOrganization(ctx context.Context, req *GetOrganizationRequest) (res *GetOrganizationResponse, err error)
 	UpdateOrganization(ctx context.Context, req *UpdateOrganizationRequest) (res *UpdateOrganizationResponse, err error)

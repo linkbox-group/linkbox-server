@@ -13,7 +13,7 @@ type OrganizationRepositoryItf interface {
 	DeleteOrganization(ctx context.Context, id string, userId string, cascade bool) error
 	GetUserOrganizations(ctx context.Context, userId string) ([]*model.Organization, error)
 	MoveOrganization(ctx context.Context, id string, userId string, newParentCode string) error
-
+	GetDefaultOrgID(ctx context.Context, code string, userID string) (id string, err error)
 	GetOrganizationItems(ctx context.Context, orgId string) ([]*model.Item, error)
 	UpdateOrganizationItemSort(ctx context.Context, orgId string, itemId string, sortOrder int) error
 }

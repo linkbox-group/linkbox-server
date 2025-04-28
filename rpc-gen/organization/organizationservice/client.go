@@ -11,6 +11,7 @@ import (
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
+	GetDefaultOrgID(ctx context.Context, Req *organization.GetDefaultOrgIDReq, callOptions ...callopt.Option) (r *organization.GetDefaultOrgIDResp, err error)
 	CreateOrganization(ctx context.Context, Req *organization.CreateOrganizationRequest, callOptions ...callopt.Option) (r *organization.CreateOrganizationResponse, err error)
 	GetOrganization(ctx context.Context, Req *organization.GetOrganizationRequest, callOptions ...callopt.Option) (r *organization.GetOrganizationResponse, err error)
 	UpdateOrganization(ctx context.Context, Req *organization.UpdateOrganizationRequest, callOptions ...callopt.Option) (r *organization.UpdateOrganizationResponse, err error)
@@ -51,6 +52,11 @@ func MustNewClient(destService string, opts ...client.Option) Client {
 
 type kOrganizationServiceClient struct {
 	*kClient
+}
+
+func (p *kOrganizationServiceClient) GetDefaultOrgID(ctx context.Context, Req *organization.GetDefaultOrgIDReq, callOptions ...callopt.Option) (r *organization.GetDefaultOrgIDResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetDefaultOrgID(ctx, Req)
 }
 
 func (p *kOrganizationServiceClient) CreateOrganization(ctx context.Context, Req *organization.CreateOrganizationRequest, callOptions ...callopt.Option) (r *organization.CreateOrganizationResponse, err error) {

@@ -13,7 +13,7 @@ import (
 )
 
 // CreateOrganization implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) CreateOrganization(ctx context.Context, req *organization.CreateOrganizationRequest) (resp *organization.CreateOrganizationResponse, err error) {
+func (d *OrganizationDelivery) CreateOrganization(ctx context.Context, req *organization.CreateOrganizationRequest) (resp *organization.CreateOrganizationResponse, err error) {
 	oid := uuid.New().String()
 	oModel := model.Organization{
 		BaseModel: model.BaseModel{
@@ -30,9 +30,8 @@ func (s *OrganizationDelivery) CreateOrganization(ctx context.Context, req *orga
 	}
 	if req.Code != "" {
 		oModel.Code = req.Code
-		oModel.ID = req.Code
 	}
-	err = s.service.CreateOrganizationService(ctx, &oModel)
+	err = d.service.CreateOrganizationService(ctx, &oModel)
 	if err != nil {
 		logrus.Errorln(err)
 		return &organization.CreateOrganizationResponse{
@@ -52,8 +51,8 @@ func (s *OrganizationDelivery) CreateOrganization(ctx context.Context, req *orga
 }
 
 // GetOrganization implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) GetOrganization(ctx context.Context, req *organization.GetOrganizationRequest) (resp *organization.GetOrganizationResponse, err error) {
-	oModel, err := s.service.GetOrganizationService(ctx, req.Id, req.UserId)
+func (d *OrganizationDelivery) GetOrganization(ctx context.Context, req *organization.GetOrganizationRequest) (resp *organization.GetOrganizationResponse, err error) {
+	oModel, err := d.service.GetOrganizationService(ctx, req.Id, req.UserId)
 	if err != nil {
 		resp = &organization.GetOrganizationResponse{
 			Result: &organization.GetOrganizationResponse_Error{
@@ -75,7 +74,7 @@ func (s *OrganizationDelivery) GetOrganization(ctx context.Context, req *organiz
 }
 
 // UpdateOrganization implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) UpdateOrganization(ctx context.Context, req *organization.UpdateOrganizationRequest) (resp *organization.UpdateOrganizationResponse, err error) {
+func (d *OrganizationDelivery) UpdateOrganization(ctx context.Context, req *organization.UpdateOrganizationRequest) (resp *organization.UpdateOrganizationResponse, err error) {
 	oModel := model.Organization{
 		BaseModel: model.BaseModel{
 			ID: req.Id,
@@ -94,7 +93,7 @@ func (s *OrganizationDelivery) UpdateOrganization(ctx context.Context, req *orga
 		oModel.SortOrder = int(*req.SortOrder)
 	}
 
-	updatedModel, err := s.service.UpdateOrganizationService(ctx, &oModel)
+	updatedModel, err := d.service.UpdateOrganizationService(ctx, &oModel)
 	if err != nil {
 		resp = &organization.UpdateOrganizationResponse{
 			Result: &organization.UpdateOrganizationResponse_Error{
@@ -131,8 +130,8 @@ func (s *OrganizationDelivery) UpdateOrganization(ctx context.Context, req *orga
 }
 
 // DeleteOrganization implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) DeleteOrganization(ctx context.Context, req *organization.DeleteOrganizationRequest) (resp *organization.DeleteOrganizationResponse, err error) {
-	err = s.service.DeleteOrganizationService(ctx, req.Id, req.UserId, req.Cascade)
+func (d *OrganizationDelivery) DeleteOrganization(ctx context.Context, req *organization.DeleteOrganizationRequest) (resp *organization.DeleteOrganizationResponse, err error) {
+	err = d.service.DeleteOrganizationService(ctx, req.Id, req.UserId, req.Cascade)
 	if err != nil {
 		resp = &organization.DeleteOrganizationResponse{
 			Result: &organization.DeleteOrganizationResponse_Error{
@@ -154,8 +153,8 @@ func (s *OrganizationDelivery) DeleteOrganization(ctx context.Context, req *orga
 }
 
 // GetUserOrganizations implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) GetUserOrganizations(ctx context.Context, req *organization.GetUserOrganizationsRequest) (resp *organization.GetUserOrganizationsResponse, err error) {
-	organizations, err := s.service.GetUserOrganizationsService(ctx, req.UserId)
+func (d *OrganizationDelivery) GetUserOrganizations(ctx context.Context, req *organization.GetUserOrganizationsRequest) (resp *organization.GetUserOrganizationsResponse, err error) {
+	organizations, err := d.service.GetUserOrganizationsService(ctx, req.UserId)
 	logrus.Infoln(organizations)
 	if err != nil {
 		resp = &organization.GetUserOrganizationsResponse{
@@ -201,8 +200,8 @@ func (s *OrganizationDelivery) GetUserOrganizations(ctx context.Context, req *or
 }
 
 // MoveOrganization implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) MoveOrganization(ctx context.Context, req *organization.MoveOrganizationRequest) (resp *organization.MoveOrganizationResponse, err error) {
-	err = s.service.MoveOrganizationService(ctx, req.Id, req.UserId, req.NewParentCode)
+func (d *OrganizationDelivery) MoveOrganization(ctx context.Context, req *organization.MoveOrganizationRequest) (resp *organization.MoveOrganizationResponse, err error) {
+	err = d.service.MoveOrganizationService(ctx, req.Id, req.UserId, req.NewParentCode)
 	if err != nil {
 		resp = &organization.MoveOrganizationResponse{
 			Result: &organization.MoveOrganizationResponse_Error{
@@ -224,31 +223,31 @@ func (s *OrganizationDelivery) MoveOrganization(ctx context.Context, req *organi
 }
 
 // ReorderOrganizationItems implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) ReorderOrganizationItems(ctx context.Context, req *organization.ReorderOrganizationItemsRequest) (resp *organization.ReorderOrganizationItemsResponse, err error) {
+func (d *OrganizationDelivery) ReorderOrganizationItems(ctx context.Context, req *organization.ReorderOrganizationItemsRequest) (resp *organization.ReorderOrganizationItemsResponse, err error) {
 	// TODO: Your code here...
 	return
 }
 
 // ReorderOrganizations implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) ReorderOrganizations(ctx context.Context, req *organization.ReorderOrganizationsRequest) (resp *organization.ReorderOrganizationsResponse, err error) {
+func (d *OrganizationDelivery) ReorderOrganizations(ctx context.Context, req *organization.ReorderOrganizationsRequest) (resp *organization.ReorderOrganizationsResponse, err error) {
 	// TODO: Your code here...
 	return
 }
 
 // GetOrganizationActivity implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) GetOrganizationActivity(ctx context.Context, req *organization.GetOrganizationActivityRequest) (resp *organization.GetOrganizationActivityResponse, err error) {
+func (d *OrganizationDelivery) GetOrganizationActivity(ctx context.Context, req *organization.GetOrganizationActivityRequest) (resp *organization.GetOrganizationActivityResponse, err error) {
 	// TODO: Your code here...
 	return
 }
 
 // GetOrganizationTree implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) GetOrganizationTree(ctx context.Context, req *organization.GetOrganizationTreeRequest) (resp *organization.GetOrganizationTreeResponse, err error) {
+func (d *OrganizationDelivery) GetOrganizationTree(ctx context.Context, req *organization.GetOrganizationTreeRequest) (resp *organization.GetOrganizationTreeResponse, err error) {
 	// TODO: Your code here...
 	return
 }
 
 // GetOrganizationChildren implements the OrganizationDelivery interface.
-func (s *OrganizationDelivery) GetOrganizationChildren(ctx context.Context, req *organization.GetOrganizationChildrenRequest) (resp *organization.GetOrganizationChildrenResponse, err error) {
+func (d *OrganizationDelivery) GetOrganizationChildren(ctx context.Context, req *organization.GetOrganizationChildrenRequest) (resp *organization.GetOrganizationChildrenResponse, err error) {
 	// TODO: Your code here...
 	return
 }

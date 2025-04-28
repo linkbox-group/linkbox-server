@@ -2,7 +2,6 @@ package acl
 
 import (
 	"context"
-
 	"github.com/linkbox-group/linkbox-server/model"
 )
 
@@ -13,7 +12,7 @@ type OrganizationServiceItf interface {
 	DeleteOrganizationService(ctx context.Context, id string, userId string, cascade bool) error
 	GetUserOrganizationsService(ctx context.Context, userId string) ([]*model.Organization, error)
 	MoveOrganizationService(ctx context.Context, id string, userId string, newParentCode string) error
-
+	GetDefaultOrgID(ctx context.Context, code string, userID string) (id string, err error)
 	GetOrganizationItemsService(ctx context.Context, orgId string, userId string) ([]*model.Item, error)
 	ReorderOrganizationItemsService(ctx context.Context, orgId string, userId string, itemOrders map[string]int) error
 }

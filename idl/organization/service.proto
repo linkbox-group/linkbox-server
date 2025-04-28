@@ -11,6 +11,8 @@ import "common/types/types.proto";
 
 // 组织服务定义
 service OrganizationService {
+  rpc GetDefaultOrgID(GetDefaultOrgIDReq) returns(GetDefaultOrgIDResp);
+
   // 创建组织
   rpc CreateOrganization(CreateOrganizationRequest) returns (CreateOrganizationResponse);
 
@@ -75,6 +77,14 @@ message CreateOrganizationRequest {
   optional int32 sort_order = 10;
 }
 
+
+message GetDefaultOrgIDReq{
+  string code =1;
+  string user_id=2;
+}
+message GetDefaultOrgIDResp{
+  string id=1;
+}
 // 创建组织响应
 message CreateOrganizationResponse {
   oneof result {

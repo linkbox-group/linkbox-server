@@ -15,6 +15,13 @@ import (
 var errInvalidMessageType = errors.New("invalid message type for service method handler")
 
 var serviceMethods = map[string]kitex.MethodInfo{
+	"GetDefaultOrgID": kitex.NewMethodInfo(
+		getDefaultOrgIDHandler,
+		newGetDefaultOrgIDArgs,
+		newGetDefaultOrgIDResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
 	"CreateOrganization": kitex.NewMethodInfo(
 		createOrganizationHandler,
 		newCreateOrganizationArgs,
@@ -156,6 +163,117 @@ func newServiceInfo(hasStreaming bool, keepStreamingMethods bool, keepNonStreami
 		Extra:           extra,
 	}
 	return svcInfo
+}
+
+func getDefaultOrgIDHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(organization.GetDefaultOrgIDReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(organization.OrganizationService).GetDefaultOrgID(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *GetDefaultOrgIDArgs:
+		success, err := handler.(organization.OrganizationService).GetDefaultOrgID(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*GetDefaultOrgIDResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newGetDefaultOrgIDArgs() interface{} {
+	return &GetDefaultOrgIDArgs{}
+}
+
+func newGetDefaultOrgIDResult() interface{} {
+	return &GetDefaultOrgIDResult{}
+}
+
+type GetDefaultOrgIDArgs struct {
+	Req *organization.GetDefaultOrgIDReq
+}
+
+func (p *GetDefaultOrgIDArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *GetDefaultOrgIDArgs) Unmarshal(in []byte) error {
+	msg := new(organization.GetDefaultOrgIDReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var GetDefaultOrgIDArgs_Req_DEFAULT *organization.GetDefaultOrgIDReq
+
+func (p *GetDefaultOrgIDArgs) GetReq() *organization.GetDefaultOrgIDReq {
+	if !p.IsSetReq() {
+		return GetDefaultOrgIDArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *GetDefaultOrgIDArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *GetDefaultOrgIDArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type GetDefaultOrgIDResult struct {
+	Success *organization.GetDefaultOrgIDResp
+}
+
+var GetDefaultOrgIDResult_Success_DEFAULT *organization.GetDefaultOrgIDResp
+
+func (p *GetDefaultOrgIDResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *GetDefaultOrgIDResult) Unmarshal(in []byte) error {
+	msg := new(organization.GetDefaultOrgIDResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *GetDefaultOrgIDResult) GetSuccess() *organization.GetDefaultOrgIDResp {
+	if !p.IsSetSuccess() {
+		return GetDefaultOrgIDResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *GetDefaultOrgIDResult) SetSuccess(x interface{}) {
+	p.Success = x.(*organization.GetDefaultOrgIDResp)
+}
+
+func (p *GetDefaultOrgIDResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *GetDefaultOrgIDResult) GetResult() interface{} {
+	return p.Success
 }
 
 func createOrganizationHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
@@ -1387,6 +1505,16 @@ func newServiceClient(c client.Client) *kClient {
 	return &kClient{
 		c: c,
 	}
+}
+
+func (p *kClient) GetDefaultOrgID(ctx context.Context, Req *organization.GetDefaultOrgIDReq) (r *organization.GetDefaultOrgIDResp, err error) {
+	var _args GetDefaultOrgIDArgs
+	_args.Req = Req
+	var _result GetDefaultOrgIDResult
+	if err = p.c.Call(ctx, "GetDefaultOrgID", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
 }
 
 func (p *kClient) CreateOrganization(ctx context.Context, Req *organization.CreateOrganizationRequest) (r *organization.CreateOrganizationResponse, err error) {
