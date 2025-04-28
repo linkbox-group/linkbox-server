@@ -35,12 +35,12 @@ type ListOrganizationsResponse struct {
 }
 
 type AddItemRequest struct {
-	OrganizationID string `json:"organization_id"`
-	ItemID         string `json:"item_id"`
+	OrganizationID string   `json:"organization_id"`
+	ItemID         []string `json:"item_ids"`
 }
 type RemoveItemRequest struct {
-	OrganizationID string `json:"organization_id"`
-	ItemID         string `json:"item_id"`
+	OrganizationID string   `json:"organization_id"`
+	ItemID         []string `json:"item_ids"`
 }
 
 // AddMembersToOrganizationResponse represents the response for adding members to an organization

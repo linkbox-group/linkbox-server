@@ -13,6 +13,7 @@ require (
 	github.com/cloudwego/kitex v0.13.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/linkbox-group/linkbox-server/common v0.0.0-00010101000000-000000000000
+	github.com/linkbox-group/linkbox-server/model v0.0.0-20250428055941-4db60c943d7a
 	github.com/linkbox-group/linkbox-server/rpc-gen v0.0.0-00010101000000-000000000000
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.20.0
@@ -34,7 +35,7 @@ require (
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/cloudwego/localsession v0.1.2 // indirect
 	github.com/cloudwego/netpoll v0.7.0 // indirect
-	github.com/cloudwego/prutal v0.1.0 // indirect
+	github.com/cloudwego/prutal v0.1.1 // indirect
 	github.com/cloudwego/runtimex v0.1.1 // indirect
 	github.com/cloudwego/thriftgo v0.4.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
@@ -65,6 +66,8 @@ require (
 	github.com/hashicorp/serf v0.10.1 // indirect
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/jhump/protoreflect v1.8.2 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kitex-contrib/obs-opentelemetry v0.2.9 // indirect
 	github.com/kitex-contrib/registry-consul v0.1.0 // indirect
@@ -117,4 +120,5 @@ require (
 	google.golang.org/grpc v1.71.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gorm.io/gorm v1.25.12 // indirect
 )

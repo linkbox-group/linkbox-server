@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"github.com/linkbox-group/linkbox-server/common/ecode"
+	"github.com/linkbox-group/linkbox-server/model/treemodel"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
 
 	"github.com/gin-gonic/gin"
@@ -299,20 +300,27 @@ func (a *OrganizationAPI) AddItemsToOrganization(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
-	itemReq := item.UpdateItemRequest{
-		Id:             req.ItemID,
-		OrganizationId: req.OrganizationID,
-		UserId:         userId,
+	successCount := 0
+	FailureCount := 0
+	FailedItemIDs := make([]string, 0)
+	for _, itemID := range req.ItemID {
+		ItemReq := item.UpdateItemRequest{
+			Id:             itemID,
+			OrganizationId: req.OrganizationID,
+			UserId:         userId,
+		}
+		_, err = rpc.ItemClient.UpdateItem(c, &ItemReq)
+		if err != nil {
+			FailureCount++
+			FailedItemIDs = append(FailedItemIDs, itemID)
+			continue
+		}
+		successCount++
 	}
-
-	_, err = rpc.ItemClient.UpdateItem(c, &itemReq)
-	if err != nil {
-		domain.Error(c, ErrItemNotFound, "内容项不存在")
-		return
-	}
-
-	orgResp := domain.OrganizationSuccessResponse{
-		Success: true,
+	orgResp := domain.AddItemsToOrganizationResponse{
+		SuccessCount:  int32(successCount),
+		FailureCount:  int32(FailureCount),
+		FailedItemIDs: FailedItemIDs,
 	}
 	domain.Success(c, orgResp)
 }
@@ -329,19 +337,28 @@ func (a *OrganizationAPI) RemoveItemsFromOrganization(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
-	ItemReq := item.UpdateItemRequest{
-		Id:             req.ItemID,
-		OrganizationId: req.OrganizationID,
-		UserId:         userId,
-	}
-	_, err = rpc.ItemClient.UpdateItem(c, &ItemReq)
-	if err != nil {
-		domain.Error(c, ErrItemNotFound, "内容项不存在")
-		return
-	}
 
-	orgResp := domain.OrganizationSuccessResponse{
-		Success: true,
+	successCount := 0
+	FailureCount := 0
+	FailedItemIDs := make([]string, 0)
+	for _, itemID := range req.ItemID {
+		ItemReq := item.UpdateItemRequest{
+			Id:             itemID,
+			OrganizationId: treemodel.DEFAULT_ID,
+			UserId:         userId,
+		}
+		_, err = rpc.ItemClient.UpdateItem(c, &ItemReq)
+		if err != nil {
+			FailureCount++
+			FailedItemIDs = append(FailedItemIDs, itemID)
+			continue
+		}
+		successCount++
+	}
+	orgResp := domain.AddItemsToOrganizationResponse{
+		SuccessCount:  int32(successCount),
+		FailureCount:  int32(FailureCount),
+		FailedItemIDs: FailedItemIDs,
 	}
 	domain.Success(c, orgResp)
 }
