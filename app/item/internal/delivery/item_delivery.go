@@ -2,7 +2,10 @@ package delivery
 
 import (
 	"context"
+	"github.com/linkbox-group/linkbox-server/item/internal/infra/rpc"
+	"github.com/linkbox-group/linkbox-server/item/pkg/log"
 	"github.com/linkbox-group/linkbox-server/model/treemodel"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/organization"
 
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -108,6 +111,15 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 		OrganizationID: req.OrganizationId,
 		TagNames:       req.GetTags(),
 	}
+	org, err := rpc.OrganizationClient.GetOrganization(ctx, &organization.GetOrganizationRequest{
+		Id:     req.OrganizationId,
+		UserId: req.UserId,
+	})
+	if err != nil {
+		log.Log().Error("获取org失败" + err.Error())
+		return nil, err
+	}
+	itemModel.OrganizationPath = org.GetOrganization().TreeNames
 
 	err = d.s.UpdateItem(ctx, &itemModel)
 

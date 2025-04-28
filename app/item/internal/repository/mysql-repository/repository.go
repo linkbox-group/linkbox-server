@@ -4,11 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/linkbox-group/linkbox-server/item/pkg/log"
-	"go.uber.org/zap"
-
 	"github.com/google/wire"
 	"github.com/linkbox-group/linkbox-server/item/internal/acl"
+	"github.com/linkbox-group/linkbox-server/item/pkg/log"
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"gorm.io/gorm"
@@ -35,11 +33,13 @@ func (r *Repository) GetItem(ctx context.Context, item *model.Item) (err error) 
 }
 
 func (r *Repository) UpdateItem(ctx context.Context, req *model.Item) (err error) {
+	//logrus.Infoln(req)
 	res := r.db.
 		Where("id = ? AND user_id = ?", req.ID, req.UserID).
 		Updates(req)
 	if res.RowsAffected == 0 {
-		log.Log().Error("update item failed", zap.Any("item", req))
+
+		log.Log().Error("update item failed")
 		return gorm.ErrRecordNotFound
 	}
 	return res.Error

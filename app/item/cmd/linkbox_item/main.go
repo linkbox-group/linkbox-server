@@ -4,6 +4,7 @@ import (
 	"github.com/cloudwego/kitex/server"
 	"github.com/linkbox-group/linkbox-server/common/serversuite"
 	"github.com/linkbox-group/linkbox-server/item/internal/core"
+	"github.com/linkbox-group/linkbox-server/item/internal/infra/rpc"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item/itemservice"
 	"github.com/spf13/viper"
 	"log"
@@ -16,6 +17,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	rpc.InitClient()
 	itemHandler := NewItemHandler()
 	srv := itemservice.NewServer(itemHandler, kitexInit()...)
 	err = srv.Run()
