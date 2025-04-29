@@ -35,7 +35,7 @@ func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	orgReq := organization.CreateOrganizationRequest{
@@ -47,7 +47,7 @@ func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
 	}
 	resp, err := rpc.OrganizationClient.CreateOrganization(context.Background(), &orgReq)
 	if err != nil {
-		domain.Error(c, ErrOrganizationNameExists, err.Error())
+		domain.Error(c, ErrOrganizationNameExists, "组织名已存在")
 		return
 	}
 	org := resp.GetOrganization()
@@ -70,7 +70,7 @@ func (a *OrganizationAPI) GetOrganization(c *gin.Context) {
 	orgID := c.Param("id")
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 
@@ -107,14 +107,14 @@ func (a *OrganizationAPI) UpdateOrganization(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	req.UserId = userId
 
 	resp, err := rpc.OrganizationClient.UpdateOrganization(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ErrOrganizationNameExists, err.Error())
+		domain.Error(c, ErrOrganizationNameExists, "组织名已存在")
 		return
 	}
 
@@ -164,7 +164,7 @@ func (a *OrganizationAPI) DeleteOrganization(c *gin.Context) {
 func (a *OrganizationAPI) GetUserOrganizations(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 
@@ -201,7 +201,7 @@ func (a *OrganizationAPI) GetUserOrganizations(c *gin.Context) {
 func (a *OrganizationAPI) GetOrganizationTree(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	rootCode := c.Query("root_code")
@@ -222,7 +222,7 @@ func (a *OrganizationAPI) GetOrganizationTree(c *gin.Context) {
 func (a *OrganizationAPI) GetOrganizationChildren(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	parentCode := c.Query("parent_code")
@@ -272,7 +272,7 @@ func (a *OrganizationAPI) MoveOrganization(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	req.UserId = userId
@@ -298,7 +298,7 @@ func (a *OrganizationAPI) AddItemsToOrganization(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	successCount := 0
