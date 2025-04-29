@@ -54,6 +54,7 @@ func (r *Group) RegisterTagRoutes() {
 
 // RegisterItemRoutes registers content-related routes
 func (r *Group) RegisterItemRoutes() {
+	r.Use(middleware.JWT())
 	var contentAPI api.ItemAPI
 	contentGroup := r.Group("/items")
 	{
@@ -76,6 +77,7 @@ func (r *Group) RegisterItemRoutes() {
 
 // RegisterOrganizationRoutes registers organization-related routes
 func (r *Group) RegisterOrganizationRoutes() {
+	r.Use(middleware.JWT())
 	var orgAPI api.OrganizationAPI
 	orgGroup := r.Group("/organization")
 	{
