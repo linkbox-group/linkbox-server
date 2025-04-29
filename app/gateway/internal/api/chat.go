@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+		"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
 	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
@@ -20,11 +21,12 @@ func NewChatAPI() *ChatAPI {
 
 // SendMessage 发送消息
 func (ChatAPI) SendMessage(c *gin.Context) {
-	userID, err := domain.GetUserIdFromContext(c)
+	userID, err := domain.GetUserIDFromContext(c)
 	if err != nil {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
+	log.Log().Info("[a *ChatAPI] SendMessage ", "user_id", userID)
 
 	//发送消息请求
 	itemID := c.Query("item_id")
@@ -44,7 +46,7 @@ func (ChatAPI) SendMessage(c *gin.Context) {
 	req.UserId = userID
 	stream, err := rpc.AiClient.SendMessage(context.Background(), req)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrRpcServiceError, err.Error())
+		domain.ErrorMsg(c, ecode.ErrRpcServiceError,"发送消息失败")
 		return
 	}
 
@@ -56,6 +58,7 @@ func (ChatAPI) SendMessage(c *gin.Context) {
 	c.Stream(func(w io.Writer) bool {
 		resp, err := stream.Recv(c)
 		if err == io.EOF {
+			c.SSEvent("message", "EOF")
 			return true
 		}
 		if err != nil {
@@ -68,16 +71,16 @@ func (ChatAPI) SendMessage(c *gin.Context) {
 
 // ListMessages 获取消息列表
 func (ChatAPI) ListMessages(c *gin.Context) {
-	userID, err := domain.GetUserIdFromContext(c)
+	userID, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		fmt.Println(err)
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
+	log.Log().Info("[a *ChatAPI] ListMessages ", "user_id", userID)
 	req := &ai.ListMessagesRequest{}
 	err = c.ShouldBind(req)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrInvalidParam, err.Error())
+		domain.ErrorMsg(c, ecode.ErrInvalidParam, "请求参数错误")
 	}
 	if req.Pagination == nil {
 		req.Pagination = &pagination.PaginationRequest{
@@ -95,7 +98,7 @@ func (ChatAPI) ListMessages(c *gin.Context) {
 
 	resp, err := rpc.AiClient.ListMessages(context.Background(), req)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrRpcServiceError, err.Error())
+		domain.ErrorMsg(c, ecode.ErrRpcServiceError, "列出消息失败")
 		return
 	}
 	messages := make([]*domain.MessageResp, 0)
@@ -121,21 +124,22 @@ func (ChatAPI) ListMessages(c *gin.Context) {
 	domain.Success(c, vo)
 }
 func (ChatAPI) DeleteMessage(c *gin.Context) {
-	userID, err := domain.GetUserIdFromContext(c)
+	userID, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
+	log.Log().Info("[a *ChatAPI] DeleteMessage ", "user_id", userID)
 	req := &ai.DeleteMessageRequest{}
 	err = c.ShouldBind(req)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrInvalidParam, err.Error())
+		domain.ErrorMsg(c, ecode.ErrInvalidParam, "请求参数错误")
 		return
 	}
 	req.UserId = userID
 	res, err := rpc.AiClient.DeleteMessage(context.Background(), req)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrRpcServiceError, err.Error())
+		domain.ErrorMsg(c, ecode.ErrRpcServiceError, "删除消息失败")
 		return
 
 	}
@@ -143,21 +147,22 @@ func (ChatAPI) DeleteMessage(c *gin.Context) {
 
 }
 func (ChatAPI) SuggestTags(c *gin.Context) {
-	userID, err := domain.GetUserIdFromContext(c)
+	userID, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
+	log.Log().Info("[a *ChatAPI] SuggestTags ", "user_id", userID)
 	req := &ai.SuggestTagsRequest{}
 	err = c.ShouldBind(req)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrInvalidParam, err.Error())
+		domain.ErrorMsg(c, ecode.ErrInvalidParam, "请求参数错误")
 		return
 	}
 	req.UserId = userID
 	tags, err := rpc.AiClient.SuggestTags(context.Background(), req)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrRpcServiceError, err.Error())
+		domain.ErrorMsg(c, ecode.ErrRpcServiceError, "获取标签失败")
 		return
 	}
 	domain.Success(c, tags.Tags)
