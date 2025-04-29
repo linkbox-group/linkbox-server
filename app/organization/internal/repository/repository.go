@@ -20,8 +20,12 @@ type OrganizationRepository struct {
 
 func (r *OrganizationRepository) GetDefaultOrgID(ctx context.Context, code string, userID string) (id string, err error) {
 	org := model.Organization{}
-	r.db.Where("code = ? AND user_id = ?", code, userID).Select("id").First(&org)
-	return org.ID, err
+	err = r.db.Where("code = ? AND user_id = ?", code, userID).Select("id").First(&org).Error
+	if err != nil {
+		return "", err
+	}
+
+	return org.ID, nil
 }
 
 func NewOrganizationRepository(db *gorm.DB) *OrganizationRepository {

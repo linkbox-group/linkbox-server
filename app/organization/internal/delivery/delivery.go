@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/google/wire"
 	"github.com/linkbox-group/linkbox-server/organization/internal/acl"
+	"github.com/linkbox-group/linkbox-server/organization/pkg/log"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/organization"
 )
 
@@ -16,6 +17,7 @@ type OrganizationDelivery struct {
 func (d *OrganizationDelivery) GetDefaultOrgID(ctx context.Context, req *organization.GetDefaultOrgIDReq) (res *organization.GetDefaultOrgIDResp, err error) {
 	id, err := d.service.GetDefaultOrgID(ctx, req.Code, req.UserId)
 	if err != nil {
+		log.Log().Error(err.Error(), "req", req)
 		return nil, err
 	}
 	res = &organization.GetDefaultOrgIDResp{
