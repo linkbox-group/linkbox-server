@@ -29,7 +29,7 @@ func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemReque
 		CreatedAt:      model.CustomTime(time.Now()),
 		UpdatedAt:      model.CustomTime(time.Now()),
 	}
-	if req.OrganizationId == "" {
+	if req.OrganizationId == "" || req.OrganizationId == treemodel.ROOT_ID {
 		orgID, err := rpc.OrganizationClient.GetDefaultOrgID(ctx, &organization.GetDefaultOrgIDReq{
 			UserId: req.UserId,
 			Code:   treemodel.ROOT_ID,
