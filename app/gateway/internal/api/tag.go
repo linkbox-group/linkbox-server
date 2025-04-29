@@ -41,14 +41,14 @@ func (a *TagAPI) CreateTag(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	req.UserId = userId
 
 	resp, err := rpc.TagClient.CreateTag(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ErrTagNameExists, err.Error())
+		domain.Error(c, ErrTagNameExists, "标签名已存在")
 		return
 	}
 
@@ -71,7 +71,7 @@ func (a *TagAPI) GetTag(c *gin.Context) {
 	tagID := c.Param("id")
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	resp, err := rpc.TagClient.GetTag(context.Background(), &tag.GetTagRequest{
@@ -108,7 +108,7 @@ func (a *TagAPI) UpdateTag(c *gin.Context) {
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	req.UserId = userId
@@ -116,7 +116,7 @@ func (a *TagAPI) UpdateTag(c *gin.Context) {
 	req.Id = tagID
 	resp, err := rpc.TagClient.UpdateTag(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ErrTagNameExists, err.Error())
+		domain.Error(c, ErrTagNameExists, "标签名已存在")
 		return
 	}
 
@@ -139,7 +139,7 @@ func (a *TagAPI) DeleteTag(c *gin.Context) {
 	tagID := c.Param("id")
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 
@@ -164,7 +164,7 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
 		log.Log().Error(err.Error())
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 
@@ -215,7 +215,7 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 func (a *TagAPI) AddTagsToItems(c *gin.Context) {
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 
@@ -246,7 +246,7 @@ func (a *TagAPI) AddTagsToItems(c *gin.Context) {
 func (a *TagAPI) RemoveTagsFromItems(c *gin.Context) {
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 
@@ -277,7 +277,7 @@ func (a *TagAPI) GetItemTags(c *gin.Context) {
 	itemID := c.Param("item_id")
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrRpcServiceError, err.Error())
+		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败"+err.Error())
 		return
 	}
 
@@ -317,7 +317,7 @@ func (a *TagAPI) GetRelatedTags(c *gin.Context) {
 	tagID := c.Param("tag_id")
 	userID, err := domain.GetUserIdFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 
