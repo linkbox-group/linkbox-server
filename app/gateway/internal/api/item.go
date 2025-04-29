@@ -6,9 +6,11 @@ import (
 	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
+	"github.com/linkbox-group/linkbox-server/model/treemodel"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
 	itemmodel "github.com/linkbox-group/linkbox-server/rpc-gen/model"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/organization"
 	"github.com/sirupsen/logrus"
 )
 
@@ -187,6 +189,19 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 		return
 	}
 	req.UserId = userId
+	if req.OrganizationId == "" || req.OrganizationId == treemodel.ROOT_ID {
+		orgID, err := rpc.OrganizationClient.GetDefaultOrgID(c, &organization.GetDefaultOrgIDReq{
+			UserId: req.UserId,
+			Code:   treemodel.ROOT_ID,
+		})
+
+		if err != nil {
+			domain.ErrorMsg(c, ecode.ErrRpcServiceError, err.Error())
+			return
+		}
+		req.OrganizationId = orgID.GetId()
+	}
+
 	resp, err := rpc.ItemClient.GetItemsByOrganization(context.Background(), req)
 	if err != nil {
 		domain.Error(c, ecode.ErrRpcServiceError, err.Error())
