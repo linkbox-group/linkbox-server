@@ -111,6 +111,7 @@ func (d *ItemDelivery) GetItem(ctx context.Context, req *item.GetItemRequest) (r
 
 // UpdateItem implements the ItemDelivery interface.
 func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemRequest) (resp *item.UpdateItemResponse, err error) {
+
 	itemModel := model.Item{
 		BaseModel: model.BaseModel{
 			ID: req.Id,
@@ -122,6 +123,16 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 		OrganizationID: req.OrganizationId,
 		UpdatedAt:      model.CustomTime(time.Now()),
 		TagNames:       req.GetTags(),
+	}
+	if req.OrganizationId == "" || req.OrganizationId == treemodel.ROOT_ID {
+		orgID, err := rpc.OrganizationClient.GetDefaultOrgID(ctx, &organization.GetDefaultOrgIDReq{
+			UserId: req.UserId,
+			Code:   treemodel.ROOT_ID,
+		})
+		if err != nil {
+			return nil, err
+		}
+		itemModel.OrganizationID = orgID.Id
 	}
 	org, err := rpc.OrganizationClient.GetOrganization(ctx, &organization.GetOrganizationRequest{
 		Id:     req.OrganizationId,
