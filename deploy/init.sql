@@ -168,3 +168,16 @@ CREATE TABLE `feature_usage` (
                                  UNIQUE KEY `idx_user_feature` (`user_id`, `feature_name`),
                                  CONSTRAINT `fk_feature_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='功能使用统计表';
+create table `chat` (
+                        `id` VARCHAR(36) NOT NULL COMMENT 'UUID',
+                        `user_id` VARCHAR(36) NOT NULL COMMENT '用户ID',
+
+                        `content` TEXT NOT NULL COMMENT '聊天内容',
+                     `sender_type` VARCHAR(100) NOT NULL COMMENT '发送者类型',
+                        `send_time` TIMESTAMP NOT NULL ,
+                        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                        PRIMARY KEY (`id`),
+                        CONSTRAINT `fk_chat_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='聊天表';
+
