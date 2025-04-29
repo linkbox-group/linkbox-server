@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 	"github.com/linkbox-group/linkbox-server/model/array"
@@ -36,6 +37,45 @@ func (Item) TableName() string {
 }
 
 type CustomTime time.Time
+
+func (ct CustomTime) Value() (driver.Value, error) {
+	t := time.Time(ct)
+	// 不要返回 nil，而是返回实际的零值时间
+	// 即使是零值时间也要返回有效的时间
+	return t, nil
+}
+
+// Scan 实现 sql.Scanner 接口
+func (ct *CustomTime) Scan(value interface{}) error {
+	if value == nil {
+		*ct = CustomTime(time.Time{})
+		return nil
+	}
+	switch v := value.(type) {
+	case time.Time:
+		*ct = CustomTime(v)
+		return nil
+	case []byte:
+		t, err := time.Parse("2006-01-02 15:04:05", string(v))
+		if err != nil {
+			return err
+		}
+		*ct = CustomTime(t)
+		return nil
+	case string:
+		t, err := time.Parse("2006-01-02 15:04:05", v)
+		if err != nil {
+			return err
+		}
+		*ct = CustomTime(t)
+		return nil
+	default:
+		return fmt.Errorf("cannot scan %T into CustomTime", value)
+	}
+}
+func (CustomTime) GormDataType() string {
+	return "datetime"
+}
 
 // UnmarshalJSON 实现 json.Unmarshaler 接口
 func (ct *CustomTime) UnmarshalJSON(b []byte) error {

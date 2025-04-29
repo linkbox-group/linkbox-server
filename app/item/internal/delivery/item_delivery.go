@@ -6,6 +6,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/item/pkg/log"
 	"github.com/linkbox-group/linkbox-server/model/treemodel"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/organization"
+	"time"
 
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -25,6 +26,8 @@ func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemReque
 		URL:            req.Url,
 		OrganizationID: req.OrganizationId,
 		Note:           req.Note,
+		CreatedAt:      model.CustomTime(time.Now()),
+		UpdatedAt:      model.CustomTime(time.Now()),
 	}
 	if req.OrganizationId == "" {
 		orgID, err := rpc.OrganizationClient.GetDefaultOrgID(ctx, &organization.GetDefaultOrgIDReq{
@@ -116,6 +119,7 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 		URL:            req.Url,
 		Note:           req.Note,
 		OrganizationID: req.OrganizationId,
+		UpdatedAt:      model.CustomTime(time.Now()),
 		TagNames:       req.GetTags(),
 	}
 	org, err := rpc.OrganizationClient.GetOrganization(ctx, &organization.GetOrganizationRequest{
