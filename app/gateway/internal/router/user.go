@@ -17,5 +17,5 @@ func (r *Group) SetUserRouter() {
 	groupAuthed.PUT("/info", userApi.UpdateUserInfo)
 	groupAuthed.PUT("/password", userApi.ChangePassword)
 	groupAuthed.GET("/info", userApi.GetUserInfo)
-	group.DELETE("/", userApi.DeleteUser)
+	group.DELETE("", userApi.DeleteUser)
 }
