@@ -58,8 +58,8 @@ func (d *UserDelivery) Register(ctx context.Context, req *user.RegisterReq) (res
 	}
 	_, err = rpc.OrganizationClient.CreateOrganization(ctx, &organization.CreateOrganizationRequest{
 		UserId: registerUser.UserId,
-		Name:   "默认目录",
-		Code:   treemodel.DEFAULT_ID,
+		Name:   "/",
+		Code:   treemodel.ROOT_ID,
 	})
 	if err != nil {
 		log.Log().Error(err.Error())

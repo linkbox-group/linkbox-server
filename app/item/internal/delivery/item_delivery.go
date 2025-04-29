@@ -32,7 +32,7 @@ func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemReque
 	if req.OrganizationId == "" {
 		orgID, err := rpc.OrganizationClient.GetDefaultOrgID(ctx, &organization.GetDefaultOrgIDReq{
 			UserId: req.UserId,
-			Code:   treemodel.DEFAULT_ID,
+			Code:   treemodel.ROOT_ID,
 		})
 		if err != nil {
 			return nil, err
