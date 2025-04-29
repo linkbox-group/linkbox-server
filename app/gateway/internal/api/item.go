@@ -171,7 +171,7 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 	err = c.ShouldBind(&req)
 	if err != nil {
 		logrus.Infoln(err)
-		domain.ErrorMsg(c, ecode.ErrInvalidParam, "请求参数无效")
+		domain.ErrorMsg(c, ecode.ErrInvalidParam, "请求参数错误")
 		return
 	}
 	logrus.Infoln(req.Pagination)
@@ -213,7 +213,7 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 	req := &item.GetItemsByOrganizationRequest{}
 	err := c.ShouldBind(req)
 	if err != nil {
-		domain.Error(c, ErrInvalidReq, "请求参数无效")
+		domain.Error(c, ErrInvalidReq, "请求参数错误")
 	}
 	userId, err := domain.GetUserIdFromContext(c)
 	if err != nil {
@@ -265,7 +265,7 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 	req.UserId = userId
 	err = c.ShouldBind(&req)
 	if err != nil {
-		domain.Error(c, ErrInvalidReq, "请求参数无效")
+		domain.Error(c, ErrInvalidReq, "请求参数错误")
 	}
 	resp, err := rpc.ItemClient.SearchItems(context.Background(), &req)
 	if err != nil {
