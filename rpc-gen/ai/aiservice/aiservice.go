@@ -22,75 +22,31 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"ClassifyContent": kitex.NewMethodInfo(
-		classifyContentHandler,
-		newClassifyContentArgs,
-		newClassifyContentResult,
+	"SendMessage": kitex.NewMethodInfo(
+		sendMessageHandler,
+		newSendMessageArgs,
+		newSendMessageResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingServer),
+	),
+	"ListMessages": kitex.NewMethodInfo(
+		listMessagesHandler,
+		newListMessagesArgs,
+		newListMessagesResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"GenerateSummary": kitex.NewMethodInfo(
-		generateSummaryHandler,
-		newGenerateSummaryArgs,
-		newGenerateSummaryResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
-	"FindSimilarContent": kitex.NewMethodInfo(
-		findSimilarContentHandler,
-		newFindSimilarContentArgs,
-		newFindSimilarContentResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
-	"EnhanceSearchQuery": kitex.NewMethodInfo(
-		enhanceSearchQueryHandler,
-		newEnhanceSearchQueryArgs,
-		newEnhanceSearchQueryResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
-	"ExtractArticleContent": kitex.NewMethodInfo(
-		extractArticleContentHandler,
-		newExtractArticleContentArgs,
-		newExtractArticleContentResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
-	"AnalyzeSentiment": kitex.NewMethodInfo(
-		analyzeSentimentHandler,
-		newAnalyzeSentimentArgs,
-		newAnalyzeSentimentResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
-	"RecognizeEntities": kitex.NewMethodInfo(
-		recognizeEntitiesHandler,
-		newRecognizeEntitiesArgs,
-		newRecognizeEntitiesResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
-	"GenerateCollectionName": kitex.NewMethodInfo(
-		generateCollectionNameHandler,
-		newGenerateCollectionNameArgs,
-		newGenerateCollectionNameResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
-	"GroupContentIntoCollections": kitex.NewMethodInfo(
-		groupContentIntoCollectionsHandler,
-		newGroupContentIntoCollectionsArgs,
-		newGroupContentIntoCollectionsResult,
+	"DeleteMessage": kitex.NewMethodInfo(
+		deleteMessageHandler,
+		newDeleteMessageArgs,
+		newDeleteMessageResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
 }
 
 var (
-	aIServiceServiceInfo                = NewServiceInfo()
-	aIServiceServiceInfoForClient       = NewServiceInfoForClient()
-	aIServiceServiceInfoForStreamClient = NewServiceInfoForStreamClient()
+	aIServiceServiceInfo = NewServiceInfo()
 )
 
 // for server
@@ -98,52 +54,21 @@ func serviceInfo() *kitex.ServiceInfo {
 	return aIServiceServiceInfo
 }
 
-// for stream client
-func serviceInfoForStreamClient() *kitex.ServiceInfo {
-	return aIServiceServiceInfoForStreamClient
-}
-
-// for client
-func serviceInfoForClient() *kitex.ServiceInfo {
-	return aIServiceServiceInfoForClient
-}
-
-// NewServiceInfo creates a new ServiceInfo containing all methods
+// NewServiceInfo creates a new ServiceInfo
 func NewServiceInfo() *kitex.ServiceInfo {
-	return newServiceInfo(false, true, true)
+	return newServiceInfo()
 }
 
-// NewServiceInfo creates a new ServiceInfo containing non-streaming methods
-func NewServiceInfoForClient() *kitex.ServiceInfo {
-	return newServiceInfo(false, false, true)
-}
-func NewServiceInfoForStreamClient() *kitex.ServiceInfo {
-	return newServiceInfo(true, true, false)
-}
-
-func newServiceInfo(hasStreaming bool, keepStreamingMethods bool, keepNonStreamingMethods bool) *kitex.ServiceInfo {
+func newServiceInfo() *kitex.ServiceInfo {
 	serviceName := "AIService"
 	handlerType := (*ai.AIService)(nil)
-	methods := map[string]kitex.MethodInfo{}
-	for name, m := range serviceMethods {
-		if m.IsStreaming() && !keepStreamingMethods {
-			continue
-		}
-		if !m.IsStreaming() && !keepNonStreamingMethods {
-			continue
-		}
-		methods[name] = m
-	}
 	extra := map[string]interface{}{
 		"PackageName": "ai",
-	}
-	if hasStreaming {
-		extra["streaming"] = hasStreaming
 	}
 	svcInfo := &kitex.ServiceInfo{
 		ServiceName:     serviceName,
 		HandlerType:     handlerType,
-		Methods:         methods,
+		Methods:         serviceMethods,
 		PayloadCodec:    kitex.Protobuf,
 		KiteXGenVersion: "v0.13.1",
 		Extra:           extra,
@@ -152,30 +77,16 @@ func newServiceInfo(hasStreaming bool, keepStreamingMethods bool, keepNonStreami
 }
 
 func suggestTagsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(ai.SuggestTagsRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(ai.AIService).SuggestTags(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *SuggestTagsArgs:
-		success, err := handler.(ai.AIService).SuggestTags(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*SuggestTagsResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
+	s := arg.(*SuggestTagsArgs)
+	success, err := handler.(ai.AIService).SuggestTags(ctx, s.Req)
+	if err != nil {
+		return err
 	}
+	realResult := result.(*SuggestTagsResult)
+	realResult.Success = success
+	return nil
 }
+
 func newSuggestTagsArgs() interface{} {
 	return &SuggestTagsArgs{}
 }
@@ -262,52 +173,40 @@ func (p *SuggestTagsResult) GetResult() interface{} {
 	return p.Success
 }
 
-func classifyContentHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(ai.ClassifyContentRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(ai.AIService).ClassifyContent(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *ClassifyContentArgs:
-		success, err := handler.(ai.AIService).ClassifyContent(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*ClassifyContentResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
+func sendMessageHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	st, err := streaming.GetServerStreamFromArg(arg)
+	if err != nil {
+		return err
 	}
-}
-func newClassifyContentArgs() interface{} {
-	return &ClassifyContentArgs{}
-}
-
-func newClassifyContentResult() interface{} {
-	return &ClassifyContentResult{}
-}
-
-type ClassifyContentArgs struct {
-	Req *ai.ClassifyContentRequest
+	stream := streaming.NewServerStreamingServer[ai.SendMessageResponse](st)
+	req := new(ai.SendMessageRequest)
+	if err := stream.RecvMsg(ctx, req); err != nil {
+		return err
+	}
+	return handler.(ai.AIService).SendMessage(ctx, req, stream)
 }
 
-func (p *ClassifyContentArgs) Marshal(out []byte) ([]byte, error) {
+func newSendMessageArgs() interface{} {
+	return &SendMessageArgs{}
+}
+
+func newSendMessageResult() interface{} {
+	return &SendMessageResult{}
+}
+
+type SendMessageArgs struct {
+	Req *ai.SendMessageRequest
+}
+
+func (p *SendMessageArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *ClassifyContentArgs) Unmarshal(in []byte) error {
-	msg := new(ai.ClassifyContentRequest)
+func (p *SendMessageArgs) Unmarshal(in []byte) error {
+	msg := new(ai.SendMessageRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -315,38 +214,38 @@ func (p *ClassifyContentArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var ClassifyContentArgs_Req_DEFAULT *ai.ClassifyContentRequest
+var SendMessageArgs_Req_DEFAULT *ai.SendMessageRequest
 
-func (p *ClassifyContentArgs) GetReq() *ai.ClassifyContentRequest {
+func (p *SendMessageArgs) GetReq() *ai.SendMessageRequest {
 	if !p.IsSetReq() {
-		return ClassifyContentArgs_Req_DEFAULT
+		return SendMessageArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *ClassifyContentArgs) IsSetReq() bool {
+func (p *SendMessageArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *ClassifyContentArgs) GetFirstArgument() interface{} {
+func (p *SendMessageArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type ClassifyContentResult struct {
-	Success *ai.ClassifyContentResponse
+type SendMessageResult struct {
+	Success *ai.SendMessageResponse
 }
 
-var ClassifyContentResult_Success_DEFAULT *ai.ClassifyContentResponse
+var SendMessageResult_Success_DEFAULT *ai.SendMessageResponse
 
-func (p *ClassifyContentResult) Marshal(out []byte) ([]byte, error) {
+func (p *SendMessageResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *ClassifyContentResult) Unmarshal(in []byte) error {
-	msg := new(ai.ClassifyContentResponse)
+func (p *SendMessageResult) Unmarshal(in []byte) error {
+	msg := new(ai.SendMessageResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -354,71 +253,57 @@ func (p *ClassifyContentResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *ClassifyContentResult) GetSuccess() *ai.ClassifyContentResponse {
+func (p *SendMessageResult) GetSuccess() *ai.SendMessageResponse {
 	if !p.IsSetSuccess() {
-		return ClassifyContentResult_Success_DEFAULT
+		return SendMessageResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *ClassifyContentResult) SetSuccess(x interface{}) {
-	p.Success = x.(*ai.ClassifyContentResponse)
+func (p *SendMessageResult) SetSuccess(x interface{}) {
+	p.Success = x.(*ai.SendMessageResponse)
 }
 
-func (p *ClassifyContentResult) IsSetSuccess() bool {
+func (p *SendMessageResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *ClassifyContentResult) GetResult() interface{} {
+func (p *SendMessageResult) GetResult() interface{} {
 	return p.Success
 }
 
-func generateSummaryHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(ai.GenerateSummaryRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(ai.AIService).GenerateSummary(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *GenerateSummaryArgs:
-		success, err := handler.(ai.AIService).GenerateSummary(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*GenerateSummaryResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
+func listMessagesHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	s := arg.(*ListMessagesArgs)
+	success, err := handler.(ai.AIService).ListMessages(ctx, s.Req)
+	if err != nil {
+		return err
 	}
-}
-func newGenerateSummaryArgs() interface{} {
-	return &GenerateSummaryArgs{}
-}
-
-func newGenerateSummaryResult() interface{} {
-	return &GenerateSummaryResult{}
+	realResult := result.(*ListMessagesResult)
+	realResult.Success = success
+	return nil
 }
 
-type GenerateSummaryArgs struct {
-	Req *ai.GenerateSummaryRequest
+func newListMessagesArgs() interface{} {
+	return &ListMessagesArgs{}
 }
 
-func (p *GenerateSummaryArgs) Marshal(out []byte) ([]byte, error) {
+func newListMessagesResult() interface{} {
+	return &ListMessagesResult{}
+}
+
+type ListMessagesArgs struct {
+	Req *ai.ListMessagesRequest
+}
+
+func (p *ListMessagesArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *GenerateSummaryArgs) Unmarshal(in []byte) error {
-	msg := new(ai.GenerateSummaryRequest)
+func (p *ListMessagesArgs) Unmarshal(in []byte) error {
+	msg := new(ai.ListMessagesRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -426,38 +311,38 @@ func (p *GenerateSummaryArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var GenerateSummaryArgs_Req_DEFAULT *ai.GenerateSummaryRequest
+var ListMessagesArgs_Req_DEFAULT *ai.ListMessagesRequest
 
-func (p *GenerateSummaryArgs) GetReq() *ai.GenerateSummaryRequest {
+func (p *ListMessagesArgs) GetReq() *ai.ListMessagesRequest {
 	if !p.IsSetReq() {
-		return GenerateSummaryArgs_Req_DEFAULT
+		return ListMessagesArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *GenerateSummaryArgs) IsSetReq() bool {
+func (p *ListMessagesArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *GenerateSummaryArgs) GetFirstArgument() interface{} {
+func (p *ListMessagesArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type GenerateSummaryResult struct {
-	Success *ai.GenerateSummaryResponse
+type ListMessagesResult struct {
+	Success *ai.ListMessagesResponse
 }
 
-var GenerateSummaryResult_Success_DEFAULT *ai.GenerateSummaryResponse
+var ListMessagesResult_Success_DEFAULT *ai.ListMessagesResponse
 
-func (p *GenerateSummaryResult) Marshal(out []byte) ([]byte, error) {
+func (p *ListMessagesResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *GenerateSummaryResult) Unmarshal(in []byte) error {
-	msg := new(ai.GenerateSummaryResponse)
+func (p *ListMessagesResult) Unmarshal(in []byte) error {
+	msg := new(ai.ListMessagesResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -465,71 +350,57 @@ func (p *GenerateSummaryResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *GenerateSummaryResult) GetSuccess() *ai.GenerateSummaryResponse {
+func (p *ListMessagesResult) GetSuccess() *ai.ListMessagesResponse {
 	if !p.IsSetSuccess() {
-		return GenerateSummaryResult_Success_DEFAULT
+		return ListMessagesResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *GenerateSummaryResult) SetSuccess(x interface{}) {
-	p.Success = x.(*ai.GenerateSummaryResponse)
+func (p *ListMessagesResult) SetSuccess(x interface{}) {
+	p.Success = x.(*ai.ListMessagesResponse)
 }
 
-func (p *GenerateSummaryResult) IsSetSuccess() bool {
+func (p *ListMessagesResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *GenerateSummaryResult) GetResult() interface{} {
+func (p *ListMessagesResult) GetResult() interface{} {
 	return p.Success
 }
 
-func findSimilarContentHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(ai.FindSimilarContentRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(ai.AIService).FindSimilarContent(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *FindSimilarContentArgs:
-		success, err := handler.(ai.AIService).FindSimilarContent(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*FindSimilarContentResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
+func deleteMessageHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	s := arg.(*DeleteMessageArgs)
+	success, err := handler.(ai.AIService).DeleteMessage(ctx, s.Req)
+	if err != nil {
+		return err
 	}
-}
-func newFindSimilarContentArgs() interface{} {
-	return &FindSimilarContentArgs{}
-}
-
-func newFindSimilarContentResult() interface{} {
-	return &FindSimilarContentResult{}
+	realResult := result.(*DeleteMessageResult)
+	realResult.Success = success
+	return nil
 }
 
-type FindSimilarContentArgs struct {
-	Req *ai.FindSimilarContentRequest
+func newDeleteMessageArgs() interface{} {
+	return &DeleteMessageArgs{}
 }
 
-func (p *FindSimilarContentArgs) Marshal(out []byte) ([]byte, error) {
+func newDeleteMessageResult() interface{} {
+	return &DeleteMessageResult{}
+}
+
+type DeleteMessageArgs struct {
+	Req *ai.DeleteMessageRequest
+}
+
+func (p *DeleteMessageArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *FindSimilarContentArgs) Unmarshal(in []byte) error {
-	msg := new(ai.FindSimilarContentRequest)
+func (p *DeleteMessageArgs) Unmarshal(in []byte) error {
+	msg := new(ai.DeleteMessageRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -537,38 +408,38 @@ func (p *FindSimilarContentArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var FindSimilarContentArgs_Req_DEFAULT *ai.FindSimilarContentRequest
+var DeleteMessageArgs_Req_DEFAULT *ai.DeleteMessageRequest
 
-func (p *FindSimilarContentArgs) GetReq() *ai.FindSimilarContentRequest {
+func (p *DeleteMessageArgs) GetReq() *ai.DeleteMessageRequest {
 	if !p.IsSetReq() {
-		return FindSimilarContentArgs_Req_DEFAULT
+		return DeleteMessageArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *FindSimilarContentArgs) IsSetReq() bool {
+func (p *DeleteMessageArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *FindSimilarContentArgs) GetFirstArgument() interface{} {
+func (p *DeleteMessageArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type FindSimilarContentResult struct {
-	Success *ai.FindSimilarContentResponse
+type DeleteMessageResult struct {
+	Success *ai.DeleteMessageResponse
 }
 
-var FindSimilarContentResult_Success_DEFAULT *ai.FindSimilarContentResponse
+var DeleteMessageResult_Success_DEFAULT *ai.DeleteMessageResponse
 
-func (p *FindSimilarContentResult) Marshal(out []byte) ([]byte, error) {
+func (p *DeleteMessageResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *FindSimilarContentResult) Unmarshal(in []byte) error {
-	msg := new(ai.FindSimilarContentResponse)
+func (p *DeleteMessageResult) Unmarshal(in []byte) error {
+	msg := new(ai.DeleteMessageResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -576,698 +447,34 @@ func (p *FindSimilarContentResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *FindSimilarContentResult) GetSuccess() *ai.FindSimilarContentResponse {
+func (p *DeleteMessageResult) GetSuccess() *ai.DeleteMessageResponse {
 	if !p.IsSetSuccess() {
-		return FindSimilarContentResult_Success_DEFAULT
+		return DeleteMessageResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *FindSimilarContentResult) SetSuccess(x interface{}) {
-	p.Success = x.(*ai.FindSimilarContentResponse)
+func (p *DeleteMessageResult) SetSuccess(x interface{}) {
+	p.Success = x.(*ai.DeleteMessageResponse)
 }
 
-func (p *FindSimilarContentResult) IsSetSuccess() bool {
+func (p *DeleteMessageResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *FindSimilarContentResult) GetResult() interface{} {
-	return p.Success
-}
-
-func enhanceSearchQueryHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(ai.EnhanceSearchQueryRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(ai.AIService).EnhanceSearchQuery(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *EnhanceSearchQueryArgs:
-		success, err := handler.(ai.AIService).EnhanceSearchQuery(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*EnhanceSearchQueryResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newEnhanceSearchQueryArgs() interface{} {
-	return &EnhanceSearchQueryArgs{}
-}
-
-func newEnhanceSearchQueryResult() interface{} {
-	return &EnhanceSearchQueryResult{}
-}
-
-type EnhanceSearchQueryArgs struct {
-	Req *ai.EnhanceSearchQueryRequest
-}
-
-func (p *EnhanceSearchQueryArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *EnhanceSearchQueryArgs) Unmarshal(in []byte) error {
-	msg := new(ai.EnhanceSearchQueryRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var EnhanceSearchQueryArgs_Req_DEFAULT *ai.EnhanceSearchQueryRequest
-
-func (p *EnhanceSearchQueryArgs) GetReq() *ai.EnhanceSearchQueryRequest {
-	if !p.IsSetReq() {
-		return EnhanceSearchQueryArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *EnhanceSearchQueryArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *EnhanceSearchQueryArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type EnhanceSearchQueryResult struct {
-	Success *ai.EnhanceSearchQueryResponse
-}
-
-var EnhanceSearchQueryResult_Success_DEFAULT *ai.EnhanceSearchQueryResponse
-
-func (p *EnhanceSearchQueryResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *EnhanceSearchQueryResult) Unmarshal(in []byte) error {
-	msg := new(ai.EnhanceSearchQueryResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *EnhanceSearchQueryResult) GetSuccess() *ai.EnhanceSearchQueryResponse {
-	if !p.IsSetSuccess() {
-		return EnhanceSearchQueryResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *EnhanceSearchQueryResult) SetSuccess(x interface{}) {
-	p.Success = x.(*ai.EnhanceSearchQueryResponse)
-}
-
-func (p *EnhanceSearchQueryResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *EnhanceSearchQueryResult) GetResult() interface{} {
-	return p.Success
-}
-
-func extractArticleContentHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(ai.ExtractArticleContentRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(ai.AIService).ExtractArticleContent(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *ExtractArticleContentArgs:
-		success, err := handler.(ai.AIService).ExtractArticleContent(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*ExtractArticleContentResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newExtractArticleContentArgs() interface{} {
-	return &ExtractArticleContentArgs{}
-}
-
-func newExtractArticleContentResult() interface{} {
-	return &ExtractArticleContentResult{}
-}
-
-type ExtractArticleContentArgs struct {
-	Req *ai.ExtractArticleContentRequest
-}
-
-func (p *ExtractArticleContentArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *ExtractArticleContentArgs) Unmarshal(in []byte) error {
-	msg := new(ai.ExtractArticleContentRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var ExtractArticleContentArgs_Req_DEFAULT *ai.ExtractArticleContentRequest
-
-func (p *ExtractArticleContentArgs) GetReq() *ai.ExtractArticleContentRequest {
-	if !p.IsSetReq() {
-		return ExtractArticleContentArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *ExtractArticleContentArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *ExtractArticleContentArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type ExtractArticleContentResult struct {
-	Success *ai.ExtractArticleContentResponse
-}
-
-var ExtractArticleContentResult_Success_DEFAULT *ai.ExtractArticleContentResponse
-
-func (p *ExtractArticleContentResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *ExtractArticleContentResult) Unmarshal(in []byte) error {
-	msg := new(ai.ExtractArticleContentResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *ExtractArticleContentResult) GetSuccess() *ai.ExtractArticleContentResponse {
-	if !p.IsSetSuccess() {
-		return ExtractArticleContentResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *ExtractArticleContentResult) SetSuccess(x interface{}) {
-	p.Success = x.(*ai.ExtractArticleContentResponse)
-}
-
-func (p *ExtractArticleContentResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *ExtractArticleContentResult) GetResult() interface{} {
-	return p.Success
-}
-
-func analyzeSentimentHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(ai.AnalyzeSentimentRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(ai.AIService).AnalyzeSentiment(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *AnalyzeSentimentArgs:
-		success, err := handler.(ai.AIService).AnalyzeSentiment(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*AnalyzeSentimentResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newAnalyzeSentimentArgs() interface{} {
-	return &AnalyzeSentimentArgs{}
-}
-
-func newAnalyzeSentimentResult() interface{} {
-	return &AnalyzeSentimentResult{}
-}
-
-type AnalyzeSentimentArgs struct {
-	Req *ai.AnalyzeSentimentRequest
-}
-
-func (p *AnalyzeSentimentArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *AnalyzeSentimentArgs) Unmarshal(in []byte) error {
-	msg := new(ai.AnalyzeSentimentRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var AnalyzeSentimentArgs_Req_DEFAULT *ai.AnalyzeSentimentRequest
-
-func (p *AnalyzeSentimentArgs) GetReq() *ai.AnalyzeSentimentRequest {
-	if !p.IsSetReq() {
-		return AnalyzeSentimentArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *AnalyzeSentimentArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *AnalyzeSentimentArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type AnalyzeSentimentResult struct {
-	Success *ai.AnalyzeSentimentResponse
-}
-
-var AnalyzeSentimentResult_Success_DEFAULT *ai.AnalyzeSentimentResponse
-
-func (p *AnalyzeSentimentResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *AnalyzeSentimentResult) Unmarshal(in []byte) error {
-	msg := new(ai.AnalyzeSentimentResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *AnalyzeSentimentResult) GetSuccess() *ai.AnalyzeSentimentResponse {
-	if !p.IsSetSuccess() {
-		return AnalyzeSentimentResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *AnalyzeSentimentResult) SetSuccess(x interface{}) {
-	p.Success = x.(*ai.AnalyzeSentimentResponse)
-}
-
-func (p *AnalyzeSentimentResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *AnalyzeSentimentResult) GetResult() interface{} {
-	return p.Success
-}
-
-func recognizeEntitiesHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(ai.RecognizeEntitiesRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(ai.AIService).RecognizeEntities(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *RecognizeEntitiesArgs:
-		success, err := handler.(ai.AIService).RecognizeEntities(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*RecognizeEntitiesResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newRecognizeEntitiesArgs() interface{} {
-	return &RecognizeEntitiesArgs{}
-}
-
-func newRecognizeEntitiesResult() interface{} {
-	return &RecognizeEntitiesResult{}
-}
-
-type RecognizeEntitiesArgs struct {
-	Req *ai.RecognizeEntitiesRequest
-}
-
-func (p *RecognizeEntitiesArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *RecognizeEntitiesArgs) Unmarshal(in []byte) error {
-	msg := new(ai.RecognizeEntitiesRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var RecognizeEntitiesArgs_Req_DEFAULT *ai.RecognizeEntitiesRequest
-
-func (p *RecognizeEntitiesArgs) GetReq() *ai.RecognizeEntitiesRequest {
-	if !p.IsSetReq() {
-		return RecognizeEntitiesArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *RecognizeEntitiesArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *RecognizeEntitiesArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type RecognizeEntitiesResult struct {
-	Success *ai.RecognizeEntitiesResponse
-}
-
-var RecognizeEntitiesResult_Success_DEFAULT *ai.RecognizeEntitiesResponse
-
-func (p *RecognizeEntitiesResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *RecognizeEntitiesResult) Unmarshal(in []byte) error {
-	msg := new(ai.RecognizeEntitiesResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *RecognizeEntitiesResult) GetSuccess() *ai.RecognizeEntitiesResponse {
-	if !p.IsSetSuccess() {
-		return RecognizeEntitiesResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *RecognizeEntitiesResult) SetSuccess(x interface{}) {
-	p.Success = x.(*ai.RecognizeEntitiesResponse)
-}
-
-func (p *RecognizeEntitiesResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *RecognizeEntitiesResult) GetResult() interface{} {
-	return p.Success
-}
-
-func generateCollectionNameHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(ai.GenerateCollectionNameRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(ai.AIService).GenerateCollectionName(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *GenerateCollectionNameArgs:
-		success, err := handler.(ai.AIService).GenerateCollectionName(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*GenerateCollectionNameResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newGenerateCollectionNameArgs() interface{} {
-	return &GenerateCollectionNameArgs{}
-}
-
-func newGenerateCollectionNameResult() interface{} {
-	return &GenerateCollectionNameResult{}
-}
-
-type GenerateCollectionNameArgs struct {
-	Req *ai.GenerateCollectionNameRequest
-}
-
-func (p *GenerateCollectionNameArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *GenerateCollectionNameArgs) Unmarshal(in []byte) error {
-	msg := new(ai.GenerateCollectionNameRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var GenerateCollectionNameArgs_Req_DEFAULT *ai.GenerateCollectionNameRequest
-
-func (p *GenerateCollectionNameArgs) GetReq() *ai.GenerateCollectionNameRequest {
-	if !p.IsSetReq() {
-		return GenerateCollectionNameArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *GenerateCollectionNameArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *GenerateCollectionNameArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type GenerateCollectionNameResult struct {
-	Success *ai.GenerateCollectionNameResponse
-}
-
-var GenerateCollectionNameResult_Success_DEFAULT *ai.GenerateCollectionNameResponse
-
-func (p *GenerateCollectionNameResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *GenerateCollectionNameResult) Unmarshal(in []byte) error {
-	msg := new(ai.GenerateCollectionNameResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *GenerateCollectionNameResult) GetSuccess() *ai.GenerateCollectionNameResponse {
-	if !p.IsSetSuccess() {
-		return GenerateCollectionNameResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *GenerateCollectionNameResult) SetSuccess(x interface{}) {
-	p.Success = x.(*ai.GenerateCollectionNameResponse)
-}
-
-func (p *GenerateCollectionNameResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *GenerateCollectionNameResult) GetResult() interface{} {
-	return p.Success
-}
-
-func groupContentIntoCollectionsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(ai.GroupContentIntoCollectionsRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(ai.AIService).GroupContentIntoCollections(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *GroupContentIntoCollectionsArgs:
-		success, err := handler.(ai.AIService).GroupContentIntoCollections(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*GroupContentIntoCollectionsResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newGroupContentIntoCollectionsArgs() interface{} {
-	return &GroupContentIntoCollectionsArgs{}
-}
-
-func newGroupContentIntoCollectionsResult() interface{} {
-	return &GroupContentIntoCollectionsResult{}
-}
-
-type GroupContentIntoCollectionsArgs struct {
-	Req *ai.GroupContentIntoCollectionsRequest
-}
-
-func (p *GroupContentIntoCollectionsArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *GroupContentIntoCollectionsArgs) Unmarshal(in []byte) error {
-	msg := new(ai.GroupContentIntoCollectionsRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var GroupContentIntoCollectionsArgs_Req_DEFAULT *ai.GroupContentIntoCollectionsRequest
-
-func (p *GroupContentIntoCollectionsArgs) GetReq() *ai.GroupContentIntoCollectionsRequest {
-	if !p.IsSetReq() {
-		return GroupContentIntoCollectionsArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *GroupContentIntoCollectionsArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *GroupContentIntoCollectionsArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type GroupContentIntoCollectionsResult struct {
-	Success *ai.GroupContentIntoCollectionsResponse
-}
-
-var GroupContentIntoCollectionsResult_Success_DEFAULT *ai.GroupContentIntoCollectionsResponse
-
-func (p *GroupContentIntoCollectionsResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *GroupContentIntoCollectionsResult) Unmarshal(in []byte) error {
-	msg := new(ai.GroupContentIntoCollectionsResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *GroupContentIntoCollectionsResult) GetSuccess() *ai.GroupContentIntoCollectionsResponse {
-	if !p.IsSetSuccess() {
-		return GroupContentIntoCollectionsResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *GroupContentIntoCollectionsResult) SetSuccess(x interface{}) {
-	p.Success = x.(*ai.GroupContentIntoCollectionsResponse)
-}
-
-func (p *GroupContentIntoCollectionsResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *GroupContentIntoCollectionsResult) GetResult() interface{} {
+func (p *DeleteMessageResult) GetResult() interface{} {
 	return p.Success
 }
 
 type kClient struct {
-	c client.Client
+	c  client.Client
+	sc client.Streaming
 }
 
 func newServiceClient(c client.Client) *kClient {
 	return &kClient{
-		c: c,
+		c:  c,
+		sc: c.(client.Streaming),
 	}
 }
 
@@ -1281,91 +488,36 @@ func (p *kClient) SuggestTags(ctx context.Context, Req *ai.SuggestTagsRequest) (
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) ClassifyContent(ctx context.Context, Req *ai.ClassifyContentRequest) (r *ai.ClassifyContentResponse, err error) {
-	var _args ClassifyContentArgs
+func (p *kClient) SendMessage(ctx context.Context, req *ai.SendMessageRequest) (AIService_SendMessageClient, error) {
+	st, err := p.sc.StreamX(ctx, "SendMessage")
+	if err != nil {
+		return nil, err
+	}
+	stream := streaming.NewServerStreamingClient[ai.SendMessageResponse](st)
+	if err := stream.SendMsg(ctx, req); err != nil {
+		return nil, err
+	}
+	if err := stream.CloseSend(ctx); err != nil {
+		return nil, err
+	}
+	return stream, nil
+}
+
+func (p *kClient) ListMessages(ctx context.Context, Req *ai.ListMessagesRequest) (r *ai.ListMessagesResponse, err error) {
+	var _args ListMessagesArgs
 	_args.Req = Req
-	var _result ClassifyContentResult
-	if err = p.c.Call(ctx, "ClassifyContent", &_args, &_result); err != nil {
+	var _result ListMessagesResult
+	if err = p.c.Call(ctx, "ListMessages", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) GenerateSummary(ctx context.Context, Req *ai.GenerateSummaryRequest) (r *ai.GenerateSummaryResponse, err error) {
-	var _args GenerateSummaryArgs
+func (p *kClient) DeleteMessage(ctx context.Context, Req *ai.DeleteMessageRequest) (r *ai.DeleteMessageResponse, err error) {
+	var _args DeleteMessageArgs
 	_args.Req = Req
-	var _result GenerateSummaryResult
-	if err = p.c.Call(ctx, "GenerateSummary", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) FindSimilarContent(ctx context.Context, Req *ai.FindSimilarContentRequest) (r *ai.FindSimilarContentResponse, err error) {
-	var _args FindSimilarContentArgs
-	_args.Req = Req
-	var _result FindSimilarContentResult
-	if err = p.c.Call(ctx, "FindSimilarContent", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) EnhanceSearchQuery(ctx context.Context, Req *ai.EnhanceSearchQueryRequest) (r *ai.EnhanceSearchQueryResponse, err error) {
-	var _args EnhanceSearchQueryArgs
-	_args.Req = Req
-	var _result EnhanceSearchQueryResult
-	if err = p.c.Call(ctx, "EnhanceSearchQuery", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) ExtractArticleContent(ctx context.Context, Req *ai.ExtractArticleContentRequest) (r *ai.ExtractArticleContentResponse, err error) {
-	var _args ExtractArticleContentArgs
-	_args.Req = Req
-	var _result ExtractArticleContentResult
-	if err = p.c.Call(ctx, "ExtractArticleContent", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) AnalyzeSentiment(ctx context.Context, Req *ai.AnalyzeSentimentRequest) (r *ai.AnalyzeSentimentResponse, err error) {
-	var _args AnalyzeSentimentArgs
-	_args.Req = Req
-	var _result AnalyzeSentimentResult
-	if err = p.c.Call(ctx, "AnalyzeSentiment", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) RecognizeEntities(ctx context.Context, Req *ai.RecognizeEntitiesRequest) (r *ai.RecognizeEntitiesResponse, err error) {
-	var _args RecognizeEntitiesArgs
-	_args.Req = Req
-	var _result RecognizeEntitiesResult
-	if err = p.c.Call(ctx, "RecognizeEntities", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) GenerateCollectionName(ctx context.Context, Req *ai.GenerateCollectionNameRequest) (r *ai.GenerateCollectionNameResponse, err error) {
-	var _args GenerateCollectionNameArgs
-	_args.Req = Req
-	var _result GenerateCollectionNameResult
-	if err = p.c.Call(ctx, "GenerateCollectionName", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) GroupContentIntoCollections(ctx context.Context, Req *ai.GroupContentIntoCollectionsRequest) (r *ai.GroupContentIntoCollectionsResponse, err error) {
-	var _args GroupContentIntoCollectionsArgs
-	_args.Req = Req
-	var _result GroupContentIntoCollectionsResult
-	if err = p.c.Call(ctx, "GroupContentIntoCollections", &_args, &_result); err != nil {
+	var _result DeleteMessageResult
+	if err = p.c.Call(ctx, "DeleteMessage", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

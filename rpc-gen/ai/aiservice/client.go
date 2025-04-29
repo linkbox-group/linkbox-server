@@ -6,27 +6,28 @@ import (
 	"context"
 	client "github.com/cloudwego/kitex/client"
 	callopt "github.com/cloudwego/kitex/client/callopt"
+	streamcall "github.com/cloudwego/kitex/client/callopt/streamcall"
+	streaming "github.com/cloudwego/kitex/pkg/streaming"
+	transport "github.com/cloudwego/kitex/transport"
 	ai "github.com/linkbox-group/linkbox-server/rpc-gen/ai"
 )
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
 	SuggestTags(ctx context.Context, Req *ai.SuggestTagsRequest, callOptions ...callopt.Option) (r *ai.SuggestTagsResponse, err error)
-	ClassifyContent(ctx context.Context, Req *ai.ClassifyContentRequest, callOptions ...callopt.Option) (r *ai.ClassifyContentResponse, err error)
-	GenerateSummary(ctx context.Context, Req *ai.GenerateSummaryRequest, callOptions ...callopt.Option) (r *ai.GenerateSummaryResponse, err error)
-	FindSimilarContent(ctx context.Context, Req *ai.FindSimilarContentRequest, callOptions ...callopt.Option) (r *ai.FindSimilarContentResponse, err error)
-	EnhanceSearchQuery(ctx context.Context, Req *ai.EnhanceSearchQueryRequest, callOptions ...callopt.Option) (r *ai.EnhanceSearchQueryResponse, err error)
-	ExtractArticleContent(ctx context.Context, Req *ai.ExtractArticleContentRequest, callOptions ...callopt.Option) (r *ai.ExtractArticleContentResponse, err error)
-	AnalyzeSentiment(ctx context.Context, Req *ai.AnalyzeSentimentRequest, callOptions ...callopt.Option) (r *ai.AnalyzeSentimentResponse, err error)
-	RecognizeEntities(ctx context.Context, Req *ai.RecognizeEntitiesRequest, callOptions ...callopt.Option) (r *ai.RecognizeEntitiesResponse, err error)
-	GenerateCollectionName(ctx context.Context, Req *ai.GenerateCollectionNameRequest, callOptions ...callopt.Option) (r *ai.GenerateCollectionNameResponse, err error)
-	GroupContentIntoCollections(ctx context.Context, Req *ai.GroupContentIntoCollectionsRequest, callOptions ...callopt.Option) (r *ai.GroupContentIntoCollectionsResponse, err error)
+	SendMessage(ctx context.Context, Req *ai.SendMessageRequest, callOptions ...streamcall.Option) (stream AIService_SendMessageClient, err error)
+	ListMessages(ctx context.Context, Req *ai.ListMessagesRequest, callOptions ...callopt.Option) (r *ai.ListMessagesResponse, err error)
+	DeleteMessage(ctx context.Context, Req *ai.DeleteMessageRequest, callOptions ...callopt.Option) (r *ai.DeleteMessageResponse, err error)
 }
+
+type AIService_SendMessageClient streaming.ServerStreamingClient[ai.SendMessageResponse]
 
 // NewClient creates a client for the service defined in IDL.
 func NewClient(destService string, opts ...client.Option) (Client, error) {
 	var options []client.Option
 	options = append(options, client.WithDestService(destService))
+
+	options = append(options, client.WithTransportProtocol(transport.GRPC))
 
 	options = append(options, opts...)
 
@@ -57,47 +58,17 @@ func (p *kAIServiceClient) SuggestTags(ctx context.Context, Req *ai.SuggestTagsR
 	return p.kClient.SuggestTags(ctx, Req)
 }
 
-func (p *kAIServiceClient) ClassifyContent(ctx context.Context, Req *ai.ClassifyContentRequest, callOptions ...callopt.Option) (r *ai.ClassifyContentResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.ClassifyContent(ctx, Req)
+func (p *kAIServiceClient) SendMessage(ctx context.Context, Req *ai.SendMessageRequest, callOptions ...streamcall.Option) (stream AIService_SendMessageClient, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, streamcall.GetCallOptions(callOptions))
+	return p.kClient.SendMessage(ctx, Req)
 }
 
-func (p *kAIServiceClient) GenerateSummary(ctx context.Context, Req *ai.GenerateSummaryRequest, callOptions ...callopt.Option) (r *ai.GenerateSummaryResponse, err error) {
+func (p *kAIServiceClient) ListMessages(ctx context.Context, Req *ai.ListMessagesRequest, callOptions ...callopt.Option) (r *ai.ListMessagesResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GenerateSummary(ctx, Req)
+	return p.kClient.ListMessages(ctx, Req)
 }
 
-func (p *kAIServiceClient) FindSimilarContent(ctx context.Context, Req *ai.FindSimilarContentRequest, callOptions ...callopt.Option) (r *ai.FindSimilarContentResponse, err error) {
+func (p *kAIServiceClient) DeleteMessage(ctx context.Context, Req *ai.DeleteMessageRequest, callOptions ...callopt.Option) (r *ai.DeleteMessageResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.FindSimilarContent(ctx, Req)
-}
-
-func (p *kAIServiceClient) EnhanceSearchQuery(ctx context.Context, Req *ai.EnhanceSearchQueryRequest, callOptions ...callopt.Option) (r *ai.EnhanceSearchQueryResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.EnhanceSearchQuery(ctx, Req)
-}
-
-func (p *kAIServiceClient) ExtractArticleContent(ctx context.Context, Req *ai.ExtractArticleContentRequest, callOptions ...callopt.Option) (r *ai.ExtractArticleContentResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.ExtractArticleContent(ctx, Req)
-}
-
-func (p *kAIServiceClient) AnalyzeSentiment(ctx context.Context, Req *ai.AnalyzeSentimentRequest, callOptions ...callopt.Option) (r *ai.AnalyzeSentimentResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.AnalyzeSentiment(ctx, Req)
-}
-
-func (p *kAIServiceClient) RecognizeEntities(ctx context.Context, Req *ai.RecognizeEntitiesRequest, callOptions ...callopt.Option) (r *ai.RecognizeEntitiesResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.RecognizeEntities(ctx, Req)
-}
-
-func (p *kAIServiceClient) GenerateCollectionName(ctx context.Context, Req *ai.GenerateCollectionNameRequest, callOptions ...callopt.Option) (r *ai.GenerateCollectionNameResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GenerateCollectionName(ctx, Req)
-}
-
-func (p *kAIServiceClient) GroupContentIntoCollections(ctx context.Context, Req *ai.GroupContentIntoCollectionsRequest, callOptions ...callopt.Option) (r *ai.GroupContentIntoCollectionsResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GroupContentIntoCollections(ctx, Req)
+	return p.kClient.DeleteMessage(ctx, Req)
 }

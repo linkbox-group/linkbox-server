@@ -4,21 +4,96 @@ package ai
 
 import (
 	"context"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"strconv"
 
+	"github.com/cloudwego/kitex/pkg/streaming"
 	"github.com/cloudwego/prutal"
 )
 
+type SenderType int32
+
+const (
+	SenderType_SENDER_UNSPECIFIED SenderType = 0
+	SenderType_SENDER_USER        SenderType = 1
+	SenderType_SENDER_AI          SenderType = 2
+)
+
+// Enum value maps for SenderType.
+var SenderType_name = map[int32]string{
+	0: "SENDER_UNSPECIFIED",
+	1: "SENDER_USER",
+	2: "SENDER_AI",
+}
+
+var SenderType_value = map[string]int32{
+	"SENDER_UNSPECIFIED": 0,
+	"SENDER_USER":        1,
+	"SENDER_AI":          2,
+}
+
+func (x SenderType) String() string {
+	s, ok := SenderType_name[int32(x)]
+	if ok {
+		return s
+	}
+	return strconv.Itoa(int(x))
+}
+
+type Message struct {
+	UserId     string                 `protobuf:"bytes,5,opt,name=user_id" json:"user_id,omitempty"`
+	Id         string                 `protobuf:"bytes,3,opt,name=id" json:"id,omitempty"`
+	Content    string                 `protobuf:"bytes,1,opt,name=content" json:"content,omitempty"`
+	SenderType SenderType             `protobuf:"varint,2,opt,name=sender_type" json:"sender_type,omitempty"`
+	SendTime   *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=send_time" json:"send_time,omitempty"`
+}
+
+func (x *Message) Reset() { *x = Message{} }
+
+func (x *Message) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *Message) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *Message) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *Message) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Message) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *Message) GetSenderType() SenderType {
+	if x != nil {
+		return x.SenderType
+	}
+	return SenderType_SENDER_UNSPECIFIED
+}
+
+func (x *Message) GetSendTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.SendTime
+	}
+	return nil
+}
+
 // 为内容建议标签请求
 type SuggestTagsRequest struct {
-	UserId              string  `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	ItemId              *string `protobuf:"bytes,2,opt,name=item_id" json:"item_id,omitempty"`
-	Url                 *string `protobuf:"bytes,3,opt,name=url" json:"url,omitempty"`
-	Title               *string `protobuf:"bytes,4,opt,name=title" json:"title,omitempty"`
-	Content             *string `protobuf:"bytes,5,opt,name=content" json:"content,omitempty"`
-	MaxTags             *int32  `protobuf:"varint,6,opt,name=max_tags" json:"max_tags,omitempty"`
-	UseExistingUserTags *bool   `protobuf:"varint,7,opt,name=use_existing_user_tags" json:"use_existing_user_tags,omitempty"`
+	UserId string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
+	ItemId string `protobuf:"bytes,2,opt,name=item_id" json:"item_id,omitempty"`
 }
 
 func (x *SuggestTagsRequest) Reset() { *x = SuggestTagsRequest{} }
@@ -35,54 +110,15 @@ func (x *SuggestTagsRequest) GetUserId() string {
 }
 
 func (x *SuggestTagsRequest) GetItemId() string {
-	if x != nil && x.ItemId != nil {
-		return *x.ItemId
+	if x != nil {
+		return x.ItemId
 	}
 	return ""
-}
-
-func (x *SuggestTagsRequest) GetUrl() string {
-	if x != nil && x.Url != nil {
-		return *x.Url
-	}
-	return ""
-}
-
-func (x *SuggestTagsRequest) GetTitle() string {
-	if x != nil && x.Title != nil {
-		return *x.Title
-	}
-	return ""
-}
-
-func (x *SuggestTagsRequest) GetContent() string {
-	if x != nil && x.Content != nil {
-		return *x.Content
-	}
-	return ""
-}
-
-func (x *SuggestTagsRequest) GetMaxTags() int32 {
-	if x != nil && x.MaxTags != nil {
-		return *x.MaxTags
-	}
-	return 0
-}
-
-func (x *SuggestTagsRequest) GetUseExistingUserTags() bool {
-	if x != nil && x.UseExistingUserTags != nil {
-		return *x.UseExistingUserTags
-	}
-	return false
 }
 
 // 为内容建议标签响应
 type SuggestTagsResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*SuggestTagsResponse_Suggestions
-	//	*SuggestTagsResponse_Error
-	Result isSuggestTagsResponse_Result `protobuf_oneof:"result"`
+	Tags []string `protobuf:"bytes,1,rep,name=tags" json:"tags,omitempty"`
 }
 
 func (x *SuggestTagsResponse) Reset() { *x = SuggestTagsResponse{} }
@@ -91,54 +127,16 @@ func (x *SuggestTagsResponse) Marshal(in []byte) ([]byte, error) { return prutal
 
 func (x *SuggestTagsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *SuggestTagsResponse) GetResult() isSuggestTagsResponse_Result {
+func (x *SuggestTagsResponse) GetTags() []string {
 	if x != nil {
-		return x.Result
+		return x.Tags
 	}
 	return nil
 }
-func (x *SuggestTagsResponse) GetSuggestions() *TagSuggestions {
-	if p, ok := x.GetResult().(*SuggestTagsResponse_Suggestions); ok {
-		return p.Suggestions
-	}
-	return nil
-}
-
-func (x *SuggestTagsResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*SuggestTagsResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*SuggestTagsResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*SuggestTagsResponse_Suggestions)(nil),
-		(*SuggestTagsResponse_Error)(nil),
-	}
-}
-
-type isSuggestTagsResponse_Result interface {
-	isSuggestTagsResponse_Result()
-}
-
-type SuggestTagsResponse_Suggestions struct {
-	Suggestions *TagSuggestions `protobuf:"bytes,1,opt,name=suggestions" json:"suggestions,omitempty"`
-}
-
-func (*SuggestTagsResponse_Suggestions) isSuggestTagsResponse_Result() {}
-
-type SuggestTagsResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*SuggestTagsResponse_Error) isSuggestTagsResponse_Result() {}
 
 // 标签建议
 type TagSuggestions struct {
-	Tags             []*SuggestedTag `protobuf:"bytes,1,rep,name=tags" json:"tags,omitempty"`
-	ExistingUserTags []string        `protobuf:"bytes,2,rep,name=existing_user_tags" json:"existing_user_tags,omitempty"`
+	Tags []string `protobuf:"bytes,1,rep,name=tags" json:"tags,omitempty"`
 }
 
 func (x *TagSuggestions) Reset() { *x = TagSuggestions{} }
@@ -147,1634 +145,164 @@ func (x *TagSuggestions) Marshal(in []byte) ([]byte, error) { return prutal.Mars
 
 func (x *TagSuggestions) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *TagSuggestions) GetTags() []*SuggestedTag {
+func (x *TagSuggestions) GetTags() []string {
 	if x != nil {
 		return x.Tags
 	}
 	return nil
 }
 
-func (x *TagSuggestions) GetExistingUserTags() []string {
-	if x != nil {
-		return x.ExistingUserTags
-	}
-	return nil
+// 发送消息请求
+type SendMessageRequest struct {
+	UserId  string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"` // 用于权限验证
+	Content string `protobuf:"bytes,3,opt,name=content" json:"content,omitempty"`
+	ItemId  string `protobuf:"bytes,4,opt,name=item_id" json:"item_id,omitempty"`
 }
 
-// 建议的标签
-type SuggestedTag struct {
-	Name       string  `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Confidence float32 `protobuf:"fixed32,2,opt,name=confidence" json:"confidence,omitempty"`
-	Source     string  `protobuf:"bytes,3,opt,name=source" json:"source,omitempty"` // "content_analysis", "user_history", "popular_tags"
-}
+func (x *SendMessageRequest) Reset() { *x = SendMessageRequest{} }
 
-func (x *SuggestedTag) Reset() { *x = SuggestedTag{} }
+func (x *SendMessageRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *SuggestedTag) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *SendMessageRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *SuggestedTag) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *SuggestedTag) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *SuggestedTag) GetConfidence() float32 {
-	if x != nil {
-		return x.Confidence
-	}
-	return 0
-}
-
-func (x *SuggestedTag) GetSource() string {
-	if x != nil {
-		return x.Source
-	}
-	return ""
-}
-
-// 自动分类内容请求
-type ClassifyContentRequest struct {
-	UserId  string  `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	ItemId  *string `protobuf:"bytes,2,opt,name=item_id" json:"item_id,omitempty"`
-	Url     *string `protobuf:"bytes,3,opt,name=url" json:"url,omitempty"`
-	Title   *string `protobuf:"bytes,4,opt,name=title" json:"title,omitempty"`
-	Content *string `protobuf:"bytes,5,opt,name=content" json:"content,omitempty"`
-}
-
-func (x *ClassifyContentRequest) Reset() { *x = ClassifyContentRequest{} }
-
-func (x *ClassifyContentRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ClassifyContentRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ClassifyContentRequest) GetUserId() string {
+func (x *SendMessageRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *ClassifyContentRequest) GetItemId() string {
-	if x != nil && x.ItemId != nil {
-		return *x.ItemId
-	}
-	return ""
-}
-
-func (x *ClassifyContentRequest) GetUrl() string {
-	if x != nil && x.Url != nil {
-		return *x.Url
-	}
-	return ""
-}
-
-func (x *ClassifyContentRequest) GetTitle() string {
-	if x != nil && x.Title != nil {
-		return *x.Title
-	}
-	return ""
-}
-
-func (x *ClassifyContentRequest) GetContent() string {
-	if x != nil && x.Content != nil {
-		return *x.Content
-	}
-	return ""
-}
-
-// 自动分类内容响应
-type ClassifyContentResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*ClassifyContentResponse_Classification
-	//	*ClassifyContentResponse_Error
-	Result isClassifyContentResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *ClassifyContentResponse) Reset() { *x = ClassifyContentResponse{} }
-
-func (x *ClassifyContentResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ClassifyContentResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ClassifyContentResponse) GetResult() isClassifyContentResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *ClassifyContentResponse) GetClassification() *ContentClassification {
-	if p, ok := x.GetResult().(*ClassifyContentResponse_Classification); ok {
-		return p.Classification
-	}
-	return nil
-}
-
-func (x *ClassifyContentResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*ClassifyContentResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*ClassifyContentResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*ClassifyContentResponse_Classification)(nil),
-		(*ClassifyContentResponse_Error)(nil),
-	}
-}
-
-type isClassifyContentResponse_Result interface {
-	isClassifyContentResponse_Result()
-}
-
-type ClassifyContentResponse_Classification struct {
-	Classification *ContentClassification `protobuf:"bytes,1,opt,name=classification" json:"classification,omitempty"`
-}
-
-func (*ClassifyContentResponse_Classification) isClassifyContentResponse_Result() {}
-
-type ClassifyContentResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*ClassifyContentResponse_Error) isClassifyContentResponse_Result() {}
-
-// 内容分类
-type ContentClassification struct {
-	Categories []*CategoryPrediction `protobuf:"bytes,1,rep,name=categories" json:"categories,omitempty"`
-	Topics     []*TopicPrediction    `protobuf:"bytes,2,rep,name=topics" json:"topics,omitempty"`
-}
-
-func (x *ContentClassification) Reset() { *x = ContentClassification{} }
-
-func (x *ContentClassification) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ContentClassification) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ContentClassification) GetCategories() []*CategoryPrediction {
-	if x != nil {
-		return x.Categories
-	}
-	return nil
-}
-
-func (x *ContentClassification) GetTopics() []*TopicPrediction {
-	if x != nil {
-		return x.Topics
-	}
-	return nil
-}
-
-// 类别预测
-type CategoryPrediction struct {
-	Category   string  `protobuf:"bytes,1,opt,name=category" json:"category,omitempty"`
-	Confidence float32 `protobuf:"fixed32,2,opt,name=confidence" json:"confidence,omitempty"`
-}
-
-func (x *CategoryPrediction) Reset() { *x = CategoryPrediction{} }
-
-func (x *CategoryPrediction) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *CategoryPrediction) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *CategoryPrediction) GetCategory() string {
-	if x != nil {
-		return x.Category
-	}
-	return ""
-}
-
-func (x *CategoryPrediction) GetConfidence() float32 {
-	if x != nil {
-		return x.Confidence
-	}
-	return 0
-}
-
-// 主题预测
-type TopicPrediction struct {
-	Topic      string   `protobuf:"bytes,1,opt,name=topic" json:"topic,omitempty"`
-	Confidence float32  `protobuf:"fixed32,2,opt,name=confidence" json:"confidence,omitempty"`
-	Keywords   []string `protobuf:"bytes,3,rep,name=keywords" json:"keywords,omitempty"`
-}
-
-func (x *TopicPrediction) Reset() { *x = TopicPrediction{} }
-
-func (x *TopicPrediction) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *TopicPrediction) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *TopicPrediction) GetTopic() string {
-	if x != nil {
-		return x.Topic
-	}
-	return ""
-}
-
-func (x *TopicPrediction) GetConfidence() float32 {
-	if x != nil {
-		return x.Confidence
-	}
-	return 0
-}
-
-func (x *TopicPrediction) GetKeywords() []string {
-	if x != nil {
-		return x.Keywords
-	}
-	return nil
-}
-
-// 生成内容摘要请求
-type GenerateSummaryRequest struct {
-	UserId    string  `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	ItemId    *string `protobuf:"bytes,2,opt,name=item_id" json:"item_id,omitempty"`
-	Url       *string `protobuf:"bytes,3,opt,name=url" json:"url,omitempty"`
-	Content   *string `protobuf:"bytes,4,opt,name=content" json:"content,omitempty"`
-	MaxLength *int32  `protobuf:"varint,5,opt,name=max_length" json:"max_length,omitempty"`
-	Language  *string `protobuf:"bytes,6,opt,name=language" json:"language,omitempty"`
-}
-
-func (x *GenerateSummaryRequest) Reset() { *x = GenerateSummaryRequest{} }
-
-func (x *GenerateSummaryRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GenerateSummaryRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GenerateSummaryRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *GenerateSummaryRequest) GetItemId() string {
-	if x != nil && x.ItemId != nil {
-		return *x.ItemId
-	}
-	return ""
-}
-
-func (x *GenerateSummaryRequest) GetUrl() string {
-	if x != nil && x.Url != nil {
-		return *x.Url
-	}
-	return ""
-}
-
-func (x *GenerateSummaryRequest) GetContent() string {
-	if x != nil && x.Content != nil {
-		return *x.Content
-	}
-	return ""
-}
-
-func (x *GenerateSummaryRequest) GetMaxLength() int32 {
-	if x != nil && x.MaxLength != nil {
-		return *x.MaxLength
-	}
-	return 0
-}
-
-func (x *GenerateSummaryRequest) GetLanguage() string {
-	if x != nil && x.Language != nil {
-		return *x.Language
-	}
-	return ""
-}
-
-// 生成内容摘要响应
-type GenerateSummaryResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*GenerateSummaryResponse_Summary
-	//	*GenerateSummaryResponse_Error
-	Result isGenerateSummaryResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *GenerateSummaryResponse) Reset() { *x = GenerateSummaryResponse{} }
-
-func (x *GenerateSummaryResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GenerateSummaryResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GenerateSummaryResponse) GetResult() isGenerateSummaryResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *GenerateSummaryResponse) GetSummary() *ContentSummary {
-	if p, ok := x.GetResult().(*GenerateSummaryResponse_Summary); ok {
-		return p.Summary
-	}
-	return nil
-}
-
-func (x *GenerateSummaryResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*GenerateSummaryResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GenerateSummaryResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*GenerateSummaryResponse_Summary)(nil),
-		(*GenerateSummaryResponse_Error)(nil),
-	}
-}
-
-type isGenerateSummaryResponse_Result interface {
-	isGenerateSummaryResponse_Result()
-}
-
-type GenerateSummaryResponse_Summary struct {
-	Summary *ContentSummary `protobuf:"bytes,1,opt,name=summary" json:"summary,omitempty"`
-}
-
-func (*GenerateSummaryResponse_Summary) isGenerateSummaryResponse_Result() {}
-
-type GenerateSummaryResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*GenerateSummaryResponse_Error) isGenerateSummaryResponse_Result() {}
-
-// 内容摘要
-type ContentSummary struct {
-	Summary        string   `protobuf:"bytes,1,opt,name=summary" json:"summary,omitempty"`
-	KeyPoints      []string `protobuf:"bytes,2,rep,name=key_points" json:"key_points,omitempty"`
-	OriginalLength int32    `protobuf:"varint,3,opt,name=original_length" json:"original_length,omitempty"`
-	SummaryLength  int32    `protobuf:"varint,4,opt,name=summary_length" json:"summary_length,omitempty"`
-}
-
-func (x *ContentSummary) Reset() { *x = ContentSummary{} }
-
-func (x *ContentSummary) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *ContentSummary) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ContentSummary) GetSummary() string {
-	if x != nil {
-		return x.Summary
-	}
-	return ""
-}
-
-func (x *ContentSummary) GetKeyPoints() []string {
-	if x != nil {
-		return x.KeyPoints
-	}
-	return nil
-}
-
-func (x *ContentSummary) GetOriginalLength() int32 {
-	if x != nil {
-		return x.OriginalLength
-	}
-	return 0
-}
-
-func (x *ContentSummary) GetSummaryLength() int32 {
-	if x != nil {
-		return x.SummaryLength
-	}
-	return 0
-}
-
-// 查找相似内容请求
-type FindSimilarContentRequest struct {
-	UserId        string   `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	ItemId        *string  `protobuf:"bytes,2,opt,name=item_id" json:"item_id,omitempty"`
-	Url           *string  `protobuf:"bytes,3,opt,name=url" json:"url,omitempty"`
-	Content       *string  `protobuf:"bytes,4,opt,name=content" json:"content,omitempty"`
-	MaxResults    *int32   `protobuf:"varint,5,opt,name=max_results" json:"max_results,omitempty"`
-	MinSimilarity *float32 `protobuf:"fixed32,6,opt,name=min_similarity" json:"min_similarity,omitempty"`
-}
-
-func (x *FindSimilarContentRequest) Reset() { *x = FindSimilarContentRequest{} }
-
-func (x *FindSimilarContentRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *FindSimilarContentRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *FindSimilarContentRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *FindSimilarContentRequest) GetItemId() string {
-	if x != nil && x.ItemId != nil {
-		return *x.ItemId
-	}
-	return ""
-}
-
-func (x *FindSimilarContentRequest) GetUrl() string {
-	if x != nil && x.Url != nil {
-		return *x.Url
-	}
-	return ""
-}
-
-func (x *FindSimilarContentRequest) GetContent() string {
-	if x != nil && x.Content != nil {
-		return *x.Content
-	}
-	return ""
-}
-
-func (x *FindSimilarContentRequest) GetMaxResults() int32 {
-	if x != nil && x.MaxResults != nil {
-		return *x.MaxResults
-	}
-	return 0
-}
-
-func (x *FindSimilarContentRequest) GetMinSimilarity() float32 {
-	if x != nil && x.MinSimilarity != nil {
-		return *x.MinSimilarity
-	}
-	return 0
-}
-
-// 查找相似内容响应
-type FindSimilarContentResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*FindSimilarContentResponse_Results
-	//	*FindSimilarContentResponse_Error
-	Result isFindSimilarContentResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *FindSimilarContentResponse) Reset() { *x = FindSimilarContentResponse{} }
-
-func (x *FindSimilarContentResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *FindSimilarContentResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *FindSimilarContentResponse) GetResult() isFindSimilarContentResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *FindSimilarContentResponse) GetResults() *SimilarContentResults {
-	if p, ok := x.GetResult().(*FindSimilarContentResponse_Results); ok {
-		return p.Results
-	}
-	return nil
-}
-
-func (x *FindSimilarContentResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*FindSimilarContentResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*FindSimilarContentResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*FindSimilarContentResponse_Results)(nil),
-		(*FindSimilarContentResponse_Error)(nil),
-	}
-}
-
-type isFindSimilarContentResponse_Result interface {
-	isFindSimilarContentResponse_Result()
-}
-
-type FindSimilarContentResponse_Results struct {
-	Results *SimilarContentResults `protobuf:"bytes,1,opt,name=results" json:"results,omitempty"`
-}
-
-func (*FindSimilarContentResponse_Results) isFindSimilarContentResponse_Result() {}
-
-type FindSimilarContentResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*FindSimilarContentResponse_Error) isFindSimilarContentResponse_Result() {}
-
-// 相似内容结果
-type SimilarContentResults struct {
-	Items            []*SimilarContentItem `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
-	SimilarityMethod string                `protobuf:"bytes,2,opt,name=similarity_method" json:"similarity_method,omitempty"`
-}
-
-func (x *SimilarContentResults) Reset() { *x = SimilarContentResults{} }
-
-func (x *SimilarContentResults) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *SimilarContentResults) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *SimilarContentResults) GetItems() []*SimilarContentItem {
-	if x != nil {
-		return x.Items
-	}
-	return nil
-}
-
-func (x *SimilarContentResults) GetSimilarityMethod() string {
-	if x != nil {
-		return x.SimilarityMethod
-	}
-	return ""
-}
-
-// 相似内容项
-type SimilarContentItem struct {
-	ItemId           string   `protobuf:"bytes,1,opt,name=item_id" json:"item_id,omitempty"`
-	Title            string   `protobuf:"bytes,2,opt,name=title" json:"title,omitempty"`
-	Url              string   `protobuf:"bytes,3,opt,name=url" json:"url,omitempty"`
-	SimilarityScore  float32  `protobuf:"fixed32,4,opt,name=similarity_score" json:"similarity_score,omitempty"`
-	MatchingFeatures []string `protobuf:"bytes,5,rep,name=matching_features" json:"matching_features,omitempty"`
-}
-
-func (x *SimilarContentItem) Reset() { *x = SimilarContentItem{} }
-
-func (x *SimilarContentItem) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *SimilarContentItem) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *SimilarContentItem) GetItemId() string {
-	if x != nil {
-		return x.ItemId
-	}
-	return ""
-}
-
-func (x *SimilarContentItem) GetTitle() string {
-	if x != nil {
-		return x.Title
-	}
-	return ""
-}
-
-func (x *SimilarContentItem) GetUrl() string {
-	if x != nil {
-		return x.Url
-	}
-	return ""
-}
-
-func (x *SimilarContentItem) GetSimilarityScore() float32 {
-	if x != nil {
-		return x.SimilarityScore
-	}
-	return 0
-}
-
-func (x *SimilarContentItem) GetMatchingFeatures() []string {
-	if x != nil {
-		return x.MatchingFeatures
-	}
-	return nil
-}
-
-// 增强搜索查询请求
-type EnhanceSearchQueryRequest struct {
-	UserId          string  `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	OriginalQuery   string  `protobuf:"bytes,2,opt,name=original_query" json:"original_query,omitempty"`
-	Language        *string `protobuf:"bytes,3,opt,name=language" json:"language,omitempty"`
-	ExpandAcronyms  *bool   `protobuf:"varint,4,opt,name=expand_acronyms" json:"expand_acronyms,omitempty"`
-	AddSynonyms     *bool   `protobuf:"varint,5,opt,name=add_synonyms" json:"add_synonyms,omitempty"`
-	CorrectSpelling *bool   `protobuf:"varint,6,opt,name=correct_spelling" json:"correct_spelling,omitempty"`
-}
-
-func (x *EnhanceSearchQueryRequest) Reset() { *x = EnhanceSearchQueryRequest{} }
-
-func (x *EnhanceSearchQueryRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *EnhanceSearchQueryRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *EnhanceSearchQueryRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *EnhanceSearchQueryRequest) GetOriginalQuery() string {
-	if x != nil {
-		return x.OriginalQuery
-	}
-	return ""
-}
-
-func (x *EnhanceSearchQueryRequest) GetLanguage() string {
-	if x != nil && x.Language != nil {
-		return *x.Language
-	}
-	return ""
-}
-
-func (x *EnhanceSearchQueryRequest) GetExpandAcronyms() bool {
-	if x != nil && x.ExpandAcronyms != nil {
-		return *x.ExpandAcronyms
-	}
-	return false
-}
-
-func (x *EnhanceSearchQueryRequest) GetAddSynonyms() bool {
-	if x != nil && x.AddSynonyms != nil {
-		return *x.AddSynonyms
-	}
-	return false
-}
-
-func (x *EnhanceSearchQueryRequest) GetCorrectSpelling() bool {
-	if x != nil && x.CorrectSpelling != nil {
-		return *x.CorrectSpelling
-	}
-	return false
-}
-
-// 增强搜索查询响应
-type EnhanceSearchQueryResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*EnhanceSearchQueryResponse_EnhancedQuery
-	//	*EnhanceSearchQueryResponse_Error
-	Result isEnhanceSearchQueryResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *EnhanceSearchQueryResponse) Reset() { *x = EnhanceSearchQueryResponse{} }
-
-func (x *EnhanceSearchQueryResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *EnhanceSearchQueryResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *EnhanceSearchQueryResponse) GetResult() isEnhanceSearchQueryResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *EnhanceSearchQueryResponse) GetEnhancedQuery() *EnhancedQuery {
-	if p, ok := x.GetResult().(*EnhanceSearchQueryResponse_EnhancedQuery); ok {
-		return p.EnhancedQuery
-	}
-	return nil
-}
-
-func (x *EnhanceSearchQueryResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*EnhanceSearchQueryResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*EnhanceSearchQueryResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*EnhanceSearchQueryResponse_EnhancedQuery)(nil),
-		(*EnhanceSearchQueryResponse_Error)(nil),
-	}
-}
-
-type isEnhanceSearchQueryResponse_Result interface {
-	isEnhanceSearchQueryResponse_Result()
-}
-
-type EnhanceSearchQueryResponse_EnhancedQuery struct {
-	EnhancedQuery *EnhancedQuery `protobuf:"bytes,1,opt,name=enhanced_query" json:"enhanced_query,omitempty"`
-}
-
-func (*EnhanceSearchQueryResponse_EnhancedQuery) isEnhanceSearchQueryResponse_Result() {}
-
-type EnhanceSearchQueryResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*EnhanceSearchQueryResponse_Error) isEnhanceSearchQueryResponse_Result() {}
-
-// 增强查询
-type EnhancedQuery struct {
-	EnhancedQuery      string               `protobuf:"bytes,1,opt,name=enhanced_query" json:"enhanced_query,omitempty"`
-	Modifications      []*QueryModification `protobuf:"bytes,2,rep,name=modifications" json:"modifications,omitempty"`
-	AlternativeQueries []string             `protobuf:"bytes,3,rep,name=alternative_queries" json:"alternative_queries,omitempty"`
-}
-
-func (x *EnhancedQuery) Reset() { *x = EnhancedQuery{} }
-
-func (x *EnhancedQuery) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *EnhancedQuery) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *EnhancedQuery) GetEnhancedQuery() string {
-	if x != nil {
-		return x.EnhancedQuery
-	}
-	return ""
-}
-
-func (x *EnhancedQuery) GetModifications() []*QueryModification {
-	if x != nil {
-		return x.Modifications
-	}
-	return nil
-}
-
-func (x *EnhancedQuery) GetAlternativeQueries() []string {
-	if x != nil {
-		return x.AlternativeQueries
-	}
-	return nil
-}
-
-// 查询修改
-type QueryModification struct {
-	Type     string `protobuf:"bytes,1,opt,name=type" json:"type,omitempty"` // "synonym", "correction", "expansion"
-	Original string `protobuf:"bytes,2,opt,name=original" json:"original,omitempty"`
-	Modified string `protobuf:"bytes,3,opt,name=modified" json:"modified,omitempty"`
-}
-
-func (x *QueryModification) Reset() { *x = QueryModification{} }
-
-func (x *QueryModification) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *QueryModification) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *QueryModification) GetType() string {
-	if x != nil {
-		return x.Type
-	}
-	return ""
-}
-
-func (x *QueryModification) GetOriginal() string {
-	if x != nil {
-		return x.Original
-	}
-	return ""
-}
-
-func (x *QueryModification) GetModified() string {
-	if x != nil {
-		return x.Modified
-	}
-	return ""
-}
-
-// 提取文章内容请求
-type ExtractArticleContentRequest struct {
-	UserId        string `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	Url           string `protobuf:"bytes,2,opt,name=url" json:"url,omitempty"`
-	IncludeImages *bool  `protobuf:"varint,3,opt,name=include_images" json:"include_images,omitempty"`
-	CleanLayout   *bool  `protobuf:"varint,4,opt,name=clean_layout" json:"clean_layout,omitempty"`
-}
-
-func (x *ExtractArticleContentRequest) Reset() { *x = ExtractArticleContentRequest{} }
-
-func (x *ExtractArticleContentRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ExtractArticleContentRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ExtractArticleContentRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *ExtractArticleContentRequest) GetUrl() string {
-	if x != nil {
-		return x.Url
-	}
-	return ""
-}
-
-func (x *ExtractArticleContentRequest) GetIncludeImages() bool {
-	if x != nil && x.IncludeImages != nil {
-		return *x.IncludeImages
-	}
-	return false
-}
-
-func (x *ExtractArticleContentRequest) GetCleanLayout() bool {
-	if x != nil && x.CleanLayout != nil {
-		return *x.CleanLayout
-	}
-	return false
-}
-
-// 提取文章内容响应
-type ExtractArticleContentResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*ExtractArticleContentResponse_Content
-	//	*ExtractArticleContentResponse_Error
-	Result isExtractArticleContentResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *ExtractArticleContentResponse) Reset() { *x = ExtractArticleContentResponse{} }
-
-func (x *ExtractArticleContentResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *ExtractArticleContentResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ExtractArticleContentResponse) GetResult() isExtractArticleContentResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *ExtractArticleContentResponse) GetContent() *ArticleContent {
-	if p, ok := x.GetResult().(*ExtractArticleContentResponse_Content); ok {
-		return p.Content
-	}
-	return nil
-}
-
-func (x *ExtractArticleContentResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*ExtractArticleContentResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*ExtractArticleContentResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*ExtractArticleContentResponse_Content)(nil),
-		(*ExtractArticleContentResponse_Error)(nil),
-	}
-}
-
-type isExtractArticleContentResponse_Result interface {
-	isExtractArticleContentResponse_Result()
-}
-
-type ExtractArticleContentResponse_Content struct {
-	Content *ArticleContent `protobuf:"bytes,1,opt,name=content" json:"content,omitempty"`
-}
-
-func (*ExtractArticleContentResponse_Content) isExtractArticleContentResponse_Result() {}
-
-type ExtractArticleContentResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*ExtractArticleContentResponse_Error) isExtractArticleContentResponse_Result() {}
-
-// 文章内容
-type ArticleContent struct {
-	Title           string                 `protobuf:"bytes,1,opt,name=title" json:"title,omitempty"`
-	Author          string                 `protobuf:"bytes,2,opt,name=author" json:"author,omitempty"`
-	PublishDate     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=publish_date" json:"publish_date,omitempty"`
-	Content         string                 `protobuf:"bytes,4,opt,name=content" json:"content,omitempty"`
-	Images          []string               `protobuf:"bytes,5,rep,name=images" json:"images,omitempty"`
-	WordCount       int32                  `protobuf:"varint,6,opt,name=word_count" json:"word_count,omitempty"`
-	ReadTimeMinutes int32                  `protobuf:"varint,7,opt,name=read_time_minutes" json:"read_time_minutes,omitempty"`
-}
-
-func (x *ArticleContent) Reset() { *x = ArticleContent{} }
-
-func (x *ArticleContent) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *ArticleContent) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ArticleContent) GetTitle() string {
-	if x != nil {
-		return x.Title
-	}
-	return ""
-}
-
-func (x *ArticleContent) GetAuthor() string {
-	if x != nil {
-		return x.Author
-	}
-	return ""
-}
-
-func (x *ArticleContent) GetPublishDate() *timestamppb.Timestamp {
-	if x != nil {
-		return x.PublishDate
-	}
-	return nil
-}
-
-func (x *ArticleContent) GetContent() string {
+func (x *SendMessageRequest) GetContent() string {
 	if x != nil {
 		return x.Content
 	}
 	return ""
 }
 
-func (x *ArticleContent) GetImages() []string {
+func (x *SendMessageRequest) GetItemId() string {
 	if x != nil {
-		return x.Images
+		return x.ItemId
+	}
+	return ""
+}
+
+type SendMessageResponse struct {
+	Message *Message `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
+}
+
+func (x *SendMessageResponse) Reset() { *x = SendMessageResponse{} }
+
+func (x *SendMessageResponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *SendMessageResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *SendMessageResponse) GetMessage() *Message {
+	if x != nil {
+		return x.Message
 	}
 	return nil
 }
 
-func (x *ArticleContent) GetWordCount() int32 {
-	if x != nil {
-		return x.WordCount
-	}
-	return 0
+// 获取消息列表请求
+type ListMessagesRequest struct {
+	UserId     string                        `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"` // 用于权限验证
+	Pagination *pagination.PaginationRequest `protobuf:"bytes,3,opt,name=pagination" json:"pagination,omitempty"`
 }
 
-func (x *ArticleContent) GetReadTimeMinutes() int32 {
-	if x != nil {
-		return x.ReadTimeMinutes
-	}
-	return 0
-}
+func (x *ListMessagesRequest) Reset() { *x = ListMessagesRequest{} }
 
-// 分析内容情绪请求
-type AnalyzeSentimentRequest struct {
-	UserId string  `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	ItemId *string `protobuf:"bytes,2,opt,name=item_id" json:"item_id,omitempty"`
-	Text   *string `protobuf:"bytes,3,opt,name=text" json:"text,omitempty"`
-	Url    *string `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
-}
+func (x *ListMessagesRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *AnalyzeSentimentRequest) Reset() { *x = AnalyzeSentimentRequest{} }
+func (x *ListMessagesRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *AnalyzeSentimentRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *AnalyzeSentimentRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *AnalyzeSentimentRequest) GetUserId() string {
+func (x *ListMessagesRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *AnalyzeSentimentRequest) GetItemId() string {
-	if x != nil && x.ItemId != nil {
-		return *x.ItemId
-	}
-	return ""
-}
-
-func (x *AnalyzeSentimentRequest) GetText() string {
-	if x != nil && x.Text != nil {
-		return *x.Text
-	}
-	return ""
-}
-
-func (x *AnalyzeSentimentRequest) GetUrl() string {
-	if x != nil && x.Url != nil {
-		return *x.Url
-	}
-	return ""
-}
-
-// 分析内容情绪响应
-type AnalyzeSentimentResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*AnalyzeSentimentResponse_Sentiment
-	//	*AnalyzeSentimentResponse_Error
-	Result isAnalyzeSentimentResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *AnalyzeSentimentResponse) Reset() { *x = AnalyzeSentimentResponse{} }
-
-func (x *AnalyzeSentimentResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *AnalyzeSentimentResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *AnalyzeSentimentResponse) GetResult() isAnalyzeSentimentResponse_Result {
+func (x *ListMessagesRequest) GetPagination() *pagination.PaginationRequest {
 	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *AnalyzeSentimentResponse) GetSentiment() *SentimentAnalysis {
-	if p, ok := x.GetResult().(*AnalyzeSentimentResponse_Sentiment); ok {
-		return p.Sentiment
+		return x.Pagination
 	}
 	return nil
 }
 
-func (x *AnalyzeSentimentResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*AnalyzeSentimentResponse_Error); ok {
-		return p.Error
+type ListMessagesResponse struct {
+	Messages   []*Message                 `protobuf:"bytes,1,rep,name=messages" json:"messages,omitempty"`
+	Pagination *pagination.PaginationMeta `protobuf:"bytes,2,opt,name=pagination" json:"pagination,omitempty"`
+}
+
+func (x *ListMessagesResponse) Reset() { *x = ListMessagesResponse{} }
+
+func (x *ListMessagesResponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *ListMessagesResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *ListMessagesResponse) GetMessages() []*Message {
+	if x != nil {
+		return x.Messages
 	}
 	return nil
 }
 
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*AnalyzeSentimentResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*AnalyzeSentimentResponse_Sentiment)(nil),
-		(*AnalyzeSentimentResponse_Error)(nil),
-	}
-}
-
-type isAnalyzeSentimentResponse_Result interface {
-	isAnalyzeSentimentResponse_Result()
-}
-
-type AnalyzeSentimentResponse_Sentiment struct {
-	Sentiment *SentimentAnalysis `protobuf:"bytes,1,opt,name=sentiment" json:"sentiment,omitempty"`
-}
-
-func (*AnalyzeSentimentResponse_Sentiment) isAnalyzeSentimentResponse_Result() {}
-
-type AnalyzeSentimentResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*AnalyzeSentimentResponse_Error) isAnalyzeSentimentResponse_Result() {}
-
-// 情绪分析
-type SentimentAnalysis struct {
-	PositiveScore    float32             `protobuf:"fixed32,1,opt,name=positive_score" json:"positive_score,omitempty"`
-	NegativeScore    float32             `protobuf:"fixed32,2,opt,name=negative_score" json:"negative_score,omitempty"`
-	NeutralScore     float32             `protobuf:"fixed32,3,opt,name=neutral_score" json:"neutral_score,omitempty"`
-	OverallSentiment string              `protobuf:"bytes,4,opt,name=overall_sentiment" json:"overall_sentiment,omitempty"`
-	Sentences        []*SentenceAnalysis `protobuf:"bytes,5,rep,name=sentences" json:"sentences,omitempty"`
-}
-
-func (x *SentimentAnalysis) Reset() { *x = SentimentAnalysis{} }
-
-func (x *SentimentAnalysis) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *SentimentAnalysis) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *SentimentAnalysis) GetPositiveScore() float32 {
+func (x *ListMessagesResponse) GetPagination() *pagination.PaginationMeta {
 	if x != nil {
-		return x.PositiveScore
-	}
-	return 0
-}
-
-func (x *SentimentAnalysis) GetNegativeScore() float32 {
-	if x != nil {
-		return x.NegativeScore
-	}
-	return 0
-}
-
-func (x *SentimentAnalysis) GetNeutralScore() float32 {
-	if x != nil {
-		return x.NeutralScore
-	}
-	return 0
-}
-
-func (x *SentimentAnalysis) GetOverallSentiment() string {
-	if x != nil {
-		return x.OverallSentiment
-	}
-	return ""
-}
-
-func (x *SentimentAnalysis) GetSentences() []*SentenceAnalysis {
-	if x != nil {
-		return x.Sentences
+		return x.Pagination
 	}
 	return nil
 }
 
-// 句子分析
-type SentenceAnalysis struct {
-	Text       string  `protobuf:"bytes,1,opt,name=text" json:"text,omitempty"`
-	Sentiment  string  `protobuf:"bytes,2,opt,name=sentiment" json:"sentiment,omitempty"`
-	Confidence float32 `protobuf:"fixed32,3,opt,name=confidence" json:"confidence,omitempty"`
+type DeleteMessageRequest struct {
+	Ids    []string `protobuf:"bytes,1,rep,name=ids" json:"ids,omitempty"`
+	UserId string   `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"` // 用于权限验证
 }
 
-func (x *SentenceAnalysis) Reset() { *x = SentenceAnalysis{} }
+func (x *DeleteMessageRequest) Reset() { *x = DeleteMessageRequest{} }
 
-func (x *SentenceAnalysis) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+func (x *DeleteMessageRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
 
-func (x *SentenceAnalysis) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *DeleteMessageRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *SentenceAnalysis) GetText() string {
+func (x *DeleteMessageRequest) GetIds() []string {
 	if x != nil {
-		return x.Text
+		return x.Ids
 	}
-	return ""
+	return nil
 }
 
-func (x *SentenceAnalysis) GetSentiment() string {
-	if x != nil {
-		return x.Sentiment
-	}
-	return ""
-}
-
-func (x *SentenceAnalysis) GetConfidence() float32 {
-	if x != nil {
-		return x.Confidence
-	}
-	return 0
-}
-
-// 识别实体请求
-type RecognizeEntitiesRequest struct {
-	UserId      string  `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	ItemId      *string `protobuf:"bytes,2,opt,name=item_id" json:"item_id,omitempty"`
-	Text        *string `protobuf:"bytes,3,opt,name=text" json:"text,omitempty"`
-	Url         *string `protobuf:"bytes,4,opt,name=url" json:"url,omitempty"`
-	EntityTypes *string `protobuf:"bytes,5,opt,name=entity_types" json:"entity_types,omitempty"`
-}
-
-func (x *RecognizeEntitiesRequest) Reset() { *x = RecognizeEntitiesRequest{} }
-
-func (x *RecognizeEntitiesRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *RecognizeEntitiesRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *RecognizeEntitiesRequest) GetUserId() string {
+func (x *DeleteMessageRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *RecognizeEntitiesRequest) GetItemId() string {
-	if x != nil && x.ItemId != nil {
-		return *x.ItemId
-	}
-	return ""
+type DeleteMessageResponse struct {
+	Success bool `protobuf:"varint,1,opt,name=success" json:"success,omitempty"`
 }
 
-func (x *RecognizeEntitiesRequest) GetText() string {
-	if x != nil && x.Text != nil {
-		return *x.Text
-	}
-	return ""
-}
+func (x *DeleteMessageResponse) Reset() { *x = DeleteMessageResponse{} }
 
-func (x *RecognizeEntitiesRequest) GetUrl() string {
-	if x != nil && x.Url != nil {
-		return *x.Url
-	}
-	return ""
-}
-
-func (x *RecognizeEntitiesRequest) GetEntityTypes() string {
-	if x != nil && x.EntityTypes != nil {
-		return *x.EntityTypes
-	}
-	return ""
-}
-
-// 识别实体响应
-type RecognizeEntitiesResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*RecognizeEntitiesResponse_Entities
-	//	*RecognizeEntitiesResponse_Error
-	Result isRecognizeEntitiesResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *RecognizeEntitiesResponse) Reset() { *x = RecognizeEntitiesResponse{} }
-
-func (x *RecognizeEntitiesResponse) Marshal(in []byte) ([]byte, error) {
+func (x *DeleteMessageResponse) Marshal(in []byte) ([]byte, error) {
 	return prutal.MarshalAppend(in, x)
 }
 
-func (x *RecognizeEntitiesResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+func (x *DeleteMessageResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
 
-func (x *RecognizeEntitiesResponse) GetResult() isRecognizeEntitiesResponse_Result {
+func (x *DeleteMessageResponse) GetSuccess() bool {
 	if x != nil {
-		return x.Result
+		return x.Success
 	}
-	return nil
-}
-func (x *RecognizeEntitiesResponse) GetEntities() *EntitiesRecognition {
-	if p, ok := x.GetResult().(*RecognizeEntitiesResponse_Entities); ok {
-		return p.Entities
-	}
-	return nil
-}
-
-func (x *RecognizeEntitiesResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*RecognizeEntitiesResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*RecognizeEntitiesResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*RecognizeEntitiesResponse_Entities)(nil),
-		(*RecognizeEntitiesResponse_Error)(nil),
-	}
-}
-
-type isRecognizeEntitiesResponse_Result interface {
-	isRecognizeEntitiesResponse_Result()
-}
-
-type RecognizeEntitiesResponse_Entities struct {
-	Entities *EntitiesRecognition `protobuf:"bytes,1,opt,name=entities" json:"entities,omitempty"`
-}
-
-func (*RecognizeEntitiesResponse_Entities) isRecognizeEntitiesResponse_Result() {}
-
-type RecognizeEntitiesResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*RecognizeEntitiesResponse_Error) isRecognizeEntitiesResponse_Result() {}
-
-// 实体识别
-type EntitiesRecognition struct {
-	Entities      []*RecognizedEntity `protobuf:"bytes,1,rep,name=entities" json:"entities,omitempty"`
-	TotalEntities int32               `protobuf:"varint,2,opt,name=total_entities" json:"total_entities,omitempty"`
-}
-
-func (x *EntitiesRecognition) Reset() { *x = EntitiesRecognition{} }
-
-func (x *EntitiesRecognition) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *EntitiesRecognition) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *EntitiesRecognition) GetEntities() []*RecognizedEntity {
-	if x != nil {
-		return x.Entities
-	}
-	return nil
-}
-
-func (x *EntitiesRecognition) GetTotalEntities() int32 {
-	if x != nil {
-		return x.TotalEntities
-	}
-	return 0
-}
-
-// 识别的实体
-type RecognizedEntity struct {
-	Name       string   `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Type       string   `protobuf:"bytes,2,opt,name=type" json:"type,omitempty"` // "PERSON", "ORGANIZATION", "LOCATION", "PRODUCT", etc.
-	Confidence float32  `protobuf:"fixed32,3,opt,name=confidence" json:"confidence,omitempty"`
-	Mentions   []string `protobuf:"bytes,4,rep,name=mentions" json:"mentions,omitempty"` // 文本中的具体提及
-}
-
-func (x *RecognizedEntity) Reset() { *x = RecognizedEntity{} }
-
-func (x *RecognizedEntity) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *RecognizedEntity) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *RecognizedEntity) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *RecognizedEntity) GetType() string {
-	if x != nil {
-		return x.Type
-	}
-	return ""
-}
-
-func (x *RecognizedEntity) GetConfidence() float32 {
-	if x != nil {
-		return x.Confidence
-	}
-	return 0
-}
-
-func (x *RecognizedEntity) GetMentions() []string {
-	if x != nil {
-		return x.Mentions
-	}
-	return nil
-}
-
-// 生成收藏夹名称请求
-type GenerateCollectionNameRequest struct {
-	UserId  string   `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	ItemIds []string `protobuf:"bytes,2,rep,name=item_ids" json:"item_ids,omitempty"`
-}
-
-func (x *GenerateCollectionNameRequest) Reset() { *x = GenerateCollectionNameRequest{} }
-
-func (x *GenerateCollectionNameRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GenerateCollectionNameRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GenerateCollectionNameRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *GenerateCollectionNameRequest) GetItemIds() []string {
-	if x != nil {
-		return x.ItemIds
-	}
-	return nil
-}
-
-// 生成收藏夹名称响应
-type GenerateCollectionNameResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*GenerateCollectionNameResponse_Suggestions
-	//	*GenerateCollectionNameResponse_Error
-	Result isGenerateCollectionNameResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *GenerateCollectionNameResponse) Reset() { *x = GenerateCollectionNameResponse{} }
-
-func (x *GenerateCollectionNameResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GenerateCollectionNameResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GenerateCollectionNameResponse) GetResult() isGenerateCollectionNameResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *GenerateCollectionNameResponse) GetSuggestions() *CollectionNameSuggestions {
-	if p, ok := x.GetResult().(*GenerateCollectionNameResponse_Suggestions); ok {
-		return p.Suggestions
-	}
-	return nil
-}
-
-func (x *GenerateCollectionNameResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*GenerateCollectionNameResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GenerateCollectionNameResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*GenerateCollectionNameResponse_Suggestions)(nil),
-		(*GenerateCollectionNameResponse_Error)(nil),
-	}
-}
-
-type isGenerateCollectionNameResponse_Result interface {
-	isGenerateCollectionNameResponse_Result()
-}
-
-type GenerateCollectionNameResponse_Suggestions struct {
-	Suggestions *CollectionNameSuggestions `protobuf:"bytes,1,opt,name=suggestions" json:"suggestions,omitempty"`
-}
-
-func (*GenerateCollectionNameResponse_Suggestions) isGenerateCollectionNameResponse_Result() {}
-
-type GenerateCollectionNameResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*GenerateCollectionNameResponse_Error) isGenerateCollectionNameResponse_Result() {}
-
-// 收藏夹名称建议
-type CollectionNameSuggestions struct {
-	SuggestedNames []string `protobuf:"bytes,1,rep,name=suggested_names" json:"suggested_names,omitempty"`
-	CommonTheme    string   `protobuf:"bytes,2,opt,name=common_theme" json:"common_theme,omitempty"`
-}
-
-func (x *CollectionNameSuggestions) Reset() { *x = CollectionNameSuggestions{} }
-
-func (x *CollectionNameSuggestions) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *CollectionNameSuggestions) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *CollectionNameSuggestions) GetSuggestedNames() []string {
-	if x != nil {
-		return x.SuggestedNames
-	}
-	return nil
-}
-
-func (x *CollectionNameSuggestions) GetCommonTheme() string {
-	if x != nil {
-		return x.CommonTheme
-	}
-	return ""
-}
-
-// 将内容分组到收藏夹请求
-type GroupContentIntoCollectionsRequest struct {
-	UserId         string   `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	ItemIds        []string `protobuf:"bytes,2,rep,name=item_ids" json:"item_ids,omitempty"`
-	MaxCollections *int32   `protobuf:"varint,3,opt,name=max_collections" json:"max_collections,omitempty"`
-}
-
-func (x *GroupContentIntoCollectionsRequest) Reset() { *x = GroupContentIntoCollectionsRequest{} }
-
-func (x *GroupContentIntoCollectionsRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GroupContentIntoCollectionsRequest) Unmarshal(in []byte) error {
-	return prutal.Unmarshal(in, x)
-}
-
-func (x *GroupContentIntoCollectionsRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *GroupContentIntoCollectionsRequest) GetItemIds() []string {
-	if x != nil {
-		return x.ItemIds
-	}
-	return nil
-}
-
-func (x *GroupContentIntoCollectionsRequest) GetMaxCollections() int32 {
-	if x != nil && x.MaxCollections != nil {
-		return *x.MaxCollections
-	}
-	return 0
-}
-
-// 将内容分组到收藏夹响应
-type GroupContentIntoCollectionsResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*GroupContentIntoCollectionsResponse_Groups
-	//	*GroupContentIntoCollectionsResponse_Error
-	Result isGroupContentIntoCollectionsResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *GroupContentIntoCollectionsResponse) Reset() { *x = GroupContentIntoCollectionsResponse{} }
-
-func (x *GroupContentIntoCollectionsResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GroupContentIntoCollectionsResponse) Unmarshal(in []byte) error {
-	return prutal.Unmarshal(in, x)
-}
-
-func (x *GroupContentIntoCollectionsResponse) GetResult() isGroupContentIntoCollectionsResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *GroupContentIntoCollectionsResponse) GetGroups() *ContentGroups {
-	if p, ok := x.GetResult().(*GroupContentIntoCollectionsResponse_Groups); ok {
-		return p.Groups
-	}
-	return nil
-}
-
-func (x *GroupContentIntoCollectionsResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*GroupContentIntoCollectionsResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GroupContentIntoCollectionsResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*GroupContentIntoCollectionsResponse_Groups)(nil),
-		(*GroupContentIntoCollectionsResponse_Error)(nil),
-	}
-}
-
-type isGroupContentIntoCollectionsResponse_Result interface {
-	isGroupContentIntoCollectionsResponse_Result()
-}
-
-type GroupContentIntoCollectionsResponse_Groups struct {
-	Groups *ContentGroups `protobuf:"bytes,1,opt,name=groups" json:"groups,omitempty"`
-}
-
-func (*GroupContentIntoCollectionsResponse_Groups) isGroupContentIntoCollectionsResponse_Result() {}
-
-type GroupContentIntoCollectionsResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*GroupContentIntoCollectionsResponse_Error) isGroupContentIntoCollectionsResponse_Result() {}
-
-// 内容分组
-type ContentGroups struct {
-	Groups []*ContentGroup `protobuf:"bytes,1,rep,name=groups" json:"groups,omitempty"`
-}
-
-func (x *ContentGroups) Reset() { *x = ContentGroups{} }
-
-func (x *ContentGroups) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *ContentGroups) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ContentGroups) GetGroups() []*ContentGroup {
-	if x != nil {
-		return x.Groups
-	}
-	return nil
-}
-
-// 内容组
-type ContentGroup struct {
-	SuggestedName    string   `protobuf:"bytes,1,opt,name=suggested_name" json:"suggested_name,omitempty"`
-	ThemeDescription string   `protobuf:"bytes,2,opt,name=theme_description" json:"theme_description,omitempty"`
-	ItemIds          []string `protobuf:"bytes,3,rep,name=item_ids" json:"item_ids,omitempty"`
-	CommonTags       []string `protobuf:"bytes,4,rep,name=common_tags" json:"common_tags,omitempty"`
-}
-
-func (x *ContentGroup) Reset() { *x = ContentGroup{} }
-
-func (x *ContentGroup) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *ContentGroup) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *ContentGroup) GetSuggestedName() string {
-	if x != nil {
-		return x.SuggestedName
-	}
-	return ""
-}
-
-func (x *ContentGroup) GetThemeDescription() string {
-	if x != nil {
-		return x.ThemeDescription
-	}
-	return ""
-}
-
-func (x *ContentGroup) GetItemIds() []string {
-	if x != nil {
-		return x.ItemIds
-	}
-	return nil
-}
-
-func (x *ContentGroup) GetCommonTags() []string {
-	if x != nil {
-		return x.CommonTags
-	}
-	return nil
+	return false
 }
 
 type AIService interface {
 	SuggestTags(ctx context.Context, req *SuggestTagsRequest) (res *SuggestTagsResponse, err error)
-	ClassifyContent(ctx context.Context, req *ClassifyContentRequest) (res *ClassifyContentResponse, err error)
-	GenerateSummary(ctx context.Context, req *GenerateSummaryRequest) (res *GenerateSummaryResponse, err error)
-	FindSimilarContent(ctx context.Context, req *FindSimilarContentRequest) (res *FindSimilarContentResponse, err error)
-	EnhanceSearchQuery(ctx context.Context, req *EnhanceSearchQueryRequest) (res *EnhanceSearchQueryResponse, err error)
-	ExtractArticleContent(ctx context.Context, req *ExtractArticleContentRequest) (res *ExtractArticleContentResponse, err error)
-	AnalyzeSentiment(ctx context.Context, req *AnalyzeSentimentRequest) (res *AnalyzeSentimentResponse, err error)
-	RecognizeEntities(ctx context.Context, req *RecognizeEntitiesRequest) (res *RecognizeEntitiesResponse, err error)
-	GenerateCollectionName(ctx context.Context, req *GenerateCollectionNameRequest) (res *GenerateCollectionNameResponse, err error)
-	GroupContentIntoCollections(ctx context.Context, req *GroupContentIntoCollectionsRequest) (res *GroupContentIntoCollectionsResponse, err error)
+	SendMessage(ctx context.Context, req *SendMessageRequest, stream AIService_SendMessageServer) (err error)
+	ListMessages(ctx context.Context, req *ListMessagesRequest) (res *ListMessagesResponse, err error)
+	DeleteMessage(ctx context.Context, req *DeleteMessageRequest) (res *DeleteMessageResponse, err error)
 }
+
+type AIService_SendMessageServer streaming.ServerStreamingServer[SendMessageResponse]

@@ -11,6 +11,7 @@ func NewServer(handler ai.AIService, opts ...server.Option) server.Server {
 	var options []server.Option
 
 	options = append(options, opts...)
+	options = append(options, server.WithCompatibleMiddlewareForUnary())
 
 	svr := server.NewServer(options...)
 	if err := svr.RegisterService(serviceInfo(), handler); err != nil {
