@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"github.com/linkbox-group/linkbox-server/model/treemodel"
+	"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
 
 	"github.com/gin-gonic/gin"
@@ -39,7 +40,7 @@ func (a *OrganizationAPI) CreateOrganization(c *gin.Context) {
 		return
 	}
 	orgReq := organization.CreateOrganizationRequest{
-		UserId:      userId,
+		UserId:      UserID,
 		Name:        req.Name,
 		ParentCode:  &req.ParentCode,
 		Description: &req.Description,
@@ -141,13 +142,11 @@ func (a *OrganizationAPI) UpdateOrganization(c *gin.Context) {
 func (a *OrganizationAPI) DeleteOrganization(c *gin.Context) {
 	orgID := c.Param("id")
 	cascade := c.DefaultQuery("cascade", "false")
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
 		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
-	cascade := c.DefaultQuery("cascade", "false")
-
 	req := &organization.DeleteOrganizationRequest{
 		UserId:  userId,
 		Id:      orgID,
@@ -161,7 +160,7 @@ func (a *OrganizationAPI) DeleteOrganization(c *gin.Context) {
 	orgResp := domain.OrganizationSuccessResponse{
 		Success: resp.GetSuccess(),
 	}
-	log.Log().Info("[a *OrganizationAPI] DeleteOrganization ", "user_id", UserID)
+	log.Log().Info("[a *OrganizationAPI] DeleteOrganization ", "user_id", userId)
 	domain.Success(c, orgResp)
 }
 
@@ -315,7 +314,7 @@ func (a *OrganizationAPI) AddItemsToOrganization(c *gin.Context) {
 		ItemReq := item.UpdateItemRequest{
 			Id:             itemID,
 			OrganizationId: req.OrganizationID,
-			UserId:         userId,
+			UserId:         UserID,
 		}
 		_, err = rpc.ItemClient.UpdateItem(c, &ItemReq)
 		if err != nil {
@@ -341,9 +340,9 @@ func (a *OrganizationAPI) RemoveItemsFromOrganization(c *gin.Context) {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, err.Error())
+		domain.Error(c, ecode.ErrAuthFailed, "添加内容失败")
 		return
 	}
 

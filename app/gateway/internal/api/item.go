@@ -6,6 +6,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
+	"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
 	"github.com/linkbox-group/linkbox-server/model/treemodel"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
@@ -292,7 +293,7 @@ func (a *ItemAPI) RecoverItemBatch(c *gin.Context) {
 		return
 	}
 
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
@@ -321,9 +322,9 @@ func (a *ItemAPI) DeleteItemBatch(c *gin.Context) {
 		return
 	}
 
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "删除内容是吧")
 		return
 	}
 

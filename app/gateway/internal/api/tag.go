@@ -39,7 +39,7 @@ func (a *TagAPI) CreateTag(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, err.Error())
 		return
 	}
-	log.Log().Info("[a *OrganizationAPI] CreateTag ", "user_id", UserID)
+	log.Log().Info("[a *TagAPI] CreateTag ", "user_id", UserID)
 
 	var req tag.CreateTagRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -77,7 +77,7 @@ func (a *TagAPI) GetTag(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
-	log.Log().Info("[a *OrganizationAPI] GetTag ", "user_id", userID)
+	log.Log().Info("[a *TagAPI] GetTag ", "user_id", userID)
 	resp, err := rpc.TagClient.GetTag(context.Background(), &tag.GetTagRequest{
 		Id:     tagID,
 		UserId: userID,
@@ -108,7 +108,7 @@ func (a *TagAPI) UpdateTag(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
-	log.Log().Info("[a *OrganizationAPI] UpdateTag ", "user_id", userId)
+	log.Log().Info("[a *TagAPI] UpdateTag ", "user_id", userId)
 	tagID := c.Param("id")
 	var req tag.UpdateTagRequest
 
@@ -148,7 +148,7 @@ func (a *TagAPI) DeleteTag(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
-	log.Log().Info("[a *OrganizationAPI] DeleteTag ", "user_id", userID)
+	log.Log().Info("[a *TagAPI] DeleteTag ", "user_id", userID)
 
 	resp, err := rpc.TagClient.DeleteTag(context.Background(), &tag.DeleteTagRequest{
 		Id:     tagID,
@@ -174,7 +174,7 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
-	log.Log().Info("[a *OrganizationAPI] GetUserTags ", "user_id", userID)
+	log.Log().Info("[a *TagAPI] GetUserTags ", "user_id", userID)
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "20"))
@@ -226,7 +226,7 @@ func (a *TagAPI) AddTagsToItems(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
-	log.Log().Info("[a *OrganizationAPI] AddTagsToItems ", "user_id", userID)
+	log.Log().Info("[a *TagAPI] AddTagsToItems ", "user_id", userID)
 
 	var req tag.AddTagsToItemsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -258,7 +258,7 @@ func (a *TagAPI) RemoveTagsFromItems(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
-	log.Log().Info("[a *OrganizationAPI] RemoveTagsFromItems ", "user_id", userID)
+	log.Log().Info("[a *TagAPI] RemoveTagsFromItems ", "user_id", userID)
 
 	var req tag.RemoveTagsFromItemsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -290,7 +290,7 @@ func (a *TagAPI) GetItemTags(c *gin.Context) {
 		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败"+err.Error())
 		return
 	}
-	log.Log().Info("[a *OrganizationAPI] GetItemTags ", "user_id", userID)
+	log.Log().Info("[a *TagAPI] GetItemTags ", "user_id", userID)
 
 	resp, err := rpc.TagClient.GetItemTags(context.Background(), &tag.GetItemTagsRequest{
 		ItemId: itemID,
@@ -331,7 +331,7 @@ func (a *TagAPI) GetRelatedTags(c *gin.Context) {
 		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
-	log.Log().Info("[a *OrganizationAPI] GetRelatedTags ", "user_id", userID)
+	log.Log().Info("[a *TagAPI] GetRelatedTags ", "user_id", userID)
 
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "5"))
 	limit32 := int32(limit)
