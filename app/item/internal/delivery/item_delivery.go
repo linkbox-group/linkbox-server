@@ -100,6 +100,7 @@ func (d *ItemDelivery) GetItem(ctx context.Context, req *item.GetItemRequest) (r
 				Title:       itemModel.Title,
 				Description: "",
 				Url:         itemModel.URL,
+				Note:        itemModel.Note,
 				TagNames:    itemModel.TagNames,
 				CreatedAt:   timestamppb.New(itemModel.CreatedAt.Time()),
 				UpdatedAt:   timestamppb.New(itemModel.UpdatedAt.Time()),
