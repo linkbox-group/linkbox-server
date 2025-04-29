@@ -54,6 +54,8 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 	itemResp := &domain.Item{}
 	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
+
+	log.Log().Info("[a *ItemAPI] create item", "user_id", userId)
 }
 
 // GetItem 获取内容
@@ -78,6 +80,8 @@ func (a *ItemAPI) GetItem(c *gin.Context) {
 	itemResp := &domain.Item{}
 	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
+
+	log.Log().Info("[a *ItemAPI] get item", "user_id", userId, "item_id", itemID)
 }
 
 // UpdateItem 更新内容
@@ -107,6 +111,8 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 	itemResp := &domain.Item{}
 	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
+
+	log.Log().Info("[a *ItemAPI] update item", "user_id", userId, "item_id", itemID)
 }
 
 // DeleteItem 删除内容
@@ -130,6 +136,8 @@ func (a *ItemAPI) DeleteItem(c *gin.Context) {
 		Success: resp.GetSuccess(),
 	}
 	domain.Success(c, itemResp)
+
+	log.Log().Info("[a *ItemAPI] delete item", "user_id", userId, "item_id", itemID)
 }
 
 // GetItemsByTags 按标签获取内容
@@ -174,6 +182,9 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 		},
 	}
 	domain.Success(c, itemListResp)
+
+	log.Log().Info("[a *ItemAPI] delete item", "user_id", userId)
+
 }
 
 // GetItemsByOrganization 按组织获取内容
@@ -225,6 +236,8 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 		},
 	}
 	domain.Success(c, itemListResp)
+
+	log.Log().Info("[a *ItemAPI] get items by organization", "user_id", userId)
 }
 func (a *ItemAPI) SearchItems(c *gin.Context) {
 	userId, err := domain.GetUserIdFromContext(c)
@@ -267,6 +280,7 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 		},
 	}
 	domain.Success(c, itemListResp)
+	log.Log().Info("[a *ItemAPI] search items", "user_id", userId)
 }
 func (a *ItemAPI) RecoverItemBatch(c *gin.Context) {
 	var reqBody struct {
