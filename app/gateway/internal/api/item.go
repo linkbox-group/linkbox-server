@@ -6,6 +6,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
+	"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
 	"github.com/linkbox-group/linkbox-server/model/treemodel"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
@@ -37,16 +38,16 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 		return
 	}
 
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	req.UserId = userId
 
 	resp, err := rpc.ItemClient.CreateItem(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ErrTitleExists, err.Error())
+		domain.Error(c, ErrTitleExists, "创建内容失败")
 		return
 	}
 
@@ -54,14 +55,16 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 	itemResp := &domain.Item{}
 	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
+
+	log.Log().Info("[a *ItemAPI] create item", "user_id", userId)
 }
 
 // GetItem 获取内容
 func (a *ItemAPI) GetItem(c *gin.Context) {
 	itemID := c.Param("id")
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 
@@ -70,7 +73,7 @@ func (a *ItemAPI) GetItem(c *gin.Context) {
 		UserId: userId,
 	})
 	if err != nil {
-		domain.Error(c, ErrItemNotFound, "内容不存在")
+		domain.Error(c, ErrItemNotFound, "获取内容失败")
 		return
 	}
 
@@ -78,6 +81,8 @@ func (a *ItemAPI) GetItem(c *gin.Context) {
 	itemResp := &domain.Item{}
 	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
+
+	log.Log().Info("[a *ItemAPI] get item", "user_id", userId)
 }
 
 // UpdateItem 更新内容
@@ -89,9 +94,9 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 		return
 	}
 
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证错误")
 		return
 	}
 
@@ -99,7 +104,7 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 	req.UserId = userId
 	resp, err := rpc.ItemClient.UpdateItem(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ErrTitleExists, err.Error())
+		domain.Error(c, ErrTitleExists, "更新内容失败")
 		return
 	}
 
@@ -107,14 +112,16 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 	itemResp := &domain.Item{}
 	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
+
+	log.Log().Info("[a *ItemAPI] update item", "user_id", userId)
 }
 
 // DeleteItem 删除内容
 func (a *ItemAPI) DeleteItem(c *gin.Context) {
 	itemID := c.Param("id")
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 
@@ -123,20 +130,22 @@ func (a *ItemAPI) DeleteItem(c *gin.Context) {
 		UserId: userId,
 	})
 	if err != nil {
-		domain.Error(c, ErrItemNotFound, "内容不存在")
+		domain.Error(c, ErrItemNotFound, "删除内容失败")
 		return
 	}
 	itemResp := domain.ItemSuccessResponse{
 		Success: resp.GetSuccess(),
 	}
 	domain.Success(c, itemResp)
+
+	log.Log().Info("[a *ItemAPI] delete item", "user_id", userId)
 }
 
 // GetItemsByTags 按标签获取内容
 func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 
@@ -147,13 +156,13 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 	err = c.ShouldBind(&req)
 	if err != nil {
 		logrus.Infoln(err)
-		domain.ErrorMsg(c, ecode.ErrInvalidParam, err.Error())
+		domain.ErrorMsg(c, ecode.ErrInvalidParam, "请求参数错误")
 		return
 	}
 	logrus.Infoln(req.Pagination)
 	resp, err := rpc.ItemClient.GetItemsByTags(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败")
+		domain.Error(c, ecode.ErrRpcServiceError, "获取内容失败")
 		return
 	}
 
@@ -174,6 +183,9 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 		},
 	}
 	domain.Success(c, itemListResp)
+
+	log.Log().Info("[a *ItemAPI] delete item", "user_id", userId)
+
 }
 
 // GetItemsByOrganization 按组织获取内容
@@ -181,11 +193,11 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 	req := &item.GetItemsByOrganizationRequest{}
 	err := c.ShouldBind(req)
 	if err != nil {
-		domain.Error(c, ErrInvalidReq, err.Error())
+		domain.Error(c, ErrInvalidReq, "请求参数错误")
 	}
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	req.UserId = userId
@@ -204,7 +216,7 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 
 	resp, err := rpc.ItemClient.GetItemsByOrganization(context.Background(), req)
 	if err != nil {
-		domain.Error(c, ecode.ErrRpcServiceError, err.Error())
+		domain.Error(c, ecode.ErrRpcServiceError, "获取内容失败")
 		return
 	}
 
@@ -225,18 +237,20 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 		},
 	}
 	domain.Success(c, itemListResp)
+
+	log.Log().Info("[a *ItemAPI] get items by organization", "user_id", userId)
 }
 func (a *ItemAPI) SearchItems(c *gin.Context) {
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
 	req := domain.SearchItemsReq{}
 	err = c.ShouldBind(&req)
 
 	if err != nil {
-		domain.Error(c, ErrInvalidReq, err.Error())
+		domain.Error(c, ErrInvalidReq, "请求参数错误")
 	}
 	resp, err := rpc.ItemClient.SearchItems(context.Background(), &item.SearchItemsRequest{
 		UserId:     userId,
@@ -245,7 +259,7 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 		Type:       itemmodel.ItemType(itemmodel.ItemType_value[req.ItemType]),
 	})
 	if err != nil {
-		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败")
+		domain.Error(c, ecode.ErrRpcServiceError, "搜索内容失败")
 		return
 	}
 	var items []*domain.Item
@@ -267,6 +281,7 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 		},
 	}
 	domain.Success(c, itemListResp)
+	log.Log().Info("[a *ItemAPI] search items", "user_id", userId)
 }
 func (a *ItemAPI) RecoverItemBatch(c *gin.Context) {
 	var reqBody struct {
@@ -278,7 +293,7 @@ func (a *ItemAPI) RecoverItemBatch(c *gin.Context) {
 		return
 	}
 
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
 		return
@@ -307,9 +322,9 @@ func (a *ItemAPI) DeleteItemBatch(c *gin.Context) {
 		return
 	}
 
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, err.Error())
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "删除内容是吧")
 		return
 	}
 

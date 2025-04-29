@@ -62,8 +62,8 @@ func ErrorMsg(c *gin.Context, code ecode.ErrorCode, msg string) {
 	c.Abort()
 }
 
-// GetUserIdFromContext 从上下文中获取 userId
-func GetUserIdFromContext(ctx *gin.Context) (string, error) {
+// GetUserIDFromContext 从上下文中获取 userId
+func GetUserIDFromContext(ctx *gin.Context) (string, error) {
 	userIdAny, exists := ctx.Get("userId")
 	if !exists {
 		return "", fmt.Errorf("用户未认证")
