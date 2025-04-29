@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"github.com/linkbox-group/linkbox-server/common/clientsuite"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/ai/aiservice"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/auth/authservice"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item/itemservice"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/organization/organizationservice"
@@ -16,6 +17,7 @@ import (
 )
 
 var (
+	AiClient           aiservice.Client
 	UserClient         userservice.Client
 	AuthClient         authservice.Client
 	TagClient          tagservice.Client
@@ -38,6 +40,7 @@ func InitClient() {
 		initUserClient()
 		initAuthClient()
 		initTagClient()
+		initAiClient()
 		initOrganizationClient()
 		initItemClient()
 	})
@@ -61,6 +64,14 @@ func initItemClient() {
 	ItemClient, err = itemservice.NewClient("item", commonSuite)
 	if err != nil {
 		log.Fatalf(err.Error())
+	}
+
+}
+func initAiClient() {
+	AiClient, err = aiservice.NewClient("ai", commonSuite)
+	if err != nil {
+		log.Fatalf(err.Error())
+
 	}
 
 }

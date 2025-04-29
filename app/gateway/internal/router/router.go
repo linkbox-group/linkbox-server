@@ -22,6 +22,7 @@ func InitRouter() *gin.Engine {
 	routerGroup.RegisterItemRoutes()
 	// 组织服务
 	routerGroup.RegisterOrganizationRoutes()
+	routerGroup.RegisterAiRoutes()
 
 	return router
 }
