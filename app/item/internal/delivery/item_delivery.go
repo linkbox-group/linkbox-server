@@ -243,7 +243,7 @@ func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByT
 	}
 	// 使用正确的类型 commonPagination.PaginationResponse 和字段名
 	paginationResp := &pagination.PaginationMeta{
-		TotalPages: int32(total), // 从 int 转为 int64
+		TotalItems: int32(total), // 从 int 转为 int64
 		Page:       int32(currentPage),
 		PageSize:   int32(currentPageSize),
 	}
@@ -310,7 +310,7 @@ func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.Get
 	}
 
 	paginationResp := &pagination.PaginationMeta{
-		TotalPages: int32(total),
+		TotalItems: int32(total),
 		Page:       int32(currentPage),
 		PageSize:   int32(currentPageSize),
 	}
@@ -398,7 +398,7 @@ func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsReq
 			Data: &item.SearchResult{
 				Items: respItems,
 				Pagination: &pagination.PaginationMeta{
-					TotalPages: int32(total),
+					TotalItems: int32(total),
 					Page:       int32(currentPage),
 					PageSize:   int32(currentPageSize),
 				},
