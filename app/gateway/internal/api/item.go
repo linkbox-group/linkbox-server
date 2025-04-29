@@ -37,7 +37,7 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 		return
 	}
 
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
@@ -46,7 +46,7 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 
 	resp, err := rpc.ItemClient.CreateItem(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ErrTitleExists, "内容标题已存在")
+		domain.Error(c, ErrTitleExists, "创建内容失败")
 		return
 	}
 
@@ -61,7 +61,7 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 // GetItem 获取内容
 func (a *ItemAPI) GetItem(c *gin.Context) {
 	itemID := c.Param("id")
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
@@ -72,7 +72,7 @@ func (a *ItemAPI) GetItem(c *gin.Context) {
 		UserId: userId,
 	})
 	if err != nil {
-		domain.Error(c, ErrItemNotFound, "内容不存在")
+		domain.Error(c, ErrItemNotFound, "获取内容失败")
 		return
 	}
 
@@ -81,7 +81,7 @@ func (a *ItemAPI) GetItem(c *gin.Context) {
 	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
 
-	log.Log().Info("[a *ItemAPI] get item", "user_id", userId, "item_id", itemID)
+	log.Log().Info("[a *ItemAPI] get item", "user_id", userId)
 }
 
 // UpdateItem 更新内容
@@ -93,9 +93,9 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 		return
 	}
 
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
+		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证错误")
 		return
 	}
 
@@ -103,7 +103,7 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 	req.UserId = userId
 	resp, err := rpc.ItemClient.UpdateItem(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ErrTitleExists, "内容标题已存在")
+		domain.Error(c, ErrTitleExists, "更新内容失败")
 		return
 	}
 
@@ -112,13 +112,13 @@ func (a *ItemAPI) UpdateItem(c *gin.Context) {
 	itemResp.Convert(itemData)
 	domain.Success(c, itemResp)
 
-	log.Log().Info("[a *ItemAPI] update item", "user_id", userId, "item_id", itemID)
+	log.Log().Info("[a *ItemAPI] update item", "user_id", userId)
 }
 
 // DeleteItem 删除内容
 func (a *ItemAPI) DeleteItem(c *gin.Context) {
 	itemID := c.Param("id")
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
@@ -129,7 +129,7 @@ func (a *ItemAPI) DeleteItem(c *gin.Context) {
 		UserId: userId,
 	})
 	if err != nil {
-		domain.Error(c, ErrItemNotFound, "内容不存在")
+		domain.Error(c, ErrItemNotFound, "删除内容失败")
 		return
 	}
 	itemResp := domain.ItemSuccessResponse{
@@ -137,12 +137,12 @@ func (a *ItemAPI) DeleteItem(c *gin.Context) {
 	}
 	domain.Success(c, itemResp)
 
-	log.Log().Info("[a *ItemAPI] delete item", "user_id", userId, "item_id", itemID)
+	log.Log().Info("[a *ItemAPI] delete item", "user_id", userId)
 }
 
 // GetItemsByTags 按标签获取内容
 func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
@@ -161,7 +161,7 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 	logrus.Infoln(req.Pagination)
 	resp, err := rpc.ItemClient.GetItemsByTags(context.Background(), &req)
 	if err != nil {
-		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败")
+		domain.Error(c, ecode.ErrRpcServiceError, "获取内容失败")
 		return
 	}
 
@@ -194,7 +194,7 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 	if err != nil {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 	}
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
@@ -215,7 +215,7 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 
 	resp, err := rpc.ItemClient.GetItemsByOrganization(context.Background(), req)
 	if err != nil {
-		domain.Error(c, ecode.ErrRpcServiceError, err.Error())
+		domain.Error(c, ecode.ErrRpcServiceError, "获取内容失败")
 		return
 	}
 
@@ -240,7 +240,7 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 	log.Log().Info("[a *ItemAPI] get items by organization", "user_id", userId)
 }
 func (a *ItemAPI) SearchItems(c *gin.Context) {
-	userId, err := domain.GetUserIdFromContext(c)
+	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
@@ -258,7 +258,7 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 		Type:       itemmodel.ItemType(itemmodel.ItemType_value[req.ItemType]),
 	})
 	if err != nil {
-		domain.Error(c, ecode.ErrRpcServiceError, "rpc调用失败")
+		domain.Error(c, ecode.ErrRpcServiceError, "搜索内容失败")
 		return
 	}
 	var items []*domain.Item
