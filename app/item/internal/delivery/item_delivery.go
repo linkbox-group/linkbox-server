@@ -130,16 +130,17 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 			Code:   treemodel.ROOT_ID,
 		})
 		if err != nil {
+			log.Log().Error(err.Error(), "req", req)
 			return nil, err
 		}
 		itemModel.OrganizationID = orgID.Id
 	}
 	org, err := rpc.OrganizationClient.GetOrganization(ctx, &organization.GetOrganizationRequest{
-		Id:     req.OrganizationId,
-		UserId: req.UserId,
+		Id:     itemModel.OrganizationID,
+		UserId: itemModel.UserID,
 	})
 	if err != nil {
-		log.Log().Error("获取org失败" + err.Error())
+		log.Log().Error(err.Error(), "req", req)
 		return nil, err
 	}
 	itemModel.OrganizationPath = org.GetOrganization().TreeNames
