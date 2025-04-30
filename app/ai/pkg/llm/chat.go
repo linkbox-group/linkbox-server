@@ -33,7 +33,7 @@ func Chat(ctx context.Context, question string, item string) (*schema.StreamRead
 
 	in := map[string]any{
 		"question": question,
-		"item":     item,
+		//"item":     item,
 		"chat_histories": []*schema.Message{
 			{},
 		},

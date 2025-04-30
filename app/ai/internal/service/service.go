@@ -5,13 +5,10 @@ import (
 	"fmt"
 	"github.com/google/wire"
 	"github.com/linkbox-group/linkbox-server/ai/internal/acl"
-	"github.com/linkbox-group/linkbox-server/ai/internal/infra/rpc"
 	"github.com/linkbox-group/linkbox-server/ai/pkg/llm"
 	"github.com/linkbox-group/linkbox-server/ai/pkg/log"
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/ai"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
-	itemmodel "github.com/linkbox-group/linkbox-server/rpc-gen/model"
 	"io"
 	"time"
 )
@@ -57,20 +54,20 @@ func (s *AiService) SendMessage(ctx context.Context, req *ai.SendMessageRequest,
 		log.Log().Error(err.Error())
 		return err
 	}
-	itemRes, err := rpc.ItemClient.GetItem(ctx, &item.GetItemRequest{
-		Id:     req.ItemId,
-		UserId: req.UserId,
-	})
-	if err != nil {
-		log.Log().Error(err.Error())
-		return err
-	}
-	itemData := itemRes.GetItem()
-	if itemData.Type == itemmodel.ItemType_LINK {
-
-	}
-	knowledge := itemData.Note
-	sr, err := llm.Chat(ctx, req.GetContent(), knowledge)
+	//itemRes, err := rpc.ItemClient.GetItem(ctx, &item.GetItemRequest{
+	//	Id:     req.ItemId,
+	//	UserId: req.UserId,
+	//})
+	//if err != nil {
+	//	log.Log().Error(err.Error())
+	//	return err
+	//}
+	//itemData := itemRes.GetItem()
+	//if itemData.Type == itemmodel.ItemType_LINK {
+	//
+	//}
+	//knowledge := itemData.Note
+	sr, err := llm.Chat(ctx, req.GetContent(), "")
 	if err != nil {
 		log.Log().Error(err.Error())
 		return
