@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
 	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
+	"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/auth"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/user"
 )
@@ -72,7 +72,7 @@ func (api *UserApi) Register(ctx *gin.Context) {
 
 	resp, err := rpc.UserClient.Register(ctx, &req)
 	if err != nil {
-		domain.ErrorMsg(ctx, ecode.ErrRpcServiceError, "注册失败")
+		domain.ErrorMsg(ctx, ecode.ErrRpcServiceError, err.Error())
 		return
 	}
 	vo := domain.UserRegisterResp{
@@ -104,7 +104,6 @@ func (api *UserApi) ChangePassword(ctx *gin.Context) {
 		return
 	}
 
-	
 	req.UserId = userId
 
 	resp, err := rpc.UserClient.ChangePassword(ctx, &req)
@@ -135,7 +134,6 @@ func (api *UserApi) UpdateUserInfo(ctx *gin.Context) {
 		return
 	}
 
-	
 	req.UserId = userId
 
 	resp, err := rpc.UserClient.UpdateUserInfo(ctx, &req)
