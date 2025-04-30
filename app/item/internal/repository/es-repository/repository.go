@@ -10,6 +10,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/item/pkg/log"
 	"github.com/linkbox-group/linkbox-server/model"
 	itemmodel "github.com/linkbox-group/linkbox-server/rpc-gen/model"
+	"strconv"
 )
 
 var ProviderSet = wire.NewSet(wire.Bind(new(acl.EsRepositoryItf), new(*EsRepository)), NewEsRepository)
@@ -23,6 +24,7 @@ const (
 	INDEX         = "item"
 	FIELD_NOTE    = "note"
 	FIELD_TYPE    = "item_type"
+	FIELD_TITLE   = "title"
 	FIELD_USER_ID = "user_id"
 )
 
@@ -31,6 +33,26 @@ func NewEsRepository(es *elasticsearch.TypedClient) *EsRepository {
 }
 
 func (r *EsRepository) SearchItems(ctx context.Context, UserID string, query string, itemType itemmodel.ItemType, pageNum int, pageSize int) (items []model.Item, count int, err error) {
+	queryCondition := types.Query{}
+	switch itemType {
+	case itemmodel.ItemType_LINK:
+		{
+			queryCondition = types.Query{
+				Match: map[string]types.MatchQuery{
+					FIELD_NOTE: {Query: query},
+				},
+			}
+		}
+	case itemmodel.ItemType_NOTE:
+		{
+			queryCondition = types.Query{
+				Match: map[string]types.MatchQuery{
+					FIELD_TITLE: {Query: query},
+				},
+			}
+		}
+	}
+
 	boolQuery := &types.BoolQuery{
 		Must: []types.Query{
 			{
@@ -38,16 +60,12 @@ func (r *EsRepository) SearchItems(ctx context.Context, UserID string, query str
 					FIELD_USER_ID: {Query: UserID},
 				},
 			},
+			queryCondition,
 			{
 				Match: map[string]types.MatchQuery{
-					FIELD_NOTE: {Query: query},
+					FIELD_TYPE: {Query: strconv.Itoa(int(itemType))},
 				},
 			},
-			//{
-			//	Match: map[string]types.MatchQuery{
-			//		FIELD_TYPE: {Query: strconv.Itoa(int(itemType))},
-			//	},
-			//},
 		},
 	}
 	resp, err := r.es.Search().
