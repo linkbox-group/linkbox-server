@@ -8,6 +8,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/ai/internal/infra/rpc"
 	"github.com/linkbox-group/linkbox-server/ai/pkg/llm"
 	"github.com/linkbox-group/linkbox-server/ai/pkg/log"
+	"github.com/linkbox-group/linkbox-server/ai/pkg/scrape"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/ai"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
@@ -34,7 +35,11 @@ func (d *AiDelivery) SuggestTags(ctx context.Context, req *ai.SuggestTagsRequest
 	fmt.Println(itemRes.GetItem())
 	knowledge := itemData.Note
 	if itemData.Type == itemmodel.ItemType_LINK {
-
+		knowledge, err = scrape.ScrapeUrl(itemData.Url)
+		if err != nil {
+			log.Log().Error(err.Error())
+			return nil, err
+		}
 	}
 	fmt.Println(knowledge)
 	tags, err := llm.GenerateSuggestion(ctx, knowledge)
