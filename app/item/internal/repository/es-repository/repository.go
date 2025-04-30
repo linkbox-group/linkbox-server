@@ -35,7 +35,7 @@ func NewEsRepository(es *elasticsearch.TypedClient) *EsRepository {
 func (r *EsRepository) SearchItems(ctx context.Context, UserID string, query string, itemType itemmodel.ItemType, pageNum int, pageSize int) (items []model.Item, count int, err error) {
 	queryCondition := types.Query{}
 	switch itemType {
-	case itemmodel.ItemType_LINK:
+	case itemmodel.ItemType_NOTE:
 		{
 			queryCondition = types.Query{
 				Match: map[string]types.MatchQuery{
@@ -43,7 +43,7 @@ func (r *EsRepository) SearchItems(ctx context.Context, UserID string, query str
 				},
 			}
 		}
-	case itemmodel.ItemType_NOTE:
+	case itemmodel.ItemType_LINK:
 		{
 			queryCondition = types.Query{
 				Match: map[string]types.MatchQuery{
@@ -52,7 +52,6 @@ func (r *EsRepository) SearchItems(ctx context.Context, UserID string, query str
 			}
 		}
 	}
-
 	boolQuery := &types.BoolQuery{
 		Must: []types.Query{
 			{
