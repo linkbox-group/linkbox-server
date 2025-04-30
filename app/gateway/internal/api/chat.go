@@ -2,12 +2,11 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
-		"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
 	"github.com/linkbox-group/linkbox-server/common/ecode"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/domain"
 	"github.com/linkbox-group/linkbox-server/gateway/internal/infra/rpc"
+	"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/ai"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"io"
@@ -46,7 +45,7 @@ func (ChatAPI) SendMessage(c *gin.Context) {
 	req.UserId = userID
 	stream, err := rpc.AiClient.SendMessage(context.Background(), req)
 	if err != nil {
-		domain.ErrorMsg(c, ecode.ErrRpcServiceError,"发送消息失败")
+		domain.ErrorMsg(c, ecode.ErrRpcServiceError, "发送消息失败")
 		return
 	}
 

@@ -3,8 +3,8 @@ package api
 import (
 	"context"
 	"github.com/linkbox-group/linkbox-server/common/ecode"
-	"github.com/linkbox-group/linkbox-server/model/treemodel"
 	"github.com/linkbox-group/linkbox-server/gateway/pkg/log"
+	"github.com/linkbox-group/linkbox-server/model/treemodel"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
 
 	"github.com/gin-gonic/gin"
