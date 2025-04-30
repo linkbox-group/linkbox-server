@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
+	"github.com/linkbox-group/linkbox-server/user/pkg/log"
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/auth"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/user"
@@ -64,6 +65,10 @@ func (u *UserService) SendCode(ctx context.Context, sendTo string) (err error) {
 
 	// 将验证码存入 redis，10 min 后过期
 	logrus.Info("用户 " + sendTo + " 验证码为 " + code)
+	log.Log().Debug(TimeToExpire.String())
+	if TimeToExpire < 10*time.Minute {
+		TimeToExpire = 10 * time.Minute
+	}
 	err = u.cache.Set(ctx, "email_code:"+sendTo, code, TimeToExpire).Err()
 	if err != nil {
 		logrus.Errorln(err)
