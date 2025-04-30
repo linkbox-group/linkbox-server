@@ -142,7 +142,7 @@ func (u *UserService) RegisterUser(ctx context.Context, email, code, password st
 	if err != nil {
 		return nil, errors.New("生成Token失败，请联系管理员")
 	}
-	err = u.repo.CreateUser(ctx, userModel)
+	err = u.repo.RegisterUser(ctx, userModel)
 	if err != nil {
 		return nil, err
 	}
