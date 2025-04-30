@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
-	"github.com/linkbox-group/linkbox-server/user/pkg/log"
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/auth"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/user"
@@ -14,6 +13,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/user/internal/infra/rpc"
 	"github.com/linkbox-group/linkbox-server/user/pkg/email"
 	"github.com/linkbox-group/linkbox-server/user/pkg/encrypt"
+	"github.com/linkbox-group/linkbox-server/user/pkg/log"
 	"github.com/linkbox-group/linkbox-server/user/pkg/regex"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -94,33 +94,26 @@ func (u *UserService) RegisterUser(ctx context.Context, email, code, password st
 	// 校验邮箱和密码格式
 	err = regex.VerifyUser(email, password)
 	if err != nil {
-		logrus.Errorln(err)
 		return nil, err
 	}
 
 	// 检查用户邮箱是否已存在
 	_, err = u.repo.FindUserByEmail(ctx, email)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			logrus.Errorln(errUserAlreadyExist)
-			return nil, errors.New("user already exist")
-		}
-		logrus.Errorln(err)
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 
 	// 校验验证码
 	OriginCode := u.cache.Get(ctx, "email_code:"+email).Val()
 	if code == "" || OriginCode != code {
-		logrus.Errorln(err)
-		return nil, errors.New("verification code is incorrect, please check again")
+		return nil, errors.New("验证码无效，请重试")
 	}
 
 	// 哈希密码
 	passwordHash, err := encrypt.HashPassword(password)
 	if err != nil {
-		logrus.Errorln(err)
-		return nil, errors.New("internal error: " + err.Error())
+		return nil, errors.New("密码加密失误")
 	}
 
 	// 构建新用户
@@ -141,22 +134,18 @@ func (u *UserService) RegisterUser(ctx context.Context, email, code, password st
 		Uid: userModel.ID,
 	})
 	if err != nil {
-		logrus.Errorln(err)
-		return nil, errors.New("internal error: " + err.Error())
+		return nil, errors.New("生成Token失败，请联系管理员")
 	}
 	refreshToken, err := rpc.AuthClient.GenerateRefreshToken(ctx, &auth.GenerateTokenReq{
 		Uid: userModel.ID,
 	})
 	if err != nil {
-		logrus.Errorln(err)
-		return nil, errors.New("internal error: " + err.Error())
+		return nil, errors.New("生成Token失败，请联系管理员")
 	}
 	err = u.repo.CreateUser(ctx, userModel)
 	if err != nil {
-		logrus.Errorln(err)
-		return nil, errors.New("internal error: " + err.Error())
+		return nil, err
 	}
-
 	// 返回用户信息
 	return &user.RegisterResp{
 		UserId:       userModel.ID,

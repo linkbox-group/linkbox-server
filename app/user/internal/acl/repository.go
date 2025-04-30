@@ -11,4 +11,5 @@ type UserRepositoryItf interface {
 	FindUserByID(ctx context.Context, id string) (user *model.User, err error)
 	UpdateUser(ctx context.Context, user *model.User) (err error)
 	DeleteUser(ctx context.Context, id string) (err error)
+	RegisterUser(ctx context.Context, user *model.User) (err error)
 }

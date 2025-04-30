@@ -53,12 +53,12 @@ func isValid(re *regexp.Regexp, str string) bool {
 func VerifyUser(email, password string) error {
 	// 校验邮箱
 	if IsEmailInvalid(email) {
-		return errors.New("invalid email")
+		return errors.New("邮箱格式错误")
 	}
 
 	// 校验密码
 	if IsPasswordInvalid(password) {
-		return errors.New("invalid password")
+		return errors.New("密码格式错误")
 	}
 
 	return nil

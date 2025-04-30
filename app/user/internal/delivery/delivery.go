@@ -5,11 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/wire"
-	"github.com/linkbox-group/linkbox-server/model/treemodel"
-	"github.com/linkbox-group/linkbox-server/rpc-gen/organization"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/user"
 	"github.com/linkbox-group/linkbox-server/user/internal/acl"
-	"github.com/linkbox-group/linkbox-server/user/internal/infra/rpc"
 	"github.com/linkbox-group/linkbox-server/user/pkg/log"
 	"github.com/sirupsen/logrus"
 )
@@ -48,24 +45,12 @@ func (d *UserDelivery) SendCode(ctx context.Context, req *user.SendCodeReq) (res
 
 // Register implements the UserServiceImpl interface.
 func (d *UserDelivery) Register(ctx context.Context, req *user.RegisterReq) (resp *user.RegisterResp, err error) {
-	// 重复校验密码
 
-	// 执行注册用户逻辑
 	registerUser, err := d.service.RegisterUser(ctx, req.Email, req.Code, req.Password)
 	if err != nil {
-		log.Log().Error(err.Error())
-		return nil, fmt.Errorf("register:%w", err)
+		log.Log().Error(err.Error(), "req", req)
+		return nil, err
 	}
-	_, err = rpc.OrganizationClient.CreateOrganization(ctx, &organization.CreateOrganizationRequest{
-		UserId: registerUser.UserId,
-		Name:   "/",
-		Code:   treemodel.ROOT_ID,
-	})
-	if err != nil {
-		log.Log().Error(err.Error())
-		return nil, fmt.Errorf("register:%w", err)
-	}
-	//TODO: use transaction
 	return registerUser, nil
 }
 
