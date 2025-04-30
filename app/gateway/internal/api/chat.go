@@ -28,11 +28,11 @@ func (ChatAPI) SendMessage(c *gin.Context) {
 	log.Log().Info("[a *ChatAPI] SendMessage ", "user_id", userID)
 
 	//发送消息请求
-	itemID := c.Query("item_id")
-	if itemID == "" {
-		domain.Error(c, ecode.ErrInvalidParam, "item_id is required")
-		return
-	}
+	//itemID := c.Query("item_id")
+	//if itemID == "" {
+	//	domain.Error(c, ecode.ErrInvalidParam, "item_id is required")
+	//	return
+	//}
 	content := c.Query("content")
 	if content == "" {
 		domain.Error(c, ecode.ErrInvalidParam, "content is required")
@@ -41,7 +41,7 @@ func (ChatAPI) SendMessage(c *gin.Context) {
 	req := &ai.SendMessageRequest{}
 
 	req.Content = content
-	req.ItemId = itemID
+	//req.ItemId = itemID
 	req.UserId = userID
 	stream, err := rpc.AiClient.SendMessage(context.Background(), req)
 	if err != nil {
