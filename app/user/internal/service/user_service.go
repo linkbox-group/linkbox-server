@@ -15,6 +15,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/user/pkg/encrypt"
 	"github.com/linkbox-group/linkbox-server/user/pkg/regex"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 
 	"time"
 
@@ -26,8 +27,8 @@ var (
 	errPasswordNotMatch = errors.New("password does not match")
 )
 
-const (
-	TimeToExpire = 60 * time.Second
+var (
+	TimeToExpire = viper.GetDuration("email.ttl") * time.Minute
 )
 
 var _ acl.UserServiceItf = &UserService{}
