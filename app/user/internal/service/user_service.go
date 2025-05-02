@@ -53,15 +53,15 @@ func (u *UserService) SendCode(ctx context.Context, sendTo string) (err error) {
 		return errors.New("invalid email")
 	}
 
-	// 是否 10 min 内重复发送验证码
-	code := u.cache.Get(ctx, "email_code:"+sendTo).Val()
-	if code != "" {
-		logrus.Errorln(err)
-		return errors.New("code already sent, please not resend within 10 min")
-	}
+	//// 是否 10 min 内重复发送验证码
+	//code := u.cache.Get(ctx, "email_code:"+sendTo).Val()
+	//if code != "" {
+	//	logrus.Errorln(err)
+	//	return errors.New("code already sent, please not resend within 10 min")
+	//}
 
 	// 随机生成 6 位数字验证码
-	code = email.RandomNumbers(6)
+	code := email.RandomNumbers(6)
 
 	// 将验证码存入 redis，10 min 后过期
 	logrus.Info("用户 " + sendTo + " 验证码为 " + code)
