@@ -58,7 +58,7 @@ func (d *UserDelivery) Register(ctx context.Context, req *user.RegisterReq) (res
 func (d *UserDelivery) Login(ctx context.Context, req *user.LoginReq) (resp *user.LoginResp, err error) {
 	loginUser, err := d.service.LoginUser(ctx, req.Email, req.Password)
 	if err != nil {
-		logrus.Errorln(err)
+		log.Log().Error(err.Error(), "req", req)
 		return nil, fmt.Errorf("login:%w", err)
 	}
 
