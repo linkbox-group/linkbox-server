@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
 	domain "github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/model/treemodel"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/organization"
@@ -25,13 +24,11 @@ func NewMysqlUserRepo(db *gorm.DB) *MysqlUserRepo {
 }
 
 func (r *MysqlUserRepo) CreateUser(ctx context.Context, user *domain.User) (err error) {
-	return r.db.Model(&domain.User{}).Create(user).Error
+	return r.db.WithContext(ctx).Model(&domain.User{}).Create(user).Error
 }
 func (r *MysqlUserRepo) RegisterUser(ctx context.Context, user *domain.User) (err error) {
-	r.db.Begin()
 	err = r.CreateUser(ctx, user)
 	if err != nil {
-		r.db.Rollback()
 		return errors.New("创建用户失败")
 	}
 	_, err = rpc.OrganizationClient.CreateOrganization(ctx, &organization.CreateOrganizationRequest{
@@ -40,11 +37,10 @@ func (r *MysqlUserRepo) RegisterUser(ctx context.Context, user *domain.User) (er
 		Code:   treemodel.ROOT_ID,
 	})
 	if err != nil {
-		r.db.Rollback()
 		return errors.New("初始化用户失败,请联系管理员")
 	}
-	err = r.db.Commit().Error
-	return fmt.Errorf("commit error: %w", err)
+
+	return nil
 
 }
 
