@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/linkbox-group/linkbox-server/model/array"
 	itemmodel "github.com/linkbox-group/linkbox-server/rpc-gen/model"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 	"time"
 )
@@ -34,6 +35,23 @@ type Item struct {
 
 func (Item) TableName() string {
 	return "item"
+}
+func (i *Item) ConvertTo() *itemmodel.Item {
+	return &itemmodel.Item{
+		Id:               i.ID,
+		UserId:           i.UserID,
+		Type:             i.ItemType,
+		Title:            i.Title,
+		Url:              i.URL,
+		Note:             i.Note,
+		ThumbnailUrl:     i.ThumbnailURL,
+		TagNames:         i.TagNames,
+		OrganizationPath: i.OrganizationPath,
+		OrganizationId:   i.OrganizationID,
+		CreatedAt:        timestamppb.New(i.CreatedAt.Time()),
+		UpdatedAt:        timestamppb.New(i.CreatedAt.Time()),
+	}
+
 }
 
 type CustomTime time.Time

@@ -65,7 +65,7 @@ func (a *TagAPI) CreateTag(c *gin.Context) {
 		CreatedAt:   tag.CreatedAt.AsTime(),
 		UpdatedAt:   tag.UpdatedAt.AsTime(),
 	}
-	
+
 	domain.Success(c, tagResp)
 }
 
@@ -116,7 +116,7 @@ func (a *TagAPI) UpdateTag(c *gin.Context) {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
 	}
-	
+
 	req.UserId = userId
 
 	req.Id = tagID
@@ -178,7 +178,6 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "20"))
-	searchQuery := c.Query("search_query")
 
 	resp, err := rpc.TagClient.GetUserTags(context.Background(), &tag.GetUserTagsRequest{
 		UserId: userID,
@@ -186,7 +185,6 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 			Page:     int32(page),
 			PageSize: int32(pageSize),
 		},
-		SearchQuery: &searchQuery,
 	})
 	if err != nil {
 		domain.Error(c, ecode.ErrRpcServiceError, "获取标签失败")

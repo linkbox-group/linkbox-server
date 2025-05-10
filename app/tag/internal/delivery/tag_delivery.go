@@ -15,7 +15,7 @@ import (
 func (s *TagDelivery) CreateTag(ctx context.Context, req *tag.CreateTagRequest) (resp *tag.CreateTagResponse, err error) {
 	tagEntity := model.Tag{
 		Name:   req.Name,
-		Color:  req.Color,
+		Color:  req.GetColor(),
 		UserID: req.UserId,
 	}
 	err = s.service.CreateTagService(ctx, &tagEntity)
@@ -31,7 +31,7 @@ func (s *TagDelivery) CreateTag(ctx context.Context, req *tag.CreateTagRequest) 
 				UserId:      tagEntity.UserID,
 				Name:        tagEntity.Name,
 				Description: "",
-				Color:       *tagEntity.Color,
+				Color:       tagEntity.Color,
 				ItemCount:   int32(len(tagEntity.Items)),
 				CreatedAt:   timestamppb.New(tagEntity.CreatedAt),
 				UpdatedAt:   timestamppb.New(tagEntity.UpdatedAt),
@@ -60,7 +60,7 @@ func (s *TagDelivery) GetTag(ctx context.Context, req *tag.GetTagRequest) (resp 
 				UserId:      tagEntity.UserID,
 				Name:        tagEntity.Name,
 				Description: "",
-				Color:       *tagEntity.Color,
+				Color:       tagEntity.Color,
 				ItemCount:   int32(len(tagEntity.Items)),
 				CreatedAt:   timestamppb.New(tagEntity.CreatedAt),
 				UpdatedAt:   timestamppb.New(tagEntity.UpdatedAt),
@@ -77,8 +77,8 @@ func (s *TagDelivery) UpdateTag(ctx context.Context, req *tag.UpdateTagRequest) 
 			ID: req.Id,
 		},
 		UserID: req.UserId,
-		Name:   *req.Name,
-		Color:  req.Color,
+		Name:   req.GetName(),
+		Color:  req.GetColor(),
 	}
 	err = s.service.UpdateTagService(ctx, &tagEntity)
 	if err != nil {
@@ -92,7 +92,7 @@ func (s *TagDelivery) UpdateTag(ctx context.Context, req *tag.UpdateTagRequest) 
 				UserId:      tagEntity.UserID,
 				Name:        tagEntity.Name,
 				Description: "",
-				Color:       *tagEntity.Color,
+				Color:       tagEntity.Color,
 				ItemCount:   int32(len(tagEntity.Items)),
 				CreatedAt:   timestamppb.New(tagEntity.CreatedAt),
 				UpdatedAt:   timestamppb.New(tagEntity.UpdatedAt)}}}
@@ -139,7 +139,7 @@ func (s *TagDelivery) GetUserTags(ctx context.Context, req *tag.GetUserTagsReque
 			UserId:      t.UserID,
 			Name:        t.Name,
 			Description: "",
-			Color:       *t.Color,
+			Color:       t.Color,
 			ItemCount:   int32(len(t.Items)),
 			CreatedAt:   timestamppb.New(t.CreatedAt),
 			UpdatedAt:   timestamppb.New(t.UpdatedAt),

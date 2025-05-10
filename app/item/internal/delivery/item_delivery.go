@@ -8,11 +8,9 @@ import (
 	"github.com/linkbox-group/linkbox-server/rpc-gen/organization"
 	"time"
 
-	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/cError"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
 	itemmodel "github.com/linkbox-group/linkbox-server/rpc-gen/model"
 )
@@ -54,19 +52,7 @@ func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemReque
 	}
 	return &item.CreateItemResponse{
 		Result: &item.CreateItemResponse_Item{
-			Item: &itemmodel.Item{
-				Id:               itemModel.ID,
-				UserId:           itemModel.UserID,
-				Title:            itemModel.Title,
-				Type:             itemModel.ItemType,
-				Description:      "",
-				Url:              itemModel.URL,
-				Note:             itemModel.Note,
-				OrganizationPath: itemModel.OrganizationPath,
-				TagNames:         itemModel.TagNames,
-				CreatedAt:        timestamppb.New(itemModel.CreatedAt.Time()),
-				UpdatedAt:        timestamppb.New(itemModel.UpdatedAt.Time()),
-			},
+			Item: itemModel.ConvertTo(),
 		},
 	}, nil
 
@@ -95,18 +81,7 @@ func (d *ItemDelivery) GetItem(ctx context.Context, req *item.GetItemRequest) (r
 
 	return &item.GetItemResponse{
 		Result: &item.GetItemResponse_Item{
-			Item: &itemmodel.Item{
-				Id:          itemModel.ID,
-				UserId:      itemModel.UserID,
-				Title:       itemModel.Title,
-				Type:        itemModel.ItemType,
-				Description: "",
-				Url:         itemModel.URL,
-				Note:        itemModel.Note,
-				TagNames:    itemModel.TagNames,
-				CreatedAt:   timestamppb.New(itemModel.CreatedAt.Time()),
-				UpdatedAt:   timestamppb.New(itemModel.UpdatedAt.Time()),
-			},
+			Item: itemModel.ConvertTo(),
 		},
 	}, nil
 }
@@ -126,7 +101,7 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 		UpdatedAt:      model.CustomTime(time.Now()),
 		TagNames:       req.GetTags(),
 	}
-	if req.OrganizationId == "" || req.OrganizationId == treemodel.ROOT_ID {
+	if req.OrganizationId == treemodel.ROOT_ID {
 		orgID, err := rpc.OrganizationClient.GetDefaultOrgID(ctx, &organization.GetDefaultOrgIDReq{
 			UserId: req.UserId,
 			Code:   treemodel.ROOT_ID,
@@ -137,15 +112,17 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 		}
 		itemModel.OrganizationID = orgID.Id
 	}
-	org, err := rpc.OrganizationClient.GetOrganization(ctx, &organization.GetOrganizationRequest{
-		Id:     itemModel.OrganizationID,
-		UserId: itemModel.UserID,
-	})
-	if err != nil {
-		log.Log().Error(err.Error(), "req", req)
-		return nil, err
+	if itemModel.OrganizationID != "" {
+		org, err := rpc.OrganizationClient.GetOrganization(ctx, &organization.GetOrganizationRequest{
+			Id:     itemModel.OrganizationID,
+			UserId: itemModel.UserID,
+		})
+		if err != nil {
+			log.Log().Error(err.Error(), "req", req)
+			return nil, err
+		}
+		itemModel.OrganizationPath = org.GetOrganization().TreeNames
 	}
-	itemModel.OrganizationPath = org.GetOrganization().TreeNames
 
 	err = d.s.UpdateItem(ctx, &itemModel)
 
@@ -162,14 +139,7 @@ func (d *ItemDelivery) UpdateItem(ctx context.Context, req *item.UpdateItemReque
 
 	return &item.UpdateItemResponse{
 		Result: &item.UpdateItemResponse_Item{
-			Item: &itemmodel.Item{
-				Id:        itemModel.ID,
-				UserId:    itemModel.UserID,
-				Title:     itemModel.Title,
-				Url:       itemModel.URL,
-				CreatedAt: timestamppb.New(itemModel.CreatedAt.Time()),
-				UpdatedAt: timestamppb.New(itemModel.UpdatedAt.Time()),
-			},
+			Item: itemModel.ConvertTo(),
 		},
 	}, nil
 }
@@ -233,18 +203,7 @@ func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByT
 			tagStrings = append(tagStrings, tag.Name)
 		}
 
-		respItems = append(respItems, &itemmodel.Item{
-			Id:     dbItem.ID,
-			UserId: dbItem.UserID,
-			Title:  dbItem.Title,
-			Note:   dbItem.Note,
-			Type:   dbItem.ItemType,
-			//Description: dbItem.Description,
-			Url:       dbItem.URL,
-			Tags:      tagStrings,
-			CreatedAt: timestamppb.New(dbItem.CreatedAt.Time()),
-			UpdatedAt: timestamppb.New(dbItem.UpdatedAt.Time()),
-		})
+		respItems = append(respItems, dbItem.ConvertTo())
 	}
 
 	// 构造分页响应信息
@@ -303,20 +262,7 @@ func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.Get
 			tagStrings = append(tagStrings, tag.Name)
 		}
 		//TODO: use convert method
-		respItems = append(respItems, &itemmodel.Item{
-			Id:               dbItem.ID,
-			UserId:           dbItem.UserID,
-			Type:             dbItem.ItemType,
-			Title:            dbItem.Title,
-			Note:             dbItem.Note,
-			Description:      "",
-			TagNames:         dbItem.TagNames,
-			OrganizationPath: dbItem.OrganizationPath,
-			Url:              dbItem.URL,
-			Tags:             tagStrings,
-			CreatedAt:        timestamppb.New(dbItem.CreatedAt.Time()),
-			UpdatedAt:        timestamppb.New(dbItem.UpdatedAt.Time()),
-		})
+		respItems = append(respItems, dbItem.ConvertTo())
 	}
 
 	paginationResp := &pagination.PaginationMeta{
@@ -385,22 +331,7 @@ func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsReq
 		for _, tag := range dbItem.Tags {
 			tagStrings = append(tagStrings, tag.Name)
 		}
-		respItems = append(respItems, &itemmodel.Item{
-			Id:               dbItem.ID,
-			UserId:           dbItem.UserID,
-			Title:            dbItem.Title,
-			Type:             dbItem.ItemType,
-			Description:      "",
-			Url:              dbItem.URL,
-			TagNames:         dbItem.TagNames,
-			OrganizationPath: dbItem.OrganizationPath,
-			ThumbnailUrl:     dbItem.ThumbnailURL,
-			Note:             dbItem.Note,
-			OrganizationId:   dbItem.OrganizationID,
-			Tags:             tagStrings,
-			CreatedAt:        timestamppb.New(dbItem.CreatedAt.Time()),
-			UpdatedAt:        timestamppb.New(dbItem.UpdatedAt.Time()),
-		})
+		respItems = append(respItems, dbItem.ConvertTo())
 	}
 
 	return &item.SearchItemsResponse{
