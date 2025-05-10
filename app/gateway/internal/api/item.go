@@ -194,6 +194,7 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 	err := c.ShouldBind(req)
 	if err != nil {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
+		return
 	}
 	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
