@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	ID           string    `gorm:"primary_key;auto_increment" json:"id"`                 // 用户唯一标识
+	ID           string    `gorm:"primary_key" json:"id"`                                // 用户唯一标识
 	Username     string    `gorm:"type:varchar(50);not null" json:"username"`            // 用户名
 	Email        string    `gorm:"type:varchar(100);unique_index;not null" json:"email"` // 邮箱
 	PasswordHash string    `gorm:"type:varchar(255);not null" json:"password_hash"`      // 密码哈希值

@@ -69,6 +69,7 @@ func (api *UserApi) Register(ctx *gin.Context) {
 	var req domain.UserRegisterReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		domain.ErrorMsg(ctx, ecode.ErrInvalidParam, "请求参数错误")
+		return
 	}
 	var reqRpc user.RegisterReq
 	reqRpc.Email = req.Email
