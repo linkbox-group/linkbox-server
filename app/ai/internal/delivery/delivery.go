@@ -32,10 +32,11 @@ func (d *AiDelivery) SuggestTags(ctx context.Context, req *ai.SuggestTagsRequest
 		return nil, err
 	}
 	itemData := itemRes.GetItem()
-	fmt.Println(itemRes.GetItem())
+	fmt.Println(itemRes.GetItem()
 	knowledge := itemData.Note
 	if itemData.Type == itemmodel.ItemType_LINK {
-		knowledge, err = scrape.ScrapeUrl(itemData.Url)
+		firecrawlApp := scrape.NewApp()
+		knowledge, err = firecrawlApp.ExtractContent(itemData.Url)
 		if err != nil {
 			log.Log().Error(err.Error())
 			return nil, err
