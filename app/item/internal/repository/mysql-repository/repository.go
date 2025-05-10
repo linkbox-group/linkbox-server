@@ -9,6 +9,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/item/pkg/log"
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -21,8 +22,48 @@ type Repository struct {
 func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{db: db}
 }
-func (r *Repository) CreateItem(ctx context.Context, req *model.Item) (err error) {
-	return r.db.Create(req).Error
+func (r *Repository) CreateItem(ctx context.Context, item *model.Item) (err error) {
+	tx := r.db.Begin().WithContext(ctx)
+	org := &model.Organization{}
+	err = tx.Model(&model.Organization{}).Where("id = ? AND user_id = ?", item.OrganizationID, item.UserID).First(org).Error
+	if err != nil {
+		tx.Rollback()
+		logrus.Error("org", err)
+		return err
+	}
+	item.OrganizationPath = org.TreeNames
+	err = tx.Model(&model.Item{}).Create(item).Error
+	if err != nil {
+		tx.Rollback()
+		logrus.Error("item", err)
+		return err
+	}
+	if item.TagNames != nil && len(item.TagNames) != 0 {
+		for _, tagName := range item.TagNames {
+			tag := &model.Tag{
+				UserID: item.UserID,
+				Name:   tagName,
+			}
+			err := tx.Model(&model.Tag{}).Create(tag).Error
+			if err != nil {
+				tx.Rollback()
+				logrus.Error("tag", err)
+				return err
+			}
+			err = tx.Model(model.ItemTag{}).Create(&model.ItemTag{
+				ItemID: item.ID,
+				TagID:  tag.ID,
+			}).Error
+			if err != nil {
+				tx.Rollback()
+				logrus.Error("itemtag", err)
+				return err
+			}
+
+		}
+	}
+
+	return tx.Commit().Error
 }
 
 func (r *Repository) GetItem(ctx context.Context, item *model.Item) (err error) {
@@ -33,7 +74,6 @@ func (r *Repository) GetItem(ctx context.Context, item *model.Item) (err error) 
 }
 
 func (r *Repository) UpdateItem(ctx context.Context, req *model.Item) (err error) {
-	//logrus.Infoln(req)
 	res := r.db.
 		Where("id = ? AND user_id = ?", req.ID, req.UserID).
 		Updates(req)
@@ -129,7 +169,6 @@ func (r *Repository) GetItemsByOrganization(ctx context.Context, userID string, 
 	// 计算分页参数
 	limit, offset := pageSize, (pageNum-1)*pageSize
 
-	// 创建查询构建器，使用 Model 而不是 Table 以获得更好的类型安全性
 	query := r.db.WithContext(ctx).Model(&model.Item{}).Where("user_id = ? AND deleted_at IS NULL", userID) // 修正了软删除条件
 
 	// 添加组织ID过滤
@@ -156,7 +195,7 @@ func (r *Repository) GetItemsByOrganization(ctx context.Context, userID string, 
 		Order("item.created_at DESC").
 		Offset(offset).
 		Limit(limit).
-		Preload("Tags", "deleted_at IS NULL"). // 只加载未删除的标签
+		Preload("Tags"). // 只加载未删除的标签
 		Find(&items).Error; err != nil {
 		log.Log().Error(err.Error())
 		return nil, 0, fmt.Errorf("fetching organization items failed: %w", err)
