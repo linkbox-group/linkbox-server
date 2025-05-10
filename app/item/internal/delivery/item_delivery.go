@@ -24,6 +24,7 @@ func (d *ItemDelivery) CreateItem(ctx context.Context, req *item.CreateItemReque
 		ItemType:       req.Type,
 		Title:          req.Title,
 		URL:            req.Url,
+		TagNames:       req.Tags,
 		OrganizationID: req.OrganizationId,
 		Note:           req.Note,
 		CreatedAt:      model.CustomTime(time.Now()),
@@ -312,10 +313,11 @@ func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.Get
 		for _, tag := range dbItem.Tags {
 			tagStrings = append(tagStrings, tag.Name)
 		}
-
+		//TODO: use convert method
 		respItems = append(respItems, &itemmodel.Item{
 			Id:               dbItem.ID,
 			UserId:           dbItem.UserID,
+			Type:             dbItem.ItemType,
 			Title:            dbItem.Title,
 			Description:      "",
 			TagNames:         dbItem.TagNames,
