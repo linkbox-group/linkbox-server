@@ -98,6 +98,7 @@ func (d *ItemDelivery) GetItem(ctx context.Context, req *item.GetItemRequest) (r
 				Id:          itemModel.ID,
 				UserId:      itemModel.UserID,
 				Title:       itemModel.Title,
+				Type:        itemModel.ItemType,
 				Description: "",
 				Url:         itemModel.URL,
 				Note:        itemModel.Note,
