@@ -8,7 +8,7 @@ import (
 
 // 基础模型，包含通用字段
 type BaseModel struct {
-	ID        string    `gorm:"type:varchar(36);primaryKey;comment:UUID" json:"id"`
+	ID        string    `gorm:"type:varchar(36);primaryKey;comment:UUID;" json:"id"`
 	CreatedAt time.Time `gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;onUpdate:CURRENT_TIMESTAMP" json:"updatedAt"`
 }

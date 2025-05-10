@@ -237,6 +237,8 @@ func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByT
 			Id:     dbItem.ID,
 			UserId: dbItem.UserID,
 			Title:  dbItem.Title,
+			Note:   dbItem.Note,
+			Type:   dbItem.ItemType,
 			//Description: dbItem.Description,
 			Url:       dbItem.URL,
 			Tags:      tagStrings,
@@ -246,25 +248,12 @@ func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByT
 	}
 
 	// 构造分页响应信息
-	var currentPage, currentPageSize int64 = 1, 10 // 默认值 (int64)
-	if paginationReq != nil {                      // 先检查 nil
-		if paginationReq.Page > 0 {
-			currentPage = int64(paginationReq.Page) // 从 int32 转为 int6
-		} else {
-			paginationReq.Page = 1
-		}
-		if paginationReq.PageSize > 0 {
-			currentPageSize = int64(paginationReq.PageSize) // 从 int32 转为 int64
-		} else {
-			paginationReq.PageSize = 10
-		}
-
-	}
 	// 使用正确的类型 commonPagination.PaginationResponse 和字段名
 	paginationResp := &pagination.PaginationMeta{
 		TotalItems: int32(total), // 从 int 转为 int64
-		Page:       int32(currentPage),
-		PageSize:   int32(currentPageSize),
+		TotalPages: int32(total) / paginationReq.PageSize,
+		Page:       int32(paginationReq.Page),
+		PageSize:   int32(paginationReq.PageSize),
 	}
 
 	// 构造成功响应，使用 ItemsPage 结构
@@ -319,6 +308,7 @@ func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.Get
 			UserId:           dbItem.UserID,
 			Type:             dbItem.ItemType,
 			Title:            dbItem.Title,
+			Note:             dbItem.Note,
 			Description:      "",
 			TagNames:         dbItem.TagNames,
 			OrganizationPath: dbItem.OrganizationPath,
