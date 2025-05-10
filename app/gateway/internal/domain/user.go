@@ -1,5 +1,10 @@
 package domain
 
+type UserRegisterReq struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Code     string `json:"code"`
+}
 type UserRegisterResp struct {
 	UserId       string `json:"user_id"`
 	Username     string `json:"username"`

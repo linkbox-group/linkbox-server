@@ -31,7 +31,7 @@ const (
 
 // CreateItem 创建内容
 func (a *ItemAPI) CreateItem(c *gin.Context) {
-	var req item.CreateItemRequest
+	var req domain.CreateItemRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		logrus.Infoln(err)
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
@@ -43,9 +43,9 @@ func (a *ItemAPI) CreateItem(c *gin.Context) {
 		domain.ErrorMsg(c, ecode.ErrAuthFailed, "用户认证失败")
 		return
 	}
-	req.UserId = userId
-
-	resp, err := rpc.ItemClient.CreateItem(context.Background(), &req)
+	rpcReq := req.ConvertTo()
+	rpcReq.UserId = userId
+	resp, err := rpc.ItemClient.CreateItem(context.Background(), rpcReq)
 	if err != nil {
 		domain.Error(c, ErrTitleExists, "创建内容失败")
 		return

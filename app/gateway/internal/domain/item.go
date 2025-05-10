@@ -2,7 +2,10 @@ package domain
 
 import (
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
+	"github.com/linkbox-group/linkbox-server/rpc-gen/item"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/model"
+	"github.com/sirupsen/logrus"
+	"reflect"
 	"time"
 )
 
@@ -59,15 +62,46 @@ func (i *Item) Convert(item *model.Item) {
 
 // CreateContentRequest represents the request to create a content
 type CreateItemRequest struct {
-	UserID          string   `json:"user_id" binding:"required"`
-	Type            string   `json:"type" binding:"required"`
-	URL             string   `json:"url"`
-	Title           string   `json:"title" binding:"required"`
-	Description     string   `json:"description"`
-	ThumbnailURL    string   `json:"thumbnail_url"`
-	Tags            []string `json:"tags"`
-	OrganizationIDs []string `json:"organization_ids"`
-	Note            string   `json:"note"`
+	Type           any      `json:"type"`
+	URL            string   `json:"url"`
+	Title          string   `json:"title" binding:"required"`
+	Description    string   `json:"description"`
+	ThumbnailURL   string   `json:"thumbnail_url"`
+	Tags           []string `json:"tags"`
+	OrganizationID string   `json:"organization_id"`
+	Note           string   `json:"note"`
+}
+
+func (r *CreateItemRequest) ConvertTo() (i *item.CreateItemRequest) {
+
+	i = &item.CreateItemRequest{
+		Url:            r.URL,
+		Title:          r.Title,
+		Description:    r.Description,
+		ThumbnailUrl:   r.ThumbnailURL,
+		Tags:           r.Tags,
+		OrganizationId: r.OrganizationID,
+		Note:           r.Note,
+	}
+	logrus.Debug("itemtype", r.Type)
+	logrus.Debug("typetype", reflect.ValueOf(r.Type).Type())
+	if t, ok := r.Type.(int); ok {
+		i.Type = model.ItemType(t)
+		logrus.Debug("item type:", i.Type)
+		return i
+	}
+	if t, ok := r.Type.(float64); ok {
+		i.Type = model.ItemType(t)
+		logrus.Debug("item type:", i.Type)
+		return i
+	}
+	if t, ok := r.Type.(string); ok {
+		i.Type = model.ItemType(model.ItemType_value[t])
+		logrus.Debug("item type:", i.Type)
+		return i
+	}
+
+	return i
 }
 
 // CreateContentResponse represents the response for creating a content

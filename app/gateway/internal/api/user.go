@@ -17,6 +17,7 @@ type UserApi struct {
 
 // SendCode 发送验证码
 func (api *UserApi) SendCode(ctx *gin.Context) {
+
 	log.Log().Info("[a *UserApi] SendCode")
 	var req user.SendCodeReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -65,12 +66,16 @@ func (api *UserApi) Login(ctx *gin.Context) {
 // Register 用户注册
 func (api *UserApi) Register(ctx *gin.Context) {
 	log.Log().Info("[a *UserApi] Register")
-	var req user.RegisterReq
+	var req domain.UserRegisterReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		domain.ErrorMsg(ctx, ecode.ErrInvalidParam, "请求参数错误")
 	}
+	var reqRpc user.RegisterReq
+	reqRpc.Email = req.Email
+	reqRpc.Password = req.Password
+	reqRpc.Code = req.Code
 
-	resp, err := rpc.UserClient.Register(ctx, &req)
+	resp, err := rpc.UserClient.Register(ctx, &reqRpc)
 	if err != nil {
 		domain.ErrorMsg(ctx, ecode.ErrRpcServiceError, err.Error())
 		return
