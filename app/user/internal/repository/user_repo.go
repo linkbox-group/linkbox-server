@@ -47,6 +47,7 @@ func (r *MysqlUserRepo) RegisterUser(ctx context.Context, user *domain.User) (er
 func (r *MysqlUserRepo) FindUserByEmail(ctx context.Context, email string) (user *domain.User, err error) {
 	user = &domain.User{}
 	if err = r.db.
+		WithContext(ctx).
 		Model(&domain.User{}).
 		Find(user, "email = ?", email).
 		Error; err != nil {
@@ -72,5 +73,8 @@ func (r *MysqlUserRepo) UpdateUser(ctx context.Context, user *domain.User) error
 }
 
 func (r *MysqlUserRepo) DeleteUser(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Model(&domain.User{}).Delete(&domain.User{}, id).Error
+	user := &domain.User{
+		ID: id,
+	}
+	return r.db.WithContext(ctx).Model(&domain.User{}).Delete(user).Error
 }
