@@ -14,9 +14,8 @@ import (
 func main() {
 
 	core.LoadLog()
-	rpc.InitClient()
-
 	err := core.LoadConfig()
+	rpc.InitClient()
 
 	if err != nil {
 		log.Log().Fatalf("load config failed: %v", err)
@@ -30,6 +29,7 @@ func main() {
 }
 func kitexInit() (opts []server.Option) {
 	// address
+
 	addr, err := net.ResolveTCPAddr("tcp", viper.GetString("service.address"))
 	if err != nil {
 		panic(err)
