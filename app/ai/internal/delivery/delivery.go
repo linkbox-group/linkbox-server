@@ -32,7 +32,6 @@ func (d *AiDelivery) SuggestTags(ctx context.Context, req *ai.SuggestTagsRequest
 		return nil, err
 	}
 	itemData := itemRes.GetItem()
-	fmt.Println(itemRes.GetItem()
 	knowledge := itemData.Note
 	if itemData.Type == itemmodel.ItemType_LINK {
 		firecrawlApp := scrape.NewApp()
@@ -69,6 +68,7 @@ func (d *AiDelivery) ListMessages(ctx context.Context, req *ai.ListMessagesReque
 		log.Log().Error(err.Error())
 		return nil, err
 	}
+	pageInfo := req.GetPagination()
 
 	// 将domain.Message转换为proto.Message
 	var protoMessages []*ai.Message
@@ -86,8 +86,9 @@ func (d *AiDelivery) ListMessages(ctx context.Context, req *ai.ListMessagesReque
 		Messages: protoMessages,
 		Pagination: &pagination.PaginationMeta{
 			TotalItems: int32(total),
-			Page:       int32(req.Pagination.Page),
-			PageSize:   int32(req.Pagination.PageSize),
+			Page:       pageInfo.GetPage(),
+			PageSize:   pageInfo.GetPageSize(),
+			TotalPages: (int32(total) / pageInfo.PageSize) + 1,
 		},
 	}, nil
 }

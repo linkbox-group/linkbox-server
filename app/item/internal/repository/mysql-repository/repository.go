@@ -157,24 +157,40 @@ func (r *Repository) GetItemsByTags(ctx context.Context, userID string, tagNames
 }
 
 func (r *Repository) GetItemsByOrganization(ctx context.Context, userID string, organizationID string, pageNum int, pageSize int) (items []model.Item, total int, err error) {
-
-	// 参数验证
-	if pageNum < 1 {
-		pageNum = 1
+	tx := r.db.Begin().WithContext(ctx)
+	//获取所有子组织
+	org := &model.Organization{}
+	orgIDs := []string{organizationID}
+	err = tx.Model(&model.Organization{}).Where("user_id = ? AND id = ?", userID, organizationID).Find(&org).Error
+	if err != nil {
+		tx.Rollback()
+		logrus.Error("org", err)
+		return nil, 0, fmt.Errorf("fetching items failed: %w", err)
 	}
-	if pageSize < 1 {
-		pageSize = 10 // 默认页大小
+	codes := []string{org.Code}
+	for {
+		var orgs []*model.Organization
+		err = tx.Model(&model.Organization{}).Where("user_id = ? AND parent_code IN ? AND id <> ?", userID, codes, organizationID).Find(&orgs).Error
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			tx.Rollback()
+			logrus.Error("org", err)
+			return nil, 0, fmt.Errorf("fetching items failed: %w", err)
+		}
+		if errors.Is(err, gorm.ErrRecordNotFound) || len(orgs) == 0 {
+			break
+		}
+		codes = []string{}
+		for _, o := range orgs {
+			codes = append(codes, o.Code)
+			orgIDs = append(orgIDs, o.ID)
+		}
+
 	}
 
 	// 计算分页参数
 	limit, offset := pageSize, (pageNum-1)*pageSize
 
-	query := r.db.WithContext(ctx).Model(&model.Item{}).Where("user_id = ? AND deleted_at IS NULL", userID) // 修正了软删除条件
-
-	// 添加组织ID过滤
-	if organizationID != "" {
-		query = query.Where("organization_id = ?", organizationID)
-	}
+	query := r.db.WithContext(ctx).Model(&model.Item{}).Where("user_id = ? AND organization_id IN ? AND deleted_at IS NULL", userID, orgIDs) // 修正了软删除条件
 
 	// 计算总数
 	var totalCount int64

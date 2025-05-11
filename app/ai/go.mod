@@ -17,6 +17,7 @@ require (
 	github.com/linkbox-group/linkbox-server/common v0.0.0-00010101000000-000000000000
 	github.com/linkbox-group/linkbox-server/model v0.0.0-00010101000000-000000000000
 	github.com/linkbox-group/linkbox-server/rpc-gen v0.0.0-00010101000000-000000000000
+	github.com/mendableai/firecrawl-go v1.0.0
 	github.com/spf13/viper v1.20.1
 	github.com/xyq777/holog v0.7.2
 	google.golang.org/protobuf v1.36.6
@@ -85,7 +86,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/meguminnnnnnnnn/go-openai v0.0.0-20250408071642-761325becfd6 // indirect
-	github.com/mendableai/firecrawl-go v1.0.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

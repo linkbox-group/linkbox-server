@@ -210,9 +210,9 @@ func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByT
 	// 使用正确的类型 commonPagination.PaginationResponse 和字段名
 	paginationResp := &pagination.PaginationMeta{
 		TotalItems: int32(total), // 从 int 转为 int64
-		TotalPages: int32(total) / paginationReq.PageSize,
-		Page:       int32(paginationReq.Page),
-		PageSize:   int32(paginationReq.PageSize),
+		TotalPages: (int32(total) / paginationReq.PageSize) + 1,
+		Page:       paginationReq.Page,
+		PageSize:   paginationReq.PageSize,
 	}
 
 	// 构造成功响应，使用 ItemsPage 结构
@@ -230,19 +230,9 @@ func (d *ItemDelivery) GetItemsByTags(ctx context.Context, req *item.GetItemsByT
 func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.GetItemsByOrganizationRequest) (resp *item.GetItemsByOrganizationResponse, err error) {
 	userID := req.UserId
 	orgID := req.OrganizationId
-	paginationReq := req.Pagination
-	// 构造分页响应信息
-	var currentPage, currentPageSize int = 1, 10 // 默认值
-	if paginationReq != nil {
-		if paginationReq.Page > 0 {
-			currentPage = int(paginationReq.Page)
-		}
-		if paginationReq.PageSize > 0 {
-			currentPageSize = int(paginationReq.PageSize)
-		}
-	}
+	page := req.GetPagination()
 
-	items, total, err := d.s.GetItemsByOrganization(ctx, userID, orgID, currentPage, currentPageSize)
+	items, total, err := d.s.GetItemsByOrganization(ctx, userID, orgID, int(page.GetPage()), int(page.GetPageSize()))
 	if err != nil {
 		return &item.GetItemsByOrganizationResponse{
 			Result: &item.GetItemsByOrganizationResponse_Error{
@@ -267,8 +257,9 @@ func (d *ItemDelivery) GetItemsByOrganization(ctx context.Context, req *item.Get
 
 	paginationResp := &pagination.PaginationMeta{
 		TotalItems: int32(total),
-		Page:       int32(currentPage),
-		PageSize:   int32(currentPageSize),
+		Page:       page.GetPage(),
+		PageSize:   page.GetPageSize(),
+		TotalPages: (int32(total) / page.PageSize) + 1,
 	}
 
 	return &item.GetItemsByOrganizationResponse{
@@ -302,18 +293,8 @@ func (d *ItemDelivery) ExportToFile(ctx context.Context, req *item.ExportToFileR
 // SearchItems implements the ItemDelivery interface.
 func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsRequest) (resp *item.SearchItemsResponse, err error) {
 	userID := req.UserId
-	paginationReq := req.Pagination
-	// 构造分页响应信息
-	var currentPage, currentPageSize int = 1, 10 // 默认值
-	if paginationReq != nil {
-		if paginationReq.Page > 0 {
-			currentPage = int(paginationReq.Page)
-		}
-		if paginationReq.PageSize > 0 {
-			currentPageSize = int(paginationReq.PageSize)
-		}
-	}
-	items, total, err := d.s.SearchItems(ctx, userID, req.Query, req.Type, currentPage, currentPageSize)
+	pageInfo := req.GetPagination()
+	items, total, err := d.s.SearchItems(ctx, userID, req.Query, req.Type, int(pageInfo.GetPage()), int(pageInfo.GetPageSize()))
 	if err != nil {
 		return &item.SearchItemsResponse{
 			Result: &item.SearchItemsResponse_Error{
@@ -340,8 +321,9 @@ func (d *ItemDelivery) SearchItems(ctx context.Context, req *item.SearchItemsReq
 				Items: respItems,
 				Pagination: &pagination.PaginationMeta{
 					TotalItems: int32(total),
-					Page:       int32(currentPage),
-					PageSize:   int32(currentPageSize),
+					Page:       pageInfo.GetPage(),
+					PageSize:   pageInfo.GetPageSize(),
+					TotalPages: (int32(total) / pageInfo.PageSize) + 1,
 				},
 			},
 		},
