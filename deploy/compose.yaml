@@ -28,3 +28,9 @@ services:
       - 6379:6379
 
     command: redis-server --requirepass 123456
+  linkbox-ai:
+    image: "xyq777/linkbox-ai"
+    ports:
+      - 8080:8080
+    volumes:
+      - ./config/ai.toml:/app/configs/test/conf.toml
