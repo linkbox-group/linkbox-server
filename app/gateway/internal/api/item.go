@@ -159,7 +159,18 @@ func (a *ItemAPI) GetItemsByTags(c *gin.Context) {
 		domain.ErrorMsg(c, ecode.ErrInvalidParam, "请求参数错误")
 		return
 	}
-	logrus.Infoln(req.Pagination)
+	if req.Pagination == nil {
+		req.Pagination = &pagination.PaginationRequest{
+			PageSize: 10,
+			Page:     1,
+		}
+	}
+	if req.Pagination.Page <= 0 {
+		req.Pagination.Page = 1
+	}
+	if req.Pagination.PageSize <= 0 {
+		req.Pagination.PageSize = 10
+	}
 	resp, err := rpc.ItemClient.GetItemsByTags(context.Background(), &req)
 	if err != nil {
 		domain.Error(c, ecode.ErrRpcServiceError, "获取内容失败")
@@ -195,6 +206,18 @@ func (a *ItemAPI) GetItemsByOrganization(c *gin.Context) {
 	if err != nil {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
 		return
+	}
+	if req.Pagination == nil {
+		req.Pagination = &pagination.PaginationRequest{
+			PageSize: 10,
+			Page:     1,
+		}
+	}
+	if req.Pagination.Page <= 0 {
+		req.Pagination.Page = 1
+	}
+	if req.Pagination.PageSize <= 0 {
+		req.Pagination.PageSize = 10
 	}
 	userId, err := domain.GetUserIDFromContext(c)
 	if err != nil {
@@ -249,6 +272,18 @@ func (a *ItemAPI) SearchItems(c *gin.Context) {
 	}
 	req := domain.SearchItemsReq{}
 	err = c.ShouldBind(&req)
+	if req.Pagination == nil {
+		req.Pagination = &pagination.PaginationRequest{
+			PageSize: 10,
+			Page:     1,
+		}
+	}
+	if req.Pagination.Page <= 0 {
+		req.Pagination.Page = 1
+	}
+	if req.Pagination.PageSize <= 0 {
+		req.Pagination.PageSize = 10
+	}
 
 	if err != nil {
 		domain.Error(c, ErrInvalidReq, "请求参数错误")
