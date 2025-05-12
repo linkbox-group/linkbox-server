@@ -13,7 +13,7 @@ type Group struct {
 func InitRouter() *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Recovery())
-	router.Use(middleware.PrintReq())
+	//router.Use(middleware.PrintReq())
 	router.Use(middleware.CORS())
 	routerGroup := Group{router.Group("/api")}
 	// 用户服务
@@ -25,6 +25,7 @@ func InitRouter() *gin.Engine {
 	// 组织服务
 	routerGroup.RegisterOrganizationRoutes()
 	routerGroup.RegisterAiRoutes()
+	routerGroup.RegisterTrashRoutes()
 
 	return router
 }
