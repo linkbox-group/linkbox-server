@@ -17,4 +17,5 @@ type UserServiceItf interface {
 	SearchItems(ctx context.Context, userID string, query string, itemType itemmodel.ItemType, pageNum int, pageSize int) ([]model.Item, int, error)
 	RecoverItemsBatch(ctx context.Context, userID string, ids []string) (err error)
 	DeleteItemsBatch(ctx context.Context, userID string, ids []string) (err error)
+	GetDeletedItems(ctx context.Context, userID string, pagination *pagination.PaginationRequest) ([]*model.Item, int, error)
 }

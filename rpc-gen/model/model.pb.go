@@ -175,3 +175,52 @@ func (x *Item) GetReadCount() int32 {
 	}
 	return 0
 }
+
+type TrashItem struct {
+	Id        string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	UserId    string                 `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
+	Title     string                 `protobuf:"bytes,3,opt,name=title" json:"title,omitempty"`
+	DeletedAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=deleted_at" json:"deleted_at,omitempty"`
+	ExpiredAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expired_at" json:"expired_at,omitempty"`
+}
+
+func (x *TrashItem) Reset() { *x = TrashItem{} }
+
+func (x *TrashItem) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *TrashItem) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *TrashItem) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *TrashItem) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *TrashItem) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *TrashItem) GetDeletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DeletedAt
+	}
+	return nil
+}
+
+func (x *TrashItem) GetExpiredAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiredAt
+	}
+	return nil
+}

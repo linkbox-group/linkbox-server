@@ -183,7 +183,10 @@ message ItemsPage {
   repeated model.Item items = 1;
   common.pagination.PaginationMeta pagination = 2;
 }
-
+message TrashItemsPage{
+  repeated model.TrashItem items = 1;
+  common.pagination.PaginationMeta pagination = 2;
+}
 
 // 获取最近内容项请求
 message GetRecentItemsRequest {
@@ -296,7 +299,7 @@ message GetDeletedItemsRequest{
 }
 message GetDeletedItemsResponse{
   oneof result {
-    ItemsPage items_page = 1;
+    TrashItemsPage items_page = 1;
     common.cError.Error error = 2;
   }
 }

@@ -29,3 +29,10 @@ message Item {
   string note = 15;
   int32 read_count = 16;
 }
+message TrashItem{
+  string id =1;
+  string user_id =2;
+  string title=3;
+  google.protobuf.Timestamp deleted_at =4;
+  google.protobuf.Timestamp expired_at =5;
+}

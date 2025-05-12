@@ -17,6 +17,7 @@ type UserRepositoryItf interface {
 	SearchItems(ctx context.Context, userID string, query string, pageNum int, pageSize int) ([]model.Item, int, error)
 	RecoverItemsBatch(context.Context, string, []string) (err error)
 	DeleteItemsBatch(context.Context, string, []string) (err error)
+	GetDeletedItems(ctx context.Context, userID string, pagination *pagination.PaginationRequest) ([]*model.Item, int, error)
 }
 type EsRepositoryItf interface {
 	SearchItems(ctx context.Context, UserID string, query string, itemType itemmodel.ItemType, pageNum int, pageSize int) (items []model.Item, count int, err error)

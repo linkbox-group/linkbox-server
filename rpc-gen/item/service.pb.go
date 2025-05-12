@@ -794,6 +794,31 @@ func (x *ItemsPage) GetPagination() *pagination.PaginationMeta {
 	return nil
 }
 
+type TrashItemsPage struct {
+	Items      []*model.TrashItem         `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
+	Pagination *pagination.PaginationMeta `protobuf:"bytes,2,opt,name=pagination" json:"pagination,omitempty"`
+}
+
+func (x *TrashItemsPage) Reset() { *x = TrashItemsPage{} }
+
+func (x *TrashItemsPage) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
+
+func (x *TrashItemsPage) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
+
+func (x *TrashItemsPage) GetItems() []*model.TrashItem {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *TrashItemsPage) GetPagination() *pagination.PaginationMeta {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
 // 获取最近内容项请求
 type GetRecentItemsRequest struct {
 	UserId          string         `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
@@ -1474,7 +1499,7 @@ func (x *GetDeletedItemsResponse) GetResult() isGetDeletedItemsResponse_Result {
 	}
 	return nil
 }
-func (x *GetDeletedItemsResponse) GetItemsPage() *ItemsPage {
+func (x *GetDeletedItemsResponse) GetItemsPage() *TrashItemsPage {
 	if p, ok := x.GetResult().(*GetDeletedItemsResponse_ItemsPage); ok {
 		return p.ItemsPage
 	}
@@ -1501,7 +1526,7 @@ type isGetDeletedItemsResponse_Result interface {
 }
 
 type GetDeletedItemsResponse_ItemsPage struct {
-	ItemsPage *ItemsPage `protobuf:"bytes,1,opt,name=items_page" json:"items_page,omitempty"`
+	ItemsPage *TrashItemsPage `protobuf:"bytes,1,opt,name=items_page" json:"items_page,omitempty"`
 }
 
 func (*GetDeletedItemsResponse_ItemsPage) isGetDeletedItemsResponse_Result() {}

@@ -11,6 +11,7 @@ import (
 	"github.com/linkbox-group/linkbox-server/rpc-gen/common/pagination"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"time"
 )
 
 var ProviderSet = wire.NewSet(wire.Bind(new(acl.UserRepositoryItf), new(*Repository)), NewRepository)
@@ -226,7 +227,7 @@ func (r *Repository) SearchItems(ctx context.Context, userID string, query strin
 	// 基础查询构建器，使用连接表查询
 	baseQuery := r.db.WithContext(ctx).
 		Table("item").
-		Where("item.user_id =? AND item.deleted_at is not null", userID)
+		Where("item.user_id =? AND item.deleted_at is NULL", userID)
 	// 添加组织ID过滤
 	if query != "" {
 		baseQuery = baseQuery.Where("item.title LIKE ?", "%"+query+"%")
@@ -252,13 +253,10 @@ func (r *Repository) SearchItems(ctx context.Context, userID string, query strin
 }
 
 func (r *Repository) RecoverItemsBatch(ctx context.Context, userID string, ids []string) error {
-	if len(ids) == 0 {
-		println("No IDs provided for recovery.")
-		return nil
-	}
+	thirtyDaysAgo := time.Now().AddDate(0, 0, -30)
 	result := r.db.WithContext(ctx).Unscoped().
 		Model(&model.Item{}).
-		Where("user_id = ? AND id IN ? AND deleted_at IS NOT NULL", userID, ids).
+		Where("user_id = ? AND id IN ? AND deleted_at IS NOT NULL AND deleted_at > ? ", userID, ids, thirtyDaysAgo).
 		Update("deleted_at", nil)
 	if result.Error != nil {
 		return fmt.Errorf("failed to recover items: %w", result.Error)
@@ -269,12 +267,8 @@ func (r *Repository) RecoverItemsBatch(ctx context.Context, userID string, ids [
 	return nil
 }
 func (r *Repository) DeleteItemsBatch(ctx context.Context, userID string, ids []string) error {
-	if len(ids) == 0 {
-		println("No IDs provided for deletion.")
-		return nil
-	}
-	result := r.db.WithContext(ctx).
-		Where("user_id =? AND id IN?", userID, ids).
+	result := r.db.WithContext(ctx).Unscoped().
+		Where("user_id = ? AND id IN ? AND deleted_at IS NOT NULL ", userID, ids).
 		Delete(&model.Item{})
 	if result.Error != nil {
 		return fmt.Errorf("failed to delete items: %w", result.Error)
@@ -283,4 +277,29 @@ func (r *Repository) DeleteItemsBatch(ctx context.Context, userID string, ids []
 		return fmt.Errorf("no items found for deletion")
 	}
 	return nil
+}
+func (r *Repository) GetDeletedItems(ctx context.Context, userID string, pagination *pagination.PaginationRequest) (
+	[]*model.Item, int, error) {
+	limit, offset := pagination.GetPage(), (pagination.GetPage()-1)*pagination.GetPageSize()
+	thirtyDaysAgo := time.Now().AddDate(0, 0, -30)
+	// 基础查询构建器，使用连接表查询
+	baseQuery := r.db.WithContext(ctx).Unscoped().
+		Model(&model.Item{}).
+		Where("user_id =? AND deleted_at IS NOT NULL AND deleted_at > ?", userID, thirtyDaysAgo)
+
+	// 计算总数
+	var total int64
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, fmt.Errorf("counting user item failed: %w", err)
+	}
+	var items []*model.Item
+	if err := baseQuery.
+		Order("created_at DESC").
+		Offset(int(offset)).
+		Limit(int(limit)).
+		Find(&items).Error; err != nil {
+		return nil, 0, fmt.Errorf("fetching user items failed: %w", err)
+	}
+	return items, int(total), nil
+
 }

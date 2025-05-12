@@ -58,3 +58,6 @@ func (s *Service) RecoverItemsBatch(ctx context.Context, userID string, ids []st
 func (s *Service) DeleteItemsBatch(ctx context.Context, userID string, ids []string) (err error) {
 	return s.repo.DeleteItemsBatch(ctx, userID, ids)
 }
+func (s *Service) GetDeletedItems(ctx context.Context, userID string, pagination *pagination.PaginationRequest) ([]*model.Item, int, error) {
+	return s.repo.GetDeletedItems(ctx, userID, pagination)
+}
