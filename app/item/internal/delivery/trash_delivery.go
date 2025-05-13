@@ -76,7 +76,6 @@ func (d *ItemDelivery) RecoverItemsBatch(ctx context.Context, req *item.RecoverI
 
 func (d *ItemDelivery) DeleteItemsBatch(ctx context.Context, req *item.DeleteItemsBatchRequest) (res *item.DeleteItemsBatchResponse, err error) {
 	userID := req.UserId
-
 	err = d.s.DeleteItemsBatch(ctx, userID, req.Ids)
 
 	if err != nil {

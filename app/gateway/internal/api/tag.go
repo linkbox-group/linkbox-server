@@ -54,19 +54,9 @@ func (a *TagAPI) CreateTag(c *gin.Context) {
 		return
 	}
 
-	tag := resp.GetTag()
-	tagResp := domain.TagResponse{
-		ID:          tag.Id,
-		UserID:      tag.UserId,
-		Name:        tag.Name,
-		Description: tag.Description,
-		Color:       tag.Color,
-		ItemCount:   tag.ItemCount,
-		CreatedAt:   tag.CreatedAt.AsTime(),
-		UpdatedAt:   tag.UpdatedAt.AsTime(),
-	}
+	tagResp := domain.TagResponse{}
 
-	domain.Success(c, tagResp)
+	domain.Success(c, tagResp.Convert(resp.GetTag()))
 }
 
 // GetTag 获取标签
@@ -87,18 +77,8 @@ func (a *TagAPI) GetTag(c *gin.Context) {
 		return
 	}
 
-	tag := resp.GetTag()
-	tagResp := domain.TagResponse{
-		ID:          tag.Id,
-		UserID:      tag.UserId,
-		Name:        tag.Name,
-		Description: tag.Description,
-		Color:       tag.Color,
-		ItemCount:   tag.ItemCount,
-		CreatedAt:   tag.CreatedAt.AsTime(),
-		UpdatedAt:   tag.UpdatedAt.AsTime(),
-	}
-	domain.Success(c, tagResp)
+	tagResp := domain.TagResponse{}
+	domain.Success(c, tagResp.Convert(resp.GetTag()))
 }
 
 // UpdateTag 更新标签
@@ -125,19 +105,8 @@ func (a *TagAPI) UpdateTag(c *gin.Context) {
 		domain.Error(c, ErrTagNameExists, "更新标签失败")
 		return
 	}
-
-	tag := resp.GetTag()
-	tagResp := domain.TagResponse{
-		ID:          tag.Id,
-		UserID:      tag.UserId,
-		Name:        tag.Name,
-		Description: tag.Description,
-		Color:       tag.Color,
-		ItemCount:   tag.ItemCount,
-		CreatedAt:   tag.CreatedAt.AsTime(),
-		UpdatedAt:   tag.UpdatedAt.AsTime(),
-	}
-	domain.Success(c, tagResp)
+	tagResp := domain.TagResponse{}
+	domain.Success(c, tagResp.Convert(resp.GetTag()))
 }
 
 // DeleteTag 删除标签
@@ -192,17 +161,10 @@ func (a *TagAPI) GetUserTags(c *gin.Context) {
 	}
 
 	var tags []domain.TagResponse
-	for _, tag := range resp.GetTags().Tags {
-		tags = append(tags, domain.TagResponse{
-			ID:          tag.Id,
-			UserID:      tag.UserId,
-			Name:        tag.Name,
-			Description: tag.Description,
-			Color:       tag.Color,
-			ItemCount:   tag.ItemCount,
-			CreatedAt:   tag.CreatedAt.AsTime(),
-			UpdatedAt:   tag.UpdatedAt.AsTime(),
-		})
+	for _, t := range resp.GetTags().Tags {
+		tagResp := domain.TagResponse{}
+		tagResp.Convert(t)
+		tags = append(tags, tagResp)
 	}
 
 	tagListResp := domain.TagListResponse{
@@ -300,74 +262,16 @@ func (a *TagAPI) GetItemTags(c *gin.Context) {
 	}
 
 	var tags []domain.TagResponse
-	for _, tag := range resp.GetTags().Tags {
-		tags = append(tags, domain.TagResponse{
-			ID:          tag.Id,
-			UserID:      tag.UserId,
-			Name:        tag.Name,
-			Description: tag.Description,
-			Color:       tag.Color,
-			ItemCount:   tag.ItemCount,
-			CreatedAt:   tag.CreatedAt.AsTime(),
-			UpdatedAt:   tag.UpdatedAt.AsTime(),
-		})
+	for _, t := range resp.GetTags().Tags {
+		tagResp := domain.TagResponse{}
+		tagResp.Convert(t)
+		tags = append(tags, tagResp)
 	}
 
 	// 使用domain中定义的ItemTagsResponse结构体
 	responseData := domain.ItemTagsResponse{
 		ItemID: itemID,
 		Tags:   tags,
-	}
-	domain.Success(c, responseData)
-}
-
-// GetRelatedTags 获取相关标签
-func (a *TagAPI) GetRelatedTags(c *gin.Context) {
-	tagID := c.Param("tag_id")
-	userID, err := domain.GetUserIDFromContext(c)
-	if err != nil {
-		domain.Error(c, ecode.ErrAuthFailed, "用户认证失败")
-		return
-	}
-	log.Log().Info("[a *TagAPI] GetRelatedTags ", "user_id", userID)
-
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "5"))
-	limit32 := int32(limit)
-
-	resp, err := rpc.TagClient.GetRelatedTags(context.Background(), &tag.GetRelatedTagsRequest{
-		TagId:  tagID,
-		UserId: userID,
-		Limit:  &limit32,
-	})
-	if err != nil {
-		domain.Error(c, ErrTagNotFound, "获取相关标签失败")
-		return
-	}
-
-	var relatedTags []domain.TagRelatedResponse
-
-	for _, relatedTag := range resp.GetRelatedTags().RelatedTags {
-		tag := relatedTag.GetTag()
-		relatedTags = append(relatedTags, domain.TagRelatedResponse{
-			Tag: domain.TagResponse{
-				ID:          tag.Id,
-				UserID:      tag.UserId,
-				Name:        tag.Name,
-				Description: tag.Description,
-				Color:       tag.Color,
-				ItemCount:   tag.ItemCount,
-				CreatedAt:   tag.CreatedAt.AsTime(),
-				UpdatedAt:   tag.UpdatedAt.AsTime(),
-			},
-			Correlation:  relatedTag.GetCorrelation(),
-			CoOccurrence: relatedTag.GetCoOccurrence(),
-		})
-	}
-
-	// 使用domain中定义的GetRelatedTagsFullResponse结构体
-	responseData := domain.GetRelatedTagsFullResponse{
-		TagID:       tagID,
-		RelatedTags: relatedTags,
 	}
 	domain.Success(c, responseData)
 }

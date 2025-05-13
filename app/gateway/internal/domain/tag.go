@@ -1,14 +1,16 @@
 package domain
 
 import (
+	"github.com/linkbox-group/linkbox-server/rpc-gen/tag"
 	"time"
 )
 
-// Tag represents a tag in the system
-type Tag struct {
+// TagResponse represents a tag response for API
+type TagResponse struct {
 	ID          string    `json:"id"`
 	UserID      string    `json:"user_id"`
 	Name        string    `json:"name"`
+	Icon        string    `json:"icon"`
 	Description string    `json:"description"`
 	Color       string    `json:"color"`
 	ItemCount   int32     `json:"item_count"`
@@ -16,16 +18,17 @@ type Tag struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-// TagResponse represents a tag response for API
-type TagResponse struct {
-	ID          string    `json:"id"`
-	UserID      string    `json:"user_id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Color       string    `json:"color"`
-	ItemCount   int32     `json:"item_count"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+func (t *TagResponse) Convert(tag *tag.Tag) *TagResponse {
+	t.ID = tag.Id
+	t.UserID = tag.UserId
+	t.Name = tag.Name
+	t.Icon = tag.Icon
+	t.Description = tag.Description
+	t.Color = tag.Color
+	t.ItemCount = tag.ItemCount
+	t.CreatedAt = tag.CreatedAt.AsTime()
+	t.UpdatedAt = tag.UpdatedAt.AsTime()
+	return t
 }
 
 // TagListResponse represents a list of tags response for API
@@ -68,7 +71,7 @@ type CreateTagRequest struct {
 
 // CreateTagResponse represents the response for creating a tag
 type CreateTagResponse struct {
-	Tag *Tag `json:"tag"`
+	Tag *TagResponse `json:"tag"`
 }
 
 // GetTagRequest represents the request to get a tag
@@ -79,7 +82,7 @@ type GetTagRequest struct {
 
 // GetTagResponse represents the response for getting a tag
 type GetTagResponse struct {
-	Tag *Tag `json:"tag"`
+	Tag *TagResponse `json:"tag"`
 }
 
 // UpdateTagRequest represents the request to update a tag
@@ -93,7 +96,7 @@ type UpdateTagRequest struct {
 
 // UpdateTagResponse represents the response for updating a tag
 type UpdateTagResponse struct {
-	Tag *Tag `json:"tag"`
+	Tag *TagResponse `json:"tag"`
 }
 
 // DeleteTagRequest represents the request to delete a tag
@@ -116,8 +119,8 @@ type GetUserTagsRequest struct {
 
 // GetUserTagsResponse represents the response for getting user tags
 type GetUserTagsResponse struct {
-	Tags       []*Tag     `json:"tags"`
-	Pagination Pagination `json:"pagination"`
+	Tags       []*TagResponse `json:"tags"`
+	Pagination Pagination     `json:"pagination"`
 }
 
 // AddTagsToItemsRequest represents the request to add tags to items
@@ -156,40 +159,6 @@ type GetItemTagsRequest struct {
 
 // GetItemTagsResponse represents the response for getting item tags
 type GetItemTagsResponse struct {
-	ItemID string `json:"item_id"`
-	Tags   []*Tag `json:"tags"`
-}
-
-// GetRelatedTagsRequest represents the request to get related tags
-type GetRelatedTagsRequest struct {
-	TagID  string `json:"tag_id" binding:"required"`
-	UserID string `json:"user_id" binding:"required"`
-	Limit  int32  `json:"limit"`
-}
-
-// RelatedTag represents a related tag with correlation information
-type RelatedTag struct {
-	Tag          *Tag    `json:"tag"`
-	Correlation  float32 `json:"correlation"`
-	CoOccurrence int32   `json:"co_occurrence"`
-}
-
-// GetRelatedTagsResponse represents the response for getting related tags
-type GetRelatedTagsResponse struct {
-	TagID       string       `json:"tag_id"`
-	RelatedTags []RelatedTag `json:"related_tags"`
-}
-
-// MergeTagsRequest represents the request to merge tags
-type MergeTagsRequest struct {
-	UserID           string   `json:"user_id" binding:"required"`
-	SourceTagIDs     []string `json:"source_tag_ids" binding:"required"`
-	TargetTagID      string   `json:"target_tag_id" binding:"required"`
-	DeleteSourceTags bool     `json:"delete_source_tags"`
-}
-
-// MergeTagsResponse represents the response for merging tags
-type MergeTagsResponse struct {
-	AffectedItems int32 `json:"affected_items"`
-	TargetTag     *Tag  `json:"target_tag"`
+	ItemID string         `json:"item_id"`
+	Tags   []*TagResponse `json:"tags"`
 }

@@ -19,7 +19,6 @@ type Client interface {
 	AddTagsToItems(ctx context.Context, Req *tag.AddTagsToItemsRequest, callOptions ...callopt.Option) (r *tag.AddTagsToItemsResponse, err error)
 	RemoveTagsFromItems(ctx context.Context, Req *tag.RemoveTagsFromItemsRequest, callOptions ...callopt.Option) (r *tag.RemoveTagsFromItemsResponse, err error)
 	GetItemTags(ctx context.Context, Req *tag.GetItemTagsRequest, callOptions ...callopt.Option) (r *tag.GetItemTagsResponse, err error)
-	GetRelatedTags(ctx context.Context, Req *tag.GetRelatedTagsRequest, callOptions ...callopt.Option) (r *tag.GetRelatedTagsResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -89,9 +88,4 @@ func (p *kTagServiceClient) RemoveTagsFromItems(ctx context.Context, Req *tag.Re
 func (p *kTagServiceClient) GetItemTags(ctx context.Context, Req *tag.GetItemTagsRequest, callOptions ...callopt.Option) (r *tag.GetItemTagsResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetItemTags(ctx, Req)
-}
-
-func (p *kTagServiceClient) GetRelatedTags(ctx context.Context, Req *tag.GetRelatedTagsRequest, callOptions ...callopt.Option) (r *tag.GetRelatedTagsResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetRelatedTags(ctx, Req)
 }

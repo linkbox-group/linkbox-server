@@ -35,8 +35,6 @@ service TagService {
   // 获取内容项的标签
   rpc GetItemTags(GetItemTagsRequest) returns (GetItemTagsResponse);
 
-  // 获取相关标签
-  rpc GetRelatedTags(GetRelatedTagsRequest) returns (GetRelatedTagsResponse);
 
 }
 
@@ -48,6 +46,7 @@ message Tag {
   string description = 4;
   string color = 5;
   int32 item_count = 6;
+  string  icon = 9;
   google.protobuf.Timestamp created_at = 7;
   google.protobuf.Timestamp updated_at = 8;
 }
@@ -58,6 +57,7 @@ message CreateTagRequest {
   string name = 2;
   optional string description = 3;
   optional string color = 4;
+  optional string  icon = 9;
 }
 
 // 创建标签响应
@@ -89,6 +89,7 @@ message UpdateTagRequest {
   optional string name = 3;
   optional string description = 4;
   optional string color = 5;
+  optional string  icon = 9;
 }
 
 // 更新标签响应
@@ -190,57 +191,4 @@ message ItemTagsData {
   string item_id = 1;
   repeated Tag tags = 2;
 }
-
-// 合并标签请求
-message MergeTagsRequest {
-  string user_id = 1;
-  repeated string source_tag_ids = 2;
-  string target_tag_id = 3;
-  optional bool delete_source_tags = 4;
-}
-
-// 合并标签响应
-message MergeTagsResponse {
-  oneof result {
-    MergeTagsResult data = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 合并标签结果
-message MergeTagsResult {
-  int32 affected_items = 1;
-  Tag target_tag = 2;
-}
-
-
-// 获取相关标签请求
-message GetRelatedTagsRequest {
-  string tag_id = 1;
-  string user_id = 2;
-  optional int32 limit = 3;
-}
-
-// 获取相关标签响应
-message GetRelatedTagsResponse {
-  oneof result {
-    RelatedTagsData related_tags = 1;
-    common.cError.Error error = 2;
-  }
-}
-
-// 相关标签数据
-message RelatedTagsData {
-  string tag_id = 1;
-  repeated TagRelation related_tags = 2;
-}
-
-// 标签关系
-message TagRelation {
-  Tag tag = 1;
-  float correlation = 2;
-  int32 co_occurrence = 3;
-}
-
-
 

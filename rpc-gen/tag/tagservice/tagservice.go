@@ -71,13 +71,6 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"GetRelatedTags": kitex.NewMethodInfo(
-		getRelatedTagsHandler,
-		newGetRelatedTagsArgs,
-		newGetRelatedTagsResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
-	),
 }
 
 var (
@@ -1032,117 +1025,6 @@ func (p *GetItemTagsResult) GetResult() interface{} {
 	return p.Success
 }
 
-func getRelatedTagsHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(tag.GetRelatedTagsRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(tag.TagService).GetRelatedTags(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *GetRelatedTagsArgs:
-		success, err := handler.(tag.TagService).GetRelatedTags(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*GetRelatedTagsResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newGetRelatedTagsArgs() interface{} {
-	return &GetRelatedTagsArgs{}
-}
-
-func newGetRelatedTagsResult() interface{} {
-	return &GetRelatedTagsResult{}
-}
-
-type GetRelatedTagsArgs struct {
-	Req *tag.GetRelatedTagsRequest
-}
-
-func (p *GetRelatedTagsArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *GetRelatedTagsArgs) Unmarshal(in []byte) error {
-	msg := new(tag.GetRelatedTagsRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var GetRelatedTagsArgs_Req_DEFAULT *tag.GetRelatedTagsRequest
-
-func (p *GetRelatedTagsArgs) GetReq() *tag.GetRelatedTagsRequest {
-	if !p.IsSetReq() {
-		return GetRelatedTagsArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *GetRelatedTagsArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *GetRelatedTagsArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type GetRelatedTagsResult struct {
-	Success *tag.GetRelatedTagsResponse
-}
-
-var GetRelatedTagsResult_Success_DEFAULT *tag.GetRelatedTagsResponse
-
-func (p *GetRelatedTagsResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *GetRelatedTagsResult) Unmarshal(in []byte) error {
-	msg := new(tag.GetRelatedTagsResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *GetRelatedTagsResult) GetSuccess() *tag.GetRelatedTagsResponse {
-	if !p.IsSetSuccess() {
-		return GetRelatedTagsResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *GetRelatedTagsResult) SetSuccess(x interface{}) {
-	p.Success = x.(*tag.GetRelatedTagsResponse)
-}
-
-func (p *GetRelatedTagsResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *GetRelatedTagsResult) GetResult() interface{} {
-	return p.Success
-}
-
 type kClient struct {
 	c client.Client
 }
@@ -1228,16 +1110,6 @@ func (p *kClient) GetItemTags(ctx context.Context, Req *tag.GetItemTagsRequest) 
 	_args.Req = Req
 	var _result GetItemTagsResult
 	if err = p.c.Call(ctx, "GetItemTags", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) GetRelatedTags(ctx context.Context, Req *tag.GetRelatedTagsRequest) (r *tag.GetRelatedTagsResponse, err error) {
-	var _args GetRelatedTagsArgs
-	_args.Req = Req
-	var _result GetRelatedTagsResult
-	if err = p.c.Call(ctx, "GetRelatedTags", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

@@ -6,7 +6,6 @@ import (
 
 	"github.com/linkbox-group/linkbox-server/model"
 	"github.com/linkbox-group/linkbox-server/rpc-gen/tag"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // TagDelivery implements the last service interface defined in the IDL.
@@ -17,6 +16,7 @@ func (s *TagDelivery) CreateTag(ctx context.Context, req *tag.CreateTagRequest) 
 		Name:   req.Name,
 		Color:  req.GetColor(),
 		UserID: req.UserId,
+		Icon:   req.GetIcon(),
 	}
 	err = s.service.CreateTagService(ctx, &tagEntity)
 	if err != nil {
@@ -26,16 +26,7 @@ func (s *TagDelivery) CreateTag(ctx context.Context, req *tag.CreateTagRequest) 
 	}
 	resp = &tag.CreateTagResponse{
 		Result: &tag.CreateTagResponse_Tag{
-			Tag: &tag.Tag{
-				Id:          tagEntity.ID,
-				UserId:      tagEntity.UserID,
-				Name:        tagEntity.Name,
-				Description: "",
-				Color:       tagEntity.Color,
-				ItemCount:   int32(len(tagEntity.Items)),
-				CreatedAt:   timestamppb.New(tagEntity.CreatedAt),
-				UpdatedAt:   timestamppb.New(tagEntity.UpdatedAt),
-			}}}
+			Tag: tagEntity.ConvertTo()}}
 	return resp, nil
 }
 
@@ -55,16 +46,7 @@ func (s *TagDelivery) GetTag(ctx context.Context, req *tag.GetTagRequest) (resp 
 	}
 	resp = &tag.GetTagResponse{
 		Result: &tag.GetTagResponse_Tag{
-			Tag: &tag.Tag{
-				Id:          tagEntity.ID,
-				UserId:      tagEntity.UserID,
-				Name:        tagEntity.Name,
-				Description: "",
-				Color:       tagEntity.Color,
-				ItemCount:   int32(len(tagEntity.Items)),
-				CreatedAt:   timestamppb.New(tagEntity.CreatedAt),
-				UpdatedAt:   timestamppb.New(tagEntity.UpdatedAt),
-			}}}
+			Tag: tagEntity.ConvertTo()}}
 	return resp, nil
 	//return
 }
@@ -87,15 +69,7 @@ func (s *TagDelivery) UpdateTag(ctx context.Context, req *tag.UpdateTagRequest) 
 	}
 	resp = &tag.UpdateTagResponse{
 		Result: &tag.UpdateTagResponse_Tag{
-			Tag: &tag.Tag{
-				Id:          tagEntity.ID,
-				UserId:      tagEntity.UserID,
-				Name:        tagEntity.Name,
-				Description: "",
-				Color:       tagEntity.Color,
-				ItemCount:   int32(len(tagEntity.Items)),
-				CreatedAt:   timestamppb.New(tagEntity.CreatedAt),
-				UpdatedAt:   timestamppb.New(tagEntity.UpdatedAt)}}}
+			Tag: tagEntity.ConvertTo()}}
 	return resp, nil
 }
 
@@ -134,16 +108,7 @@ func (s *TagDelivery) GetUserTags(ctx context.Context, req *tag.GetUserTagsReque
 	}
 	var pbTags []*tag.Tag
 	for _, t := range tags {
-		pbTags = append(pbTags, &tag.Tag{
-			Id:          t.ID,
-			UserId:      t.UserID,
-			Name:        t.Name,
-			Description: "",
-			Color:       t.Color,
-			ItemCount:   int32(len(t.Items)),
-			CreatedAt:   timestamppb.New(t.CreatedAt),
-			UpdatedAt:   timestamppb.New(t.UpdatedAt),
-		})
+		pbTags = append(pbTags, t.ConvertTo())
 	}
 	resp = &tag.GetUserTagsResponse{
 		Result: &tag.
@@ -179,28 +144,4 @@ func (s *TagDelivery) AddTagsToItems(ctx context.Context, req *tag.AddTagsToItem
 		},
 	}
 	return resp, nil
-}
-
-// RemoveTagsFromItems implements the TagDelivery interface.
-func (s *TagDelivery) RemoveTagsFromItems(ctx context.Context, req *tag.RemoveTagsFromItemsRequest) (resp *tag.RemoveTagsFromItemsResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
-// GetItemTags implements the TagDelivery interface.
-func (s *TagDelivery) GetItemTags(ctx context.Context, req *tag.GetItemTagsRequest) (resp *tag.GetItemTagsResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
-// MergeTags implements the TagDelivery interface.
-func (s *TagDelivery) MergeTags(ctx context.Context, req *tag.MergeTagsRequest) (resp *tag.MergeTagsResponse, err error) {
-	// TODO: Your code here...
-	return
-}
-
-// GetRelatedTags implements the TagDelivery interface.
-func (s *TagDelivery) GetRelatedTags(ctx context.Context, req *tag.GetRelatedTagsRequest) (resp *tag.GetRelatedTagsResponse, err error) {
-	// TODO: Your code here...
-	return
 }

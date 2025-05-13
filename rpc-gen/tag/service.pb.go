@@ -19,6 +19,7 @@ type Tag struct {
 	Description string                 `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
 	Color       string                 `protobuf:"bytes,5,opt,name=color" json:"color,omitempty"`
 	ItemCount   int32                  `protobuf:"varint,6,opt,name=item_count" json:"item_count,omitempty"`
+	Icon        string                 `protobuf:"bytes,9,opt,name=icon" json:"icon,omitempty"`
 	CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at" json:"created_at,omitempty"`
 	UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at" json:"updated_at,omitempty"`
 }
@@ -71,6 +72,13 @@ func (x *Tag) GetItemCount() int32 {
 	return 0
 }
 
+func (x *Tag) GetIcon() string {
+	if x != nil {
+		return x.Icon
+	}
+	return ""
+}
+
 func (x *Tag) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
@@ -91,6 +99,7 @@ type CreateTagRequest struct {
 	Name        string  `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
 	Description *string `protobuf:"bytes,3,opt,name=description" json:"description,omitempty"`
 	Color       *string `protobuf:"bytes,4,opt,name=color" json:"color,omitempty"`
+	Icon        *string `protobuf:"bytes,9,opt,name=icon" json:"icon,omitempty"`
 }
 
 func (x *CreateTagRequest) Reset() { *x = CreateTagRequest{} }
@@ -123,6 +132,13 @@ func (x *CreateTagRequest) GetDescription() string {
 func (x *CreateTagRequest) GetColor() string {
 	if x != nil && x.Color != nil {
 		return *x.Color
+	}
+	return ""
+}
+
+func (x *CreateTagRequest) GetIcon() string {
+	if x != nil && x.Icon != nil {
+		return *x.Icon
 	}
 	return ""
 }
@@ -278,6 +294,7 @@ type UpdateTagRequest struct {
 	Name        *string `protobuf:"bytes,3,opt,name=name" json:"name,omitempty"`
 	Description *string `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
 	Color       *string `protobuf:"bytes,5,opt,name=color" json:"color,omitempty"`
+	Icon        *string `protobuf:"bytes,9,opt,name=icon" json:"icon,omitempty"`
 }
 
 func (x *UpdateTagRequest) Reset() { *x = UpdateTagRequest{} }
@@ -317,6 +334,13 @@ func (x *UpdateTagRequest) GetDescription() string {
 func (x *UpdateTagRequest) GetColor() string {
 	if x != nil && x.Color != nil {
 		return *x.Color
+	}
+	return ""
+}
+
+func (x *UpdateTagRequest) GetIcon() string {
+	if x != nil && x.Icon != nil {
+		return *x.Icon
 	}
 	return ""
 }
@@ -923,290 +947,6 @@ func (x *ItemTagsData) GetTags() []*Tag {
 	return nil
 }
 
-// 合并标签请求
-type MergeTagsRequest struct {
-	UserId           string   `protobuf:"bytes,1,opt,name=user_id" json:"user_id,omitempty"`
-	SourceTagIds     []string `protobuf:"bytes,2,rep,name=source_tag_ids" json:"source_tag_ids,omitempty"`
-	TargetTagId      string   `protobuf:"bytes,3,opt,name=target_tag_id" json:"target_tag_id,omitempty"`
-	DeleteSourceTags *bool    `protobuf:"varint,4,opt,name=delete_source_tags" json:"delete_source_tags,omitempty"`
-}
-
-func (x *MergeTagsRequest) Reset() { *x = MergeTagsRequest{} }
-
-func (x *MergeTagsRequest) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *MergeTagsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *MergeTagsRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *MergeTagsRequest) GetSourceTagIds() []string {
-	if x != nil {
-		return x.SourceTagIds
-	}
-	return nil
-}
-
-func (x *MergeTagsRequest) GetTargetTagId() string {
-	if x != nil {
-		return x.TargetTagId
-	}
-	return ""
-}
-
-func (x *MergeTagsRequest) GetDeleteSourceTags() bool {
-	if x != nil && x.DeleteSourceTags != nil {
-		return *x.DeleteSourceTags
-	}
-	return false
-}
-
-// 合并标签响应
-type MergeTagsResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*MergeTagsResponse_Data
-	//	*MergeTagsResponse_Error
-	Result isMergeTagsResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *MergeTagsResponse) Reset() { *x = MergeTagsResponse{} }
-
-func (x *MergeTagsResponse) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *MergeTagsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *MergeTagsResponse) GetResult() isMergeTagsResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *MergeTagsResponse) GetData() *MergeTagsResult {
-	if p, ok := x.GetResult().(*MergeTagsResponse_Data); ok {
-		return p.Data
-	}
-	return nil
-}
-
-func (x *MergeTagsResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*MergeTagsResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*MergeTagsResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*MergeTagsResponse_Data)(nil),
-		(*MergeTagsResponse_Error)(nil),
-	}
-}
-
-type isMergeTagsResponse_Result interface {
-	isMergeTagsResponse_Result()
-}
-
-type MergeTagsResponse_Data struct {
-	Data *MergeTagsResult `protobuf:"bytes,1,opt,name=data" json:"data,omitempty"`
-}
-
-func (*MergeTagsResponse_Data) isMergeTagsResponse_Result() {}
-
-type MergeTagsResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*MergeTagsResponse_Error) isMergeTagsResponse_Result() {}
-
-// 合并标签结果
-type MergeTagsResult struct {
-	AffectedItems int32 `protobuf:"varint,1,opt,name=affected_items" json:"affected_items,omitempty"`
-	TargetTag     *Tag  `protobuf:"bytes,2,opt,name=target_tag" json:"target_tag,omitempty"`
-}
-
-func (x *MergeTagsResult) Reset() { *x = MergeTagsResult{} }
-
-func (x *MergeTagsResult) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *MergeTagsResult) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *MergeTagsResult) GetAffectedItems() int32 {
-	if x != nil {
-		return x.AffectedItems
-	}
-	return 0
-}
-
-func (x *MergeTagsResult) GetTargetTag() *Tag {
-	if x != nil {
-		return x.TargetTag
-	}
-	return nil
-}
-
-// 获取相关标签请求
-type GetRelatedTagsRequest struct {
-	TagId  string `protobuf:"bytes,1,opt,name=tag_id" json:"tag_id,omitempty"`
-	UserId string `protobuf:"bytes,2,opt,name=user_id" json:"user_id,omitempty"`
-	Limit  *int32 `protobuf:"varint,3,opt,name=limit" json:"limit,omitempty"`
-}
-
-func (x *GetRelatedTagsRequest) Reset() { *x = GetRelatedTagsRequest{} }
-
-func (x *GetRelatedTagsRequest) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GetRelatedTagsRequest) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetRelatedTagsRequest) GetTagId() string {
-	if x != nil {
-		return x.TagId
-	}
-	return ""
-}
-
-func (x *GetRelatedTagsRequest) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *GetRelatedTagsRequest) GetLimit() int32 {
-	if x != nil && x.Limit != nil {
-		return *x.Limit
-	}
-	return 0
-}
-
-// 获取相关标签响应
-type GetRelatedTagsResponse struct {
-	// Types that are assignable to Result:
-	//
-	//	*GetRelatedTagsResponse_RelatedTags
-	//	*GetRelatedTagsResponse_Error
-	Result isGetRelatedTagsResponse_Result `protobuf_oneof:"result"`
-}
-
-func (x *GetRelatedTagsResponse) Reset() { *x = GetRelatedTagsResponse{} }
-
-func (x *GetRelatedTagsResponse) Marshal(in []byte) ([]byte, error) {
-	return prutal.MarshalAppend(in, x)
-}
-
-func (x *GetRelatedTagsResponse) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *GetRelatedTagsResponse) GetResult() isGetRelatedTagsResponse_Result {
-	if x != nil {
-		return x.Result
-	}
-	return nil
-}
-func (x *GetRelatedTagsResponse) GetRelatedTags() *RelatedTagsData {
-	if p, ok := x.GetResult().(*GetRelatedTagsResponse_RelatedTags); ok {
-		return p.RelatedTags
-	}
-	return nil
-}
-
-func (x *GetRelatedTagsResponse) GetError() *cError.Error {
-	if p, ok := x.GetResult().(*GetRelatedTagsResponse_Error); ok {
-		return p.Error
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the prutal package.
-func (*GetRelatedTagsResponse) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*GetRelatedTagsResponse_RelatedTags)(nil),
-		(*GetRelatedTagsResponse_Error)(nil),
-	}
-}
-
-type isGetRelatedTagsResponse_Result interface {
-	isGetRelatedTagsResponse_Result()
-}
-
-type GetRelatedTagsResponse_RelatedTags struct {
-	RelatedTags *RelatedTagsData `protobuf:"bytes,1,opt,name=related_tags" json:"related_tags,omitempty"`
-}
-
-func (*GetRelatedTagsResponse_RelatedTags) isGetRelatedTagsResponse_Result() {}
-
-type GetRelatedTagsResponse_Error struct {
-	Error *cError.Error `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-}
-
-func (*GetRelatedTagsResponse_Error) isGetRelatedTagsResponse_Result() {}
-
-// 相关标签数据
-type RelatedTagsData struct {
-	TagId       string         `protobuf:"bytes,1,opt,name=tag_id" json:"tag_id,omitempty"`
-	RelatedTags []*TagRelation `protobuf:"bytes,2,rep,name=related_tags" json:"related_tags,omitempty"`
-}
-
-func (x *RelatedTagsData) Reset() { *x = RelatedTagsData{} }
-
-func (x *RelatedTagsData) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *RelatedTagsData) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *RelatedTagsData) GetTagId() string {
-	if x != nil {
-		return x.TagId
-	}
-	return ""
-}
-
-func (x *RelatedTagsData) GetRelatedTags() []*TagRelation {
-	if x != nil {
-		return x.RelatedTags
-	}
-	return nil
-}
-
-// 标签关系
-type TagRelation struct {
-	Tag          *Tag    `protobuf:"bytes,1,opt,name=tag" json:"tag,omitempty"`
-	Correlation  float32 `protobuf:"fixed32,2,opt,name=correlation" json:"correlation,omitempty"`
-	CoOccurrence int32   `protobuf:"varint,3,opt,name=co_occurrence" json:"co_occurrence,omitempty"`
-}
-
-func (x *TagRelation) Reset() { *x = TagRelation{} }
-
-func (x *TagRelation) Marshal(in []byte) ([]byte, error) { return prutal.MarshalAppend(in, x) }
-
-func (x *TagRelation) Unmarshal(in []byte) error { return prutal.Unmarshal(in, x) }
-
-func (x *TagRelation) GetTag() *Tag {
-	if x != nil {
-		return x.Tag
-	}
-	return nil
-}
-
-func (x *TagRelation) GetCorrelation() float32 {
-	if x != nil {
-		return x.Correlation
-	}
-	return 0
-}
-
-func (x *TagRelation) GetCoOccurrence() int32 {
-	if x != nil {
-		return x.CoOccurrence
-	}
-	return 0
-}
-
 type TagService interface {
 	CreateTag(ctx context.Context, req *CreateTagRequest) (res *CreateTagResponse, err error)
 	GetTag(ctx context.Context, req *GetTagRequest) (res *GetTagResponse, err error)
@@ -1216,5 +956,4 @@ type TagService interface {
 	AddTagsToItems(ctx context.Context, req *AddTagsToItemsRequest) (res *AddTagsToItemsResponse, err error)
 	RemoveTagsFromItems(ctx context.Context, req *RemoveTagsFromItemsRequest) (res *RemoveTagsFromItemsResponse, err error)
 	GetItemTags(ctx context.Context, req *GetItemTagsRequest) (res *GetItemTagsResponse, err error)
-	GetRelatedTags(ctx context.Context, req *GetRelatedTagsRequest) (res *GetRelatedTagsResponse, err error)
 }

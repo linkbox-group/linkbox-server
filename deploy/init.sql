@@ -88,6 +88,7 @@ CREATE TABLE `tag` (
                        `user_id` VARCHAR(36) NOT NULL COMMENT '用户ID',
                        `name` VARCHAR(100) NOT NULL COMMENT '标签名称',
                        `color` VARCHAR(20) NULL COMMENT '标签颜色',
+                        `icon` varchar(100) NULL COMMENT '标签颜色',
                        `use_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '使用次数',
                        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
